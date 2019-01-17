@@ -5,9 +5,9 @@ global $lo_url;
 include_once('./_common.php');
 
 if($error) {
-    $g5['title'] = "오류안내 페이지";
+    $g5['title'] = "안내";
 } else {
-    $g5['title'] = "결과안내 페이지";
+    $g5['title'] = "안내";
 }
 include_once(G5_PATH.'/head.sub.php');
 // 필수 입력입니다.

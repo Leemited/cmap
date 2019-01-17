@@ -1,6 +1,7 @@
 <?php
 include_once('./_common.php');
 include_once(G5_LIB_PATH.'/json.lib.php');
+
 set_session('ss_admin_token', '');
 
 $error = admin_referer_check(true);

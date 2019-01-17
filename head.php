@@ -112,10 +112,10 @@ include_once(G5_LIB_PATH.'/popular.lib.php');
                 <li class="gnb_1dli gnb_mnal"><button type="button" class="gnb_menu_btn"><i class="fa fa-bars" aria-hidden="true"></i><span class="sound_only">전체메뉴열기</span></button></li>
                 <?php
                 $sql = " select *
-                            from {$g5['menu_table']}
-                            where me_use = '1'
-                              and length(me_code) = '2'
-                            order by me_order, me_id ";
+                            from `cmap_menu`
+                            where menu_status = 0 
+                              and menu_depth = 0
+                            order by menu_order ";
                 $result = sql_query($sql, false);
                 $gnb_zindex = 999; // gnb_1dli z-index 값 설정용
                 $menu_datas = array();
@@ -124,11 +124,11 @@ include_once(G5_LIB_PATH.'/popular.lib.php');
                     $menu_datas[$i] = $row;
 
                     $sql2 = " select *
-                                from {$g5['menu_table']}
-                                where me_use = '1'
-                                  and length(me_code) = '4'
-                                  and substring(me_code, 1, 2) = '{$row['me_code']}'
-                                order by me_order, me_id ";
+                                from `cmap_menu`
+                                where menu_status = 0
+                                  and menu_depth = 1
+                                  and substring(menu_code, 1, 2) = '{$row['menu_code']}'
+                                order by menu_order ";
                     $result2 = sql_query($sql2);
                     for ($k=0; $row2=sql_fetch_array($result2); $k++) {
                         $menu_datas[$i]['sub'][$k] = $row2;
@@ -141,7 +141,7 @@ include_once(G5_LIB_PATH.'/popular.lib.php');
                     if( empty($row) ) continue; 
                 ?>
                 <li class="gnb_1dli" style="z-index:<?php echo $gnb_zindex--; ?>">
-                    <a href="<?php echo $row['me_link']; ?>" target="_<?php echo $row['me_target']; ?>" class="gnb_1da"><?php echo $row['me_name'] ?></a>
+                    <a href="<?php echo G5_URL?>/page/view.php?me_id=<?php echo $row["me_id"]; ?>" class="gnb_1da"><?php echo $row['menu_name'] ?></a>
                     <?php
                     $k = 0;
                     foreach( (array) $row['sub'] as $row2 ){
@@ -151,7 +151,7 @@ include_once(G5_LIB_PATH.'/popular.lib.php');
                         if($k == 0)
                             echo '<span class="bg">하위분류</span><ul class="gnb_2dul">'.PHP_EOL;
                     ?>
-                        <li class="gnb_2dli"><a href="<?php echo $row2['me_link']; ?>" target="_<?php echo $row2['me_target']; ?>" class="gnb_2da"><?php echo $row2['me_name'] ?></a></li>
+                        <li class="gnb_2dli"><a href="<?php echo G5_URL?>/page/view.php?me_id=<?php echo $row["me_id"]; ?>" class="gnb_2da"><?php echo $row2['menu_name'] ?></a></li>
                     <?php
                     $k++;
                     }   //end foreach $row2
@@ -177,14 +177,14 @@ include_once(G5_LIB_PATH.'/popular.lib.php');
                     foreach( $menu_datas as $row ){
                     ?>
                     <li class="gnb_al_li">
-                        <a href="<?php echo $row['me_link']; ?>" target="_<?php echo $row['me_target']; ?>" class="gnb_al_a"><?php echo $row['me_name'] ?></a>
+                        <a href="<?php echo $row['me_link']; ?>" class="gnb_al_a"><?php echo $row['menu_name'] ?></a>
                         <?php
                         $k = 0;
                         foreach( (array) $row['sub'] as $row2 ){
                             if($k == 0)
                                 echo '<ul>'.PHP_EOL;
                         ?>
-                            <li><a href="<?php echo $row2['me_link']; ?>" target="_<?php echo $row2['me_target']; ?>"><i class="fa fa-caret-right" aria-hidden="true"></i> <?php echo $row2['me_name'] ?></a></li>
+                            <li><a href="<?php echo $row2['me_link']; ?>" ><i class="fa fa-caret-right" aria-hidden="true"></i> <?php echo $row2['menu_name'] ?></a></li>
                         <?php
                         $k++;
                         }   //end foreach $row2

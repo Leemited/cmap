@@ -9,9 +9,16 @@ if (!$member['mb_id'])
 }
 
 include_once(G5_PATH."/head.sub.php");
+
 add_stylesheet('<link rel="stylesheet" href="'.G5_CSS_URL.'/default.css">', 0);
-include_once (G5_PATH."/head.sub.php");
 add_stylesheet('<link rel="stylesheet" href="'.G5_CSS_URL.'/admin.css">', 0);
+add_stylesheet('<link rel="stylesheet" href="'.G5_CSS_URL.'/jquery-ui.min.css">', 0);
+$sql = "select * from `cmap_menu` where menu_status = 0 and menu_depth = 0 order by menu_order asc";
+$res = sql_query($sql);
+while($row = sql_fetch_array($res)){
+    $cmap_menu[] = $row;
+}
+
 ?>
 <div class="full-width">
     <header>
@@ -35,55 +42,59 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_CSS_URL.'/admin.css">', 0);
             <div class="lnb">
                 <ul data-accordion-group id="admin-menu">
                     <li class="accordion" data-accordion>
-                        <div data-control class="list-title">카테고리관리</div>
+                        <div data-control class="list-title">메뉴관리</div>
                         <div data-content class="list-item">
-                            <div><a href="<?php echo G5_URL."/admin/category_list.php"; ?>">카테고리 관리</a></div>
-                            <!-- <div><a href="<?php echo G5_URL."/admin/.php"; ?>">카테고리 예문 관리</a></div> -->
-                            <div><a href="<?php echo G5_URL."/admin/category_temp_list.php"; ?>">제안하기 관리</a></div>
+                            <?php
+                            for($i=0;$i<count($cmap_menu);$i++){
+                                //$sql = "select * from `$g5[menu_table]` where SUBSTRING(me_code,1,2) = {$menu[$i]['me_code']} and me_code != {$menu[$i]['me_code']}";
+                                //$res = sql_query($sql);
+                            ?>
+                            <div >
+                                <?php if($cmap_menu[$i]["menu_name"]!="점검/평가"){?>
+                                <a href="<?php echo G5_URL?>/admin/construction.php?menu_code=<?php echo $cmap_menu[$i]["menu_code"];?>&menu_name=<?php echo $cmap_menu[$i]["menu_name"];?>"><?php echo $cmap_menu[$i]["menu_name"];?></a>
+                                <?php }else{?>
+                                <a href="<?php echo G5_URL?>/admin/evaluation.php?menu_code=<?php echo $cmap_menu[$i]["menu_code"];?>&menu_name=<?php echo $cmap_menu[$i]["menu_name"];?>"><?php echo $cmap_menu[$i]["menu_name"];?></a>
+                                <?php }?>
+                            </div>
+                            <!--<ul data-accordion-group id="admin-menu">
+                                <li class="accordion" data-accordion>
+                                    <div data-control class="list-title"><?php /*echo $menu[$i]["me_name"];*/?></div>
+                                    <div data-content class="list-item">
+                                        <?php /*while($row=sql_fetch_array($res)){*/?>
+                                            <div>
+                                                <a href="<?php /*echo G5_URL*/?>/admin/construction.php?me_id=<?php /*echo $row["me_code"];*/?>"><?php /*echo $row["me_name"];*/?></a>
+                                            </div>
+                                        <?php /*}*/?>
+                                    </div>
+                                </li>
+                            </ul>-->
+                            <?php }?>
+                            <!--<div><a href="<?php /*echo G5_URL."/admin/management.php?"; */?>">공사관리</a></div>
+                            <div><a href="<?php /*echo G5_URL."/admin/evaluation.php"; */?>">시공확인</a></div>
+                            <div><a href="<?php /*echo G5_URL."/admin/guide.php"; */?>">점검/평가</a></div>-->
                         </div>
                     </li>
                     <li class="accordion" data-accordion>
                         <div data-control class="list-title">홈페이지관리</div>
                         <div data-content class="list-item">
-                            <div><a href="<?php echo G5_URL."/admin/filter_write.php"; ?>">금칙어관리</a></div>
-                            <div><a href="<?php echo G5_URL."/admin/board_list.php?bo_table=help"; ?>">도움말관리</a></div>
+                            <div><a href="<?php echo G5_URL."/admin/navigator.php"; ?>">네비게이터관리</a></div>
                         </div>
                     </li>
                     <li class="accordion" data-accordion>
                         <div data-control class="list-title">게시물관리</div>
                         <div data-content class="list-item">
-                            <div><a href="<?php echo G5_URL."/admin/product_list.php"; ?>">게시글 관리</a></div>
-                            <div><a href="<?php echo G5_URL."/admin/product_ad_list.php"; ?>">광고관리</a></div>
+                            <div><a href="<?php echo G5_URL."/admin/faq.php"; ?>">FAQ관리</a></div>
+                            <div><a href="<?php echo G5_URL."/admin/.php"; ?>">제안관리</a></div>
                         </div>
                     </li>
                     <li class="accordion" data-accordion>
                         <div data-control class="list-title">회원관리</div>
                         <div data-content class="list-item">
                             <div><a href="<?php echo G5_URL."/admin/member_list.php"; ?>">회원관리</a></div>
-                            <div><a href="<?php echo G5_URL."/admin/member_company_list.php"; ?>">사업자신청관리</a></div>
-                        </div>
-                    </li>
-                    <li class="accordion" data-accordion>
-                        <div data-control class="list-title">고객센터</div>
-                        <div data-content class="list-item">
-                            <div><a href="<?php echo G5_URL."/admin/board_list.php?bo_table=notice"; ?>">공지사항</a></div>
-                            <div><a href="<?php echo G5_URL."/admin/qa_list.php?"; ?>">1:1문의</a></div>
-                            <div><a href="<?php echo G5_URL."/admin/faq_list.php?fm_id=1"; ?>">faq</a></div>
-                        </div>
-                    </li>
-                    <li class="accordion" data-accordion>
-                        <div data-control class="list-title">정산관리</div>
-                        <div data-content class="list-item">
-                            <div><a href="<?php echo G5_URL."/admin/"; ?>">거래내역</a></div>
-                            <div><a href="<?php echo G5_URL."/admin/"; ?>">배송상태</a></div>
-                            <div><a href="<?php echo G5_URL."/admin/"; ?>">정산</a></div>
                         </div>
                     </li>
                 </ul>
             </div>
-            <!-- <div class="left">
-			<div><?php //echo visit("basic")?></div>
-		</div> -->
             <div class="left_bg"></div>
         </div>
     </header>
