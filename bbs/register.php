@@ -6,6 +6,7 @@ if ($is_member) {
     goto_url(G5_URL);
 }
 
+$sub = "login";
 // 세션을 지웁니다.
 set_session("ss_mb_reg", "");
 

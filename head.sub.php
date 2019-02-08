@@ -38,6 +38,10 @@ header("Pragma: no-cache"); // HTTP/1.0
 <html lang="ko">
 <head>
 <meta charset="utf-8">
+<meta name="GENERATOR" Content="Microsoft Visual Studio .NET 7.1">
+<meta name="CODE_LANGUAGE" Content="C#">
+<meta name="vs_defaultClientScript" content="JavaScript">
+<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5">
 <?php
 if (G5_IS_MOBILE) {
     echo '<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=0,maximum-scale=10,user-scalable=yes">'.PHP_EOL;
@@ -58,8 +62,10 @@ if (defined('G5_IS_ADMIN')) {
         echo '<link rel="stylesheet" href="'.G5_ADMIN_URL.'/css/admin.css?ver='.G5_CSS_VER.'">'.PHP_EOL;
 } else {
     echo '<link rel="stylesheet" href="'.G5_CSS_URL.'/'.(G5_IS_MOBILE?'mobile':'default').'.css?ver='.G5_CSS_VER.'">'.PHP_EOL;
+    echo '<link rel="stylesheet" href="'.G5_CSS_URL.'/style.css?ver='.G5_CSS_VER.'">'.PHP_EOL;
 }
 ?>
+
 <!--[if lte IE 8]>
 <script src="<?php echo G5_JS_URL ?>/html5.js"></script>
 <![endif]-->
@@ -77,6 +83,13 @@ var g5_cookie_domain = "<?php echo G5_COOKIE_DOMAIN ?>";
 <?php if(defined('G5_IS_ADMIN')) { ?>
 var g5_admin_url = "<?php echo G5_ADMIN_URL; ?>";
 <?php } ?>
+
+document.oncontextmenu = function (e) {
+    alert("오른쪽버튼을 이용할 수 없습니다...");
+    return false;
+}
+document.ondragstart = new Function('return false');     // 드래그 방지
+document.onselectstart = new Function('return false');   // 선택 방지
 </script>
 <script src="<?php echo G5_JS_URL ?>/jquery-1.8.3.min.js"></script>
 <script src="<?php echo G5_JS_URL ?>/jquery.menu.js?ver=<?php echo G5_JS_VER; ?>"></script>
@@ -92,7 +105,7 @@ if(!defined('G5_IS_ADMIN'))
     echo $config['cf_add_script'];
 ?>
 </head>
-<body<?php echo isset($g5['body_script']) ? $g5['body_script'] : ''; ?>>
+<body<?php echo isset($g5['body_script']) ? $g5['body_script'] : ''; ?> class="<?php if($main){?>main <?php }else{?>sub <?php }?><?php if($sub=="login"){?>login_body<?php }?>" id="test" >
 <?php
 if ($is_member) { // 회원이라면 로그인 중이라는 메세지를 출력해준다.
     $sr_admin_msg = '';

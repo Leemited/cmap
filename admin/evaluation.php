@@ -25,11 +25,12 @@ if($depthcon){
 
 $me_code2 = substr($menu_code,0,2);
 if(strlen($menu_code)==2) {
-    $incode = $menu_code . "10";
+    $sql = "select me_code from `cmap_depth1` as o left join `cmap_menu` as m on o.me_id = m.menu_code where SUBSTRING(me_code,1,2) = {$menu_code} and CHAR_LENGTH(me_code) > 2 and m.menu_status = 0 order by m.menu_order asc limit 0, 1";
+    $me = sql_fetch($sql);
+    $incode = $me["me_code"];
 }else{
     $incode = $menu_code;
 }
-
 $sql = "select * from `cmap_menu` where SUBSTRING(menu_code,1,2) = {$me_code2} order by menu_order asc";
 $res = sql_query($sql);
 while($row = sql_fetch_array($res)){
@@ -56,23 +57,23 @@ while($row = sql_fetch_array($res)){
     $content[] = $row;
 }
 
-$sql = "select *,a.id as id,COUNT(*) as cnt from `cmap_depth1` as a left join `cmap_content` as b on a.id = b.depth1_id where a.me_code = '{$incode}' and menu_status = 0 {$where1} group by a.id order by a.id asc ";
+$sql = "select *,a.id as id,COUNT(*) as cnt,a.pk_id from `cmap_depth1` as a left join `cmap_content` as b on a.id = b.depth1_id where a.me_code = '{$incode}' and menu_status = 0 {$where1} group by a.id order by a.id asc ";
 $res = sql_query($sql);
 $i=0;
 while($row=sql_fetch_array($res)){
     $j=0;
     $list[$i] = $row;
-    $sql = "select *,a.id as id,COUNT(*) as cnt from `cmap_depth2` as a left join `cmap_content` as b on a.id = b.depth2_id where a.depth1_id = {$row['id']} {$where2} group by a.id order by a.id asc";
+    $sql = "select *,a.id as id,COUNT(*) as cnt,a.pk_id from `cmap_depth2` as a left join `cmap_content` as b on a.id = b.depth2_id where a.depth1_id = {$row['id']} {$where2} group by a.id order by a.id asc";
     $res2 = sql_query($sql);
     while($row2 = sql_fetch_array($res2)){
         $k=0;
         $list[$i]['depth2'][$j] = $row2;
-        $sql = "select *,a.id as id, COUNT(*) as cnt from `cmap_depth3` as a left join `cmap_content` as b on a.id = b.depth3_id where a.depth1_id = {$row['id']} and a.depth2_id = {$row2['id']} {$where3} group by a.id order by a.id asc";
+        $sql = "select *,a.id as id, COUNT(*) as cnt,a.pk_id from `cmap_depth3` as a left join `cmap_content` as b on a.id = b.depth3_id where a.depth1_id = {$row['id']} and a.depth2_id = {$row2['id']} {$where3} group by a.id order by a.id asc";
         $res3 = sql_query($sql);
         while($row3 = sql_fetch_array($res3)){
             $l=0;
             $list[$i]['depth2'][$j]['depth3'][$k] = $row3;
-            $sql = "select *,a.id as id, COUNT(*) as cnt from `cmap_depth4` as a left join `cmap_content` as b on a.id = b.depth4_id where a.depth1_id = {$row['id']} and a.depth2_id = {$row2['id']} and a.depth3_id = {$row3['id']} {$where4} group by a.id order by a.id asc";
+            $sql = "select *,a.id as id, COUNT(*) as cnt,a.pk_id from `cmap_depth4` as a left join `cmap_content` as b on a.id = b.depth4_id where a.depth1_id = {$row['id']} and a.depth2_id = {$row2['id']} and a.depth3_id = {$row3['id']} {$where4} group by a.id order by a.id asc";
             $res4 = sql_query($sql);
             while($row4 = sql_fetch_array($res4)){
                 $m=0;
@@ -98,20 +99,27 @@ while($row=sql_fetch_array($res)){
         <div class="admin_title">
             <h2><?php echo $menu_name;?></h2>
             <div class="more menu">
+                <input type="button" value="백업" class="edit_btn" onclick="fnBackup()">
+                <input type="button" value="복구" class="edit_btn" onclick="/*fnRestore()*/">
                 <input type="button" value="메뉴 수정" class="edit_btn" onclick="location.href='menu_list.php'">
             </div>
         </div>
         <div class="admin_tab">
             <ul>
                 <?php
-                $flag = true;
                 for($i=0;$i<count($inmenu);$i++) {
-                    if ($inmenu[$i]["menu_code"] == $me_code2 && $flag == true ) {continue; $flag = false;}
-                    ?>
-                    <li <?php if ($inmenu[$i]["menu_code"] == $menu_code || (strlen($menu_code)==2 && $i==0)){ ?>class="active"<?php } ?>
-                        onclick="location.href=g5_url+'/admin/construction.php?menu_code=<?php echo $inmenu[$i]["menu_code"]; ?>&menu_name=<?php echo urlencode($menu_name);?>'"><?php echo $inmenu[$i]["menu_name"]; ?></li>
-                    <?php
-                } ?>
+                    if($inmenu[$i]["menu_name"]=="건설사업관리점검") {
+                        $link = "evaluation.php";
+                    }else if($inmenu[$i]["menu_name"]=="시공평가") {
+                        $link = "evaluation2.php";
+                    }else{ //if($inmenu[$i]["menu_code"]=="") {
+                        $link = "evaluation3.php";
+                    }
+                        ?>
+                        <li <?php if ($inmenu[$i]["menu_code"] == $menu_code || (strlen($menu_code)==2 && $i==0)){ ?>class="active"<?php } ?> onclick="location.href=g5_url+'/admin/<?php echo $link;?>?menu_code=<?php echo $inmenu[$i]["menu_code"]; ?>&menu_name=<?php echo urlencode($menu_name); ?>'">
+                            <?php echo $inmenu[$i]["menu_name"]; ?>
+                        </li>
+                <?php } ?>
             </ul>
         </div>
         <div class="clear"></div>
@@ -156,9 +164,6 @@ while($row=sql_fetch_array($res)){
                     </select>
                     <input type="text" name="depthcon" class="admin_infile" value="<?php echo $depthcon;?>"> <input type="submit" value="검색" class="admin_submit">
                 </form>
-                <!--                <div>
-                                    <input type="button" value="항목추가">
-                                </div>-->
             </div>
             <div class="edit_content">
                 <table id="edit_table">
@@ -173,133 +178,132 @@ while($row=sql_fetch_array($res)){
                     </colgroup>
                     <tbody>
                     <tr>
-                        <th>유형</th>
-                        <th>직업선택</th>
-                        <th>구분</th>
+                        <th>대분류</th>
+                        <th>중분류</th>
+                        <th>소분류</th>
                         <th>항목</th>
                         <th>주요확인내용</th>
                         <th>참고</th>
-                        <th>제출일</th>
+
                     </tr>
                     <?php
-                    $depth_last = 0;
+                    $depth_last = 1;
                     for($i=0;$i<count($list);$i++){
-                        ?>
+                    ?>
                     <tr id="depth1<?php echo $list[$i]['id'];?>" class="depth<?php if($list[$i]['cnt'] == 1){echo " finish_".$list[$i]["id"];}?>" >
                         <td rowspan="<?php echo $list[$i]['cnt'];?>" class="category" id="depth1_<?php echo $list[$i]['id'];?>">
                             <input type="hidden" id="me_code" value="<?php echo $list[$i]["me_code"];?>">
-                            <input type="text" value="<?php echo $list[$i]['depth_name'];?>" name="depth1[]" class="input01 center" onkeyup="fnUpdate('<?php echo $list[$i]['id'];?>',$(this).val(),'depth1','<?php echo $list[$i]['me_id'];?>','<?php echo $list[$i]['me_code'];?>');">
+                            <input type="text" value="<?php echo $list[$i]['depth_name'];?>" name="depth1[]" class="input01 center" onkeyup="fnUpdate('<?php echo $list[$i]['pk_id'];?>',$(this).val(),'depth1','<?php echo $list[$i]['me_id'];?>','<?php echo $list[$i]['me_code'];?>');">
                             <!--<input type="button" value="추가" onclick="fnDepth1Add('<?php /*echo $list[$i]["id"];*/?>');">-->
-                            <input type="button" value="삭제" onclick="fnDepth1Del('<?php echo $list[$i]["id"];?>');" class="del">
+                            <input type="button" value="삭제" onclick="fnDepth1Del('<?php echo $list[$i]["pk_id"];?>','<?php echo $list[$i]["id"];?>');" class="del">
                         </td>
                         <?php
                         for($j=0;$j<count($list[$i]['depth2']);$j++) {
-                            if($j!=0 && $list[$i]['cnt'] == $j+1){?>
-                                <tr >
-                            <?php }?>
-                            <td rowspan="<?php echo $list[$i]['depth2'][$j]['cnt'];?>" class="category parent_<?php echo $list[$i]['id'];?>" id="depth2_<?php echo $list[$i]['depth2'][$j]['id'];?>">
-                                <input type="text" value="<?php echo $list[$i]['depth2'][$j]['depth_name'];?>" name="depth2[]" class="center" onkeyup="fnUpdate('<?php echo $list[$i]['depth2'][$j]['id'];?>',$(this).val(),'depth2','','');">
-                                <!--<input type="button" value="추가" onclick="fnDepth2Add('<?php /*echo $list[$i]["id"];*/?>','<?php /*echo $list[$i]['depth2'][$j]["id"];*/?>');">-->
-                                <input type="button" value="삭제" onclick="fnDepth2Del('<?php echo $list[$i]['depth2'][$j]["id"];?>');" class="del">
-                            </td>
-                            <?php
-                            for($k=0;$k<count($list[$i]['depth2'][$j]['depth3']);$k++) {
-                                if($k!=0 && $list[$i]['depth2'][$j]['cnt'] == $k+1){?>
-                                    <tr id="depth2<?php echo $list[$i]["depth2"][$j]["id"];?>">
-                                <?php }?>
-                                <td rowspan="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['cnt'];?>" class="category" id="depth3_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['id'];?>">
-                                    <input type="text"  value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth_name'];?>" name="depth3[]" class="center" onkeyup="fnUpdate('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['id'];?>',$(this).val(),'depth3','','');">
-                                    <!--<input type="button" value="추가" onclick="fnDepth3Add('<?php /*echo $list[$i]["id"];*/?>','<?php /*echo $list[$i]['depth2'][$j]["id"];*/?>','<?php /*echo $list[$i]['depth2'][$j]['depth3'][$k]["id"];*/?>');">-->
-                                    <input type="button" value="삭제" onclick="fnDepth3Del('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]["id"];?>');" class="del">
-                                </td>
-                                <?php
-                                for ($l = 0; $l < count($list[$i]['depth2'][$j]['depth3'][$k]['depth4']); $l++) {
-                                    if($l!=0 && $list[$i]['depth2'][$j]['depth3'][$k]['cnt'] == $l+1){?>
-                                        <tr>
-                                    <?php }?>
-                                    <td rowspan="<?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['cnt']>1){echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['cnt'];}?>" class="category"  id="depth4_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['id'];?>">
-                                        <input type="text" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth_name'];?>" name="depth4[]" class="center" onkeyup="fnUpdate('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['id'];?>',$(this).val(),'depth4','','');">
-                                        <!--<input type="button" value="추가" onclick="fnDepth4Add('<?php /*echo $list[$i]["id"];*/?>','<?php /*echo $list[$i]['depth2'][$j]["id"];*/?>','<?php /*echo $list[$i]['depth2'][$j]['depth3'][$k]["id"];*/?>','<?php /*echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]["id"];*/?>');">-->
-                                        <input type="button" value="삭제" onclick="fnDepth4Del('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]["id"];?>');" class="del">
-                                    </td>
-                                    <?php
-                                    for ($m = 0; $m < count($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5']); $m++) {
-                                        $depth_last++;
-                                        $fileid = "files".$list[$i]["depth2"][$j]["depth3"][$k]["depth4"][$l]["depth5"][$m]["id"];
-                                        if($m!=0 && $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['cnt'] == $m+1){?>
-                                            <tr class="<?php if($list[$i]['cnt'] == $depth_last){echo "finish_".$list[$i]["id"];}?>" >
-                                        <?php }?>
+                        //if($j!=0 && $list[$i]['cnt'] == $j+1){?>
+                        <!--<tr>-->
+                        <?php //}?>
+                        <td rowspan="<?php echo $list[$i]['depth2'][$j]['cnt'];?>" class="category parent_<?php echo $list[$i]['id'];?>" id="depth2_<?php echo $list[$i]['depth2'][$j]['id'];?>">
+                            <input type="text" value="<?php echo $list[$i]['depth2'][$j]['depth_name'];?>" name="depth2[]" class="center" onkeyup="fnUpdate('<?php echo $list[$i]['depth2'][$j]['pk_id'];?>',$(this).val(),'depth2','','');">
+                            <!--<input type="button" value="추가" onclick="fnDepth2Add('<?php /*echo $list[$i]["id"];*/?>','<?php /*echo $list[$i]['depth2'][$j]["id"];*/?>');">-->
+                            <input type="button" value="삭제" onclick="fnDepth2Del('<?php echo $list[$i]['depth2'][$j]["pk_id"];?>','<?php echo $list[$i]['depth2'][$j]["id"];?>');" class="del">
+                        </td>
+                        <?php
+                        for($k=0;$k<count($list[$i]['depth2'][$j]['depth3']);$k++) {
+                        //if($k!=0 && $list[$i]['depth2'][$j]['cnt'] == $k+1){?>
+                        <!--<tr id="depth2<?php /*echo $list[$i]["depth2"][$j]["id"];*/?>">-->
+                        <?php //}?>
+                        <td rowspan="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['cnt'];?>" class="category parent_<?php echo $list[$i]['id'];?>" id="depth3_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['id'];?>">
+                            <input type="text"  value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth_name'];?>" name="depth3[]" class="center" onkeyup="fnUpdate('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['pk_id'];?>',$(this).val(),'depth3','','');">
+                            <!--<input type="button" value="추가" onclick="fnDepth3Add('<?php /*echo $list[$i]["id"];*/?>','<?php /*echo $list[$i]['depth2'][$j]["id"];*/?>','<?php /*echo $list[$i]['depth2'][$j]['depth3'][$k]["id"];*/?>');">-->
+                            <input type="button" value="삭제" onclick="fnDepth3Del('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]["pk_id"];?>','<?php echo $list[$i]['depth2'][$j]['depth3'][$k]["id"];?>');" class="del">
+                        </td>
+                        <?php
+                        for ($l = 0; $l < count($list[$i]['depth2'][$j]['depth3'][$k]['depth4']); $l++) {
+                        //if($l!=0 && $list[$i]['depth2'][$j]['depth3'][$k]['cnt'] == $l+1){?>
+                        <!--<tr>-->
+                        <?php //}?>
+                        <td rowspan="<?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['cnt']>1){echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['cnt'];}?>" class="category parent_<?php echo $list[$i]['id'];?>"  id="depth4_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['id'];?>">
+                            <input type="text" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth_name'];?>" name="depth4[]" class="center" onkeyup="fnUpdate('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['pk_id'];?>',$(this).val(),'depth4','','');">
+                            <!--<input type="button" value="추가" onclick="fnDepth4Add('<?php /*echo $list[$i]["id"];*/?>','<?php /*echo $list[$i]['depth2'][$j]["id"];*/?>','<?php /*echo $list[$i]['depth2'][$j]['depth3'][$k]["id"];*/?>','<?php /*echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]["id"];*/?>');">-->
+                            <input type="button" value="삭제" onclick="fnDepth4Del('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]["pk_id"];?>','<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]["id"];?>');" class="del">
+                        </td>
+                        <?php
+                        for ($m = 0; $m < count($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5']); $m++) {
+                        $depth_last++;
+                        $fileid = "files".$list[$i]["depth2"][$j]["depth3"][$k]["depth4"][$l]["depth5"][$m]["id"];
+                        ?>
 
-                                        <td class="category" id="depth5_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['id'];?>">
-                                            <input type="text" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['content'];?>" name="dpeth5[]" class="left" onkeyup="fnUpdate('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['id'];?>',$(this).val(),'content','','');">
-                                            <input type="button" value="삭제" onclick="fnDepth5Del('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["id"];?>');" class="del">
-                                        </td>
-                                        <td class="etc" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['id'];?>">
-                                            <div id="links">
-                                                <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['link']){
-                                                    $links = array_filter(explode(",",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['link']));
-                                                    $linknames = array_filter(explode(",",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['linkname']));
-                                                    if(count($links)!=0){
-                                                        for($q=0;$q<count($links);$q++){ ?>
-                                                            <a href="<?php echo $links[$q];?>" target="_blank"><?php echo ($linknames[$q])?$linknames[$q]:"링크 ".($q+1);?></a><br>
-                                                        <?php }
-                                                    }
-                                                } ?>
-                                            </div>
-                                            <div id="files">
-                                                <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachment']){?>
-                                                    <?php
-                                                    $files = explode(",",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachment']);
-                                                    if(count($files)!=0){
-                                                        for($q=0;$q<count($files);$q++) {
-                                                            if ($files[$q] != "") {
-                                                                ?>
-                                                                <a href="javascript:fnImage('<?php echo $files[$q]; ?>');" >파일<?php echo($q + 1); ?></a><br>
-                                                            <?php }
-                                                        }
-                                                    }
-                                                    ?>
-                                                <?php }?>
-                                            </div>
-                                            <div id="etc1">
-                                                <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['etc1']){
-                                                    $etc1 = array_filter(explode(",",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['etc1']));
-                                                    $etc1name = array_filter(explode(",",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['etcname1']));
-                                                    if(count($etc1)!=0){
-                                                        for($q=0;$q<count($etc1);$q++){ ?>
-                                                            <a href="<?php echo $etc1[$q];?>" target="_blank"><?php echo ($etc1name[$q])?$etc1name[$q]:"사례 ".($q+1);?></a><br>
-                                                        <?php }
-                                                    }
-                                                } ?>
-                                            </div>
-                                            <div id="files2">
-                                                <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachment2']){?>
-                                                    <?php
-                                                    $files = explode(",",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachment2']);
-                                                    if(count($files)!=0){
-                                                        for($q=0;$q<count($files);$q++) {
-                                                            if ($files[$q] != "") {
-                                                                ?>
-                                                                <a href="javascript:fnImage('<?php echo $files[$q]; ?>');" >사례파일<?php echo($q + 1); ?></a><br>
-                                                            <?php }
-                                                        }
-                                                    }
-                                                    ?>
-                                                <?php }?>
-                                            </div>
-                                            <input type="button" value="수정" onclick="depth5ConAdd('<?php echo $list[$i]["depth2"][$j]["depth3"][$k]["depth4"][$l]["depth5"][$m]["id"];?>');" >
-                                        </td>
-                                        <td>
-                                            <input type="text" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date'];?>" name="depth5_report[]" class="center" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["id"];?>" onkeyup="fnUpdate2('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['id'];?>',$(this).val())">
-                                        </td>
-                                        </tr>
-                                        <?php
+                        <td class="category parent_<?php echo $list[$i]['id'];?>" id="depth5_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['id'];?>">
+                            <input type="text" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['content'];?>" name="dpeth5[]" class="left" onkeyup="fnUpdate('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>',$(this).val(),'content','','');">
+                            <input type="button" value="삭제" onclick="fnDepth5Del('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"];?>','<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["id"];?>');" class="del">
+                        </td>
+                        <td class="etc" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>">
+                            <div id="links">
+                                <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['link']){
+                                    $links = array_filter(explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['link']));
+                                    $linknames = array_filter(explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['linkname']));
+                                    if(count($links)!=0){
+                                        for($q=0;$q<count($links);$q++){ ?>
+                                            <a href="<?php echo $links[$q];?>" target="_blank"><?php echo ($linknames[$q])?$linknames[$q]:"링크 ".($q+1);?></a><br>
+                                        <?php }
                                     }
-                                }
-                            }?>
-                            <?php
-                        } $depth_last = 0;
-                    }?>
+                                } ?>
+                            </div>
+                            <div id="files">
+                                <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachment']){?>
+                                    <?php
+                                    $files = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachment']);
+                                    if(count($files)!=0){
+                                        for($q=0;$q<count($files);$q++) {
+                                            if ($files[$q] != "") {
+                                                ?>
+                                                <a href="javascript:fnImage('<?php echo $files[$q]; ?>');" >파일<?php echo($q + 1); ?></a><br>
+                                            <?php }
+                                        }
+                                    }
+                                    ?>
+                                <?php }?>
+                            </div>
+                            <div id="etc1">
+                                <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['etc1']){
+                                    $etc1 = array_filter(explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['etc1']));
+                                    $etc1name = array_filter(explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['etcname1']));
+                                    if(count($etc1)!=0){
+                                        for($q=0;$q<count($etc1);$q++){ ?>
+                                            <a href="<?php echo $etc1[$q];?>" target="_blank"><?php echo ($etc1name[$q])?$etc1name[$q]:"사례 ".($q+1);?></a><br>
+                                        <?php }
+                                    }
+                                } ?>
+                            </div>
+                            <div id="files2">
+                                <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachment2']){?>
+                                    <?php
+                                    $files = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachment2']);
+                                    if(count($files)!=0){
+                                        for($q=0;$q<count($files);$q++) {
+                                            if ($files[$q] != "") {
+                                                ?>
+                                                <a href="javascript:fnImage('<?php echo $files[$q]; ?>');" >사례파일<?php echo($q + 1); ?></a><br>
+                                            <?php }
+                                        }
+                                    }
+                                    ?>
+                                <?php }?>
+                            </div>
+                            <input type="button" value="수정" onclick="depth5ConAdd('<?php echo $list[$i]["depth2"][$j]["depth3"][$k]["depth4"][$l]["depth5"][$m]["pk_id"];?>');" >
+                        </td>
+                        <!--<td>
+                            <input type="text" value="<?php /*echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date'];*/?>" name="depth5_report[]" class="center" id="<?php /*echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["id"];*/?>" onkeyup="fnUpdate2('<?php /*echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];*/?>',$(this).val())">
+                        </td>-->
+                    </tr>
+                    <?php if($list[$i]['cnt'] >= $depth_last){?>
+                    <tr class="<?php if($list[$i]['cnt'] == $depth_last){echo "finish_".$list[$i]["id"];}?>">
+                        <?php }
+                        }
+                        }
+                        }
+                        } $depth_last = 1;
+                        }?>
                     </tbody>
                 </table>
             </div>
@@ -338,6 +342,21 @@ while($row=sql_fetch_array($res)){
             return false;
         }
         if(depthnum==1){
+            var currentRow = $(this).parent().index();
+            var finish = $(this).parent().attr("class");
+            var rowspan = $(this).attr("rowspan");
+            var trnum = $("#edit_table tr").length;
+            //console.log(currentRow + " // " + rowspan + " // " + trnum);
+            if(Number(currentRow) + Number(rowspan) == Number(trnum)){
+                var parentTr = $("#edit_table tr").eq(trnum - 1);
+            }else{
+                if(Number(rowspan)>1) {
+                    var parentTr = $("#edit_table tr").eq(Number(currentRow) + Number(rowspan));
+                }else{
+                    var parentTr = $("#edit_table tr").eq(currentRow);
+                }
+            }
+
             $.ajax({
                 url:g5_url+"/admin/ajax.depth_add.php",
                 type:"POST",
@@ -351,72 +370,83 @@ while($row=sql_fetch_array($res)){
 
                     //depth1
                     var td = document.createElement("td");
-                    td.setAttribute("rowspan","");
+                    td.setAttribute("rowspan","1");
                     td.setAttribute("class","category");
                     td.setAttribute("id","depth1_"+add_id);
                     var depth1_input = document.createElement("input");
                     depth1_input.setAttribute("name","depth1[]");
                     depth1_input.setAttribute("type","text");
                     depth1_input.setAttribute("class","center");
-                    depth1_input.setAttribute("onkeyup","fnUpdate('"+add_id+"',$(this).val(),'depth1')");
+                    depth1_input.setAttribute("onkeyup","fnUpdate('"+data.pk_id1+"',$(this).val(),'depth1')");
                     var depth1_delete = document.createElement("input");
                     depth1_delete.setAttribute("type","button");
                     depth1_delete.setAttribute("class","del");
-                    depth1_delete.setAttribute("onclick","fnDepth1Del('"+add_id+"');");
                     depth1_delete.setAttribute("value","삭제");
-                    depth1_delete.setAttribute("onclick","fnDepth1Del('"+add_id+"')");
+                    depth1_delete.setAttribute("onclick","fnDepth1Del('"+data.pk_id1+"','"+add_id+"')");
 
                     //depth2
                     var td2 = document.createElement("td");
-                    td2.setAttribute("class","category");
+                    td2.setAttribute("class","category parent_"+add_id);
+                    td2.setAttribute("id","depth2_"+data.depth2_id);
+                    td2.setAttribute("rowspan","1");
                     var depth2_input = document.createElement("input");
                     depth2_input.setAttribute("name","depth2[]");
                     depth2_input.setAttribute("type","text");
                     depth2_input.setAttribute("class","center");
-                    depth2_input.setAttribute("onkeyup","fnUpdate('"+data.depth2_id+"',$(this).val(),'depth2')");
+                    depth2_input.setAttribute("onkeyup","fnUpdate('"+data.pk_id2+"',$(this).val(),'depth2')");
                     var depth2_delete = document.createElement("input");
                     depth2_delete.setAttribute("type","button");
+                    depth2_delete.setAttribute("class","del");
                     depth2_delete.setAttribute("value","삭제");
-                    depth2_delete.setAttribute("onclick","fnDepth2Del('"+data.depth2_id+"')");
+                    depth2_delete.setAttribute("onclick","fnDepth2Del('"+data.pk_id2+"','"+data.depth2_id+"')");
 
                     //depth3
                     var td3 = document.createElement("td");
-                    td3.setAttribute("class","category");
+                    td3.setAttribute("class","category parent_"+add_id);
+                    td3.setAttribute("id","depth3_"+data.depth3_id);
+                    td3.setAttribute("rowspan","1");
                     var depth3_input = document.createElement("input");
                     depth3_input.setAttribute("name","depth3[]");
                     depth3_input.setAttribute("type","text");
                     depth3_input.setAttribute("class","center");
-                    depth3_input.setAttribute("onkeyup","fnUpdate('"+data.depth3_id+"',$(this).val(),'depth3')")
+                    depth3_input.setAttribute("onkeyup","fnUpdate('"+data.pk_id3+"',$(this).val(),'depth3')")
                     var depth3_delete = document.createElement("input");
                     depth3_delete.setAttribute("type","button");
+                    depth3_delete.setAttribute("class","del");
                     depth3_delete.setAttribute("value","삭제");
-                    depth3_delete.setAttribute("onclick","fnDepth3Del('"+data.depth3_id+"')");
+                    depth3_delete.setAttribute("onclick","fnDepth3Del('"+data.pk_id3+"'.'"+data.depth3_id+"')");
 
                     //depth4
                     var td4 = document.createElement("td");
-                    td4.setAttribute("class","category");
+                    td4.setAttribute("class","category parent_"+add_id);
+                    td4.setAttribute("id","depth4_"+data.depth4_id);
+                    td4.setAttribute("rowspan","1");
                     var depth4_input = document.createElement("input");
                     depth4_input.setAttribute("name","depth4[]");
                     depth4_input.setAttribute("type","text");
                     depth4_input.setAttribute("class","center");
-                    depth4_input.setAttribute("onkeyup","fnUpdate('"+data.depth4_id+"',$(this).val(),'depth4')")
+                    depth4_input.setAttribute("onkeyup","fnUpdate('"+data.pk_id4+"',$(this).val(),'depth4')")
                     var depth4_delete = document.createElement("input");
                     depth4_delete.setAttribute("type","button");
+                    depth4_delete.setAttribute("class","del");
                     depth4_delete.setAttribute("value","삭제");
-                    depth4_delete.setAttribute("onclick","fnDepth4Del('"+data.depth4_id+"')");
+                    depth4_delete.setAttribute("onclick","fnDepth4Del('"+data.pk_id4+"','"+data.depth4_id+"')");
 
                     //depth5
                     var td5 = document.createElement("td");
-                    td5.setAttribute("class","category");
+                    td5.setAttribute("class","category parent_"+add_id);
+                    td5.setAttribute("id","depth5_"+data.depth5_id);
+                    td5.setAttribute("rowspan","1");
                     var depth5_input = document.createElement("input");
                     depth5_input.setAttribute("name","depth5[]");
                     depth5_input.setAttribute("type","text");
                     depth5_input.setAttribute("class","left");
-                    depth5_input.setAttribute("onkeyup","fnUpdate('"+data.depth5_id+"',$(this).val(),'content')")
+                    depth5_input.setAttribute("onkeyup","fnUpdate('"+data.pk_id5+"',$(this).val(),'content')")
                     var depth5_delete = document.createElement("input");
                     depth5_delete.setAttribute("type","button");
+                    depth5_delete.setAttribute("class","del");
                     depth5_delete.setAttribute("value","삭제");
-                    depth5_delete.setAttribute("onclick","fnDepth5Del('"+data.depth5_id+"')");
+                    depth5_delete.setAttribute("onclick","fnDepth5Del('"+data.pk_id5+"','"+data.depth5_id+"')");
 
                     //depth6
                     var td6 = document.createElement("td");
@@ -424,7 +454,7 @@ while($row=sql_fetch_array($res)){
                     var depth6_delete = document.createElement("input");
                     depth6_delete.setAttribute("type","button");
                     depth6_delete.setAttribute("value","수정");
-                    depth6_delete.setAttribute("onclick","depth5ConAdd('"+data.depth5_id+"')");
+                    depth6_delete.setAttribute("onclick","depth5ConAdd('"+data.pk_id5+"')");
                     var divlinks = document.createElement("div");
                     divlinks.setAttribute("id","links");
                     var divetc1 = document.createElement("div");
@@ -434,12 +464,13 @@ while($row=sql_fetch_array($res)){
 
 
                     //depth7
-                    var td7 = document.createElement("td");
+                    /*var td7 = document.createElement("td");
                     var depth7_input = document.createElement("input");
                     depth7_input.setAttribute("name","depth5_report[]");
                     depth7_input.setAttribute("type","text");
                     depth7_input.setAttribute("class","center");
-                    depth7_input.setAttribute("onkeyup","fnUpdate2('"+data.depth5_id+"',$(this).val())")
+                    depth7_input.setAttribute("value","0");
+                    depth7_input.setAttribute("onkeyup","fnUpdate2('"+data.pk_id5+"',$(this).val())");*/
 
                     td.appendChild(depth1_input);
                     td.appendChild(depth1_delete);
@@ -455,7 +486,7 @@ while($row=sql_fetch_array($res)){
                     td6.appendChild(divetc1);
                     td6.appendChild(divfiles);
                     td6.appendChild(depth6_delete);
-                    td7.appendChild(depth7_input);
+                    //td7.appendChild(depth7_input);
 
                     tr.appendChild(td);
                     tr.appendChild(td2);
@@ -463,8 +494,8 @@ while($row=sql_fetch_array($res)){
                     tr.appendChild(td4);
                     tr.appendChild(td5);
                     tr.appendChild(td6);
-                    tr.appendChild(td7);
-                    var parent = $(".finish_" + id);
+                    //tr.appendChild(td7);
+                    //var parent = $(".finish_" + id);
                     $("tr[id^='depth1']").each(function(){
                         if($(this).hasClass("depth")) {
                             var id = $(this).attr("id");
@@ -486,7 +517,22 @@ while($row=sql_fetch_array($res)){
                             $(this).addClass("finish_"+ newNum);
                         }
                     });
-                    parent.after(tr);
+                    //parentTr.after(tr);
+                    if(finish.indexOf("finish")!=-1){
+                        if(finish.indexOf("depth")!=-1) {
+                            var resetfinish = finish.split(" ");
+                            parentTr.removeClass(resetfinish[1]);
+                            tr.setAttribute("class", "depth " + resetfinish[1]);
+                            parentTr.after(tr);
+                        }else{
+                            tr.setAttribute("class", "depth " + finish);
+                            parentTr.after(tr);
+                            parentTr.removeClass(finish);
+                        }
+                    }else {
+                        parentTr.after(tr);
+                    }
+
                 }
                 if(data.status == 2){
                     alert("항목을 추가하지 못했습니다.");
@@ -499,7 +545,21 @@ while($row=sql_fetch_array($res)){
                 findTr = 1;
             }
             var currentRow = $(this).parent().index();
-            var parentTr = $("#edit_table tr").eq(Number(currentRow)+Number(findTr));
+            var finish = $(this).parent().attr("class");
+            var rowspan = $(this).attr("rowspan");
+            var trnum = $("#edit_table tr").length;
+            if(Number(currentRow) + Number(rowspan) == Number(trnum)){
+                console.log("A");
+                var parentTr = $("#edit_table tr").eq(trnum - 1);
+            }else{
+                if(Number(rowspan)>1) {
+                    console.log("B 1 // " + (Number(currentRow) + Number(rowspan)));
+                    var parentTr = $("#edit_table tr").eq(Number(currentRow) + Number(rowspan) - 1);
+                }else{
+                    console.log("B 2");
+                    var parentTr = $("#edit_table tr").eq(currentRow);
+                }
+            }
 
             var parentclass = $(this).attr("class");
             var parent_row = parentclass.split(" ");
@@ -513,61 +573,69 @@ while($row=sql_fetch_array($res)){
                 dataType:"json"
             }).done(function(data) {
                 var tr = document.createElement("tr");
-                tr.setAttribute("rowspan","");
-                tr.setAttribute("id","depth2"+add_id);
+                tr.setAttribute("class","");
+                //tr.setAttribute("id","depth2"+add_id);
 
                 //depth2
                 var td2 = document.createElement("td");
-                td2.setAttribute("class", "category");
-                td2.setAttribute("class","parent_"+parent_id);
+                td2.setAttribute("class", "category parent_"+parent_id);
                 td2.setAttribute("id","depth2_"+data.depth2_id);
                 var depth2_input = document.createElement("input");
                 depth2_input.setAttribute("name", "depth2[]");
                 depth2_input.setAttribute("type", "text");
                 depth2_input.setAttribute("class", "center");
+                depth2_input.setAttribute("onkeyup","fnUpdate('"+data.pk_id2+"',$(this).val(),'depth2')");
                 var depth2_delete = document.createElement("input");
                 depth2_delete.setAttribute("type", "button");
                 depth2_delete.setAttribute("value", "삭제");
                 depth2_delete.setAttribute("class", "del");
+                depth2_delete.setAttribute("onclick","fnDepth2Del('"+data.pk_id2+"','"+data.depth2_id+"')");
 
                 //depth3
                 var td3 = document.createElement("td");
-                td3.setAttribute("class", "category");
+                td3.setAttribute("class", "category parent_"+parent_id);
                 td3.setAttribute("id", "depth3_"+data.depth3_id);
                 var depth3_input = document.createElement("input");
                 depth3_input.setAttribute("name", "depth3[]");
                 depth3_input.setAttribute("type", "text");
                 depth3_input.setAttribute("class", "center");
+                depth3_input.setAttribute("onkeyup","fnUpdate('"+data.pk_id3+"',$(this).val(),'depth3')");
                 var depth3_delete = document.createElement("input");
                 depth3_delete.setAttribute("type", "button");
                 depth3_delete.setAttribute("value", "삭제");
                 depth3_delete.setAttribute("class", "del");
+                depth3_delete.setAttribute("onclick","fnDepth3Del('"+data.pk_id3+"','"+data.depth3_id+"')");
+
 
                 //depth4
                 var td4 = document.createElement("td");
-                td4.setAttribute("class", "category");
+                td4.setAttribute("class", "category parent_"+parent_id);
                 td4.setAttribute("id", "depth4_"+data.depth4_id);
                 var depth4_input = document.createElement("input");
                 depth4_input.setAttribute("name", "depth4[]");
                 depth4_input.setAttribute("type", "text");
                 depth4_input.setAttribute("class", "center");
+                depth4_input.setAttribute("onkeyup","fnUpdate('"+data.pk_id4+"',$(this).val(),'depth4')");
                 var depth4_delete = document.createElement("input");
                 depth4_delete.setAttribute("type", "button");
                 depth4_delete.setAttribute("value", "삭제");
                 depth4_delete.setAttribute("class", "del");
+                depth4_delete.setAttribute("onclick","fnDepth4Del('"+data.pk_id4+"','"+data.depth4_id+"')");
 
                 //depth5
                 var td5 = document.createElement("td");
-                td5.setAttribute("class", "category");
+                td5.setAttribute("class", "category parent_"+parent_id);
                 td5.setAttribute("id", "depth5_"+data.depth5_id);
                 var depth5_input = document.createElement("input");
                 depth5_input.setAttribute("name", "depth5[]");
                 depth5_input.setAttribute("type", "text");
                 depth5_input.setAttribute("class", "left");
+                depth5_input.setAttribute("onkeyup","fnUpdate('"+data.pk_id5+"',$(this).val(),'content')");
                 var depth5_delete = document.createElement("input");
                 depth5_delete.setAttribute("type", "button");
                 depth5_delete.setAttribute("value", "삭제");
                 depth5_delete.setAttribute("class", "del");
+                depth5_delete.setAttribute("onclick","fnDepth5Del('"+data.pk_id5+"','"+data.depth5_id+"')");
 
                 //depth6
                 var td6 = document.createElement("td");
@@ -576,7 +644,7 @@ while($row=sql_fetch_array($res)){
                 var depth6_delete = document.createElement("input");
                 depth6_delete.setAttribute("type", "button");
                 depth6_delete.setAttribute("value", "수정");
-                depth6_delete.setAttribute("onclick","depth5ConAdd('"+data.depth5_id+"')");
+                depth6_delete.setAttribute("onclick","depth5ConAdd('"+data.pk_id5+"')");
                 var divlinks = document.createElement("div");
                 divlinks.setAttribute("id","links");
                 var divetc1 = document.createElement("div");
@@ -586,13 +654,14 @@ while($row=sql_fetch_array($res)){
 
 
                 //depth7
-                var td7 = document.createElement("td");
+                /*var td7 = document.createElement("td");
                 var depth7_input = document.createElement("input");
                 depth7_input.setAttribute("name", "depth5_report[]");
                 depth7_input.setAttribute("type", "text");
                 depth7_input.setAttribute("class", "center");
                 depth7_input.setAttribute("id", data.depth5_id);
-                depth7_input.setAttribute("onkeyup","fnUpdate2('"+data.depth5_id+"',$(this).val())");
+                depth7_input.setAttribute("value","0");
+                depth7_input.setAttribute("onkeyup","fnUpdate2('"+data.pk_id5+"',$(this).val())");*/
 
                 td2.appendChild(depth2_input);
                 td2.appendChild(depth2_delete);
@@ -606,14 +675,14 @@ while($row=sql_fetch_array($res)){
                 td6.appendChild(divetc1);
                 td6.appendChild(divfiles);
                 td6.appendChild(depth6_delete);
-                td7.appendChild(depth7_input);
+                //td7.appendChild(depth7_input);
 
                 tr.appendChild(td2);
                 tr.appendChild(td3);
                 tr.appendChild(td4);
                 tr.appendChild(td5);
                 tr.appendChild(td6);
-                tr.appendChild(td7);
+                //tr.appendChild(td7);
 
                 $("td[id^='depth2_']").each(function(){
                     var id = $(this).attr("id");
@@ -625,7 +694,22 @@ while($row=sql_fetch_array($res)){
                 });
 
                 $("#depth1_" + parent_id).attr("rowspan", Number(depth1row) + 1);
-                parentTr.before(tr);
+
+                //console.log("after : " + after);
+                if(finish.indexOf("finish")!=-1){
+                    if(finish.indexOf("depth")!=-1) {
+                        var resetfinish = finish.split(" ");
+                        parentTr.removeClass(resetfinish[1]);
+                        tr.setAttribute("class", resetfinish[1]);
+                        parentTr.after(tr);
+                    }else{
+                        tr.setAttribute("class", finish);
+                        parentTr.after(tr);
+                        parentTr.removeClass(finish);
+                    }
+                }else {
+                    parentTr.after(tr);
+                }
 
             });
         }
@@ -635,9 +719,19 @@ while($row=sql_fetch_array($res)){
             if(!findTr){
                 findTr=1;
             }
+
+            var parentclass = $(this).attr("class");
+            var parent_row = parentclass.split(" ");
+            var parent_id = parent_row[1].replace("parent_","");
+            var depth1row = $("#depth1_"+parent_id).attr("rowspan");
+
             var currentRow = $(this).parent().index();
-            console.log(findTr+"//"+currentRow);
-            var parentTr = $("#edit_table tr").eq(Number(currentRow)+Number(findTr));
+            var finish = $(this).parent().attr("class");
+            if(finish.indexOf("finish")!=-1){
+                var parentTr = $("#edit_table tr").eq(currentRow);
+            }else{
+                var parentTr = $("#edit_table tr").eq(Number(currentRow)+Number(findTr));
+            }
 
             $.ajax({
                 url:g5_url+"/admin/ajax.depth_add.php",
@@ -645,68 +739,67 @@ while($row=sql_fetch_array($res)){
                 data:{thisid:id,id:add_id,depth:3,me_code:me_code},
                 dataType:"json"
             }).done(function(data) {
-                console.log(data);
                 //depth1_row
                 var depth1Row = $("#depth1_"+data.depth1_id).attr("rowspan");
-                console.log(depth1Row);
                 if(!depth1Row){
                     depth1Row = 1;
                 }
-                console.log(depth1Row+"////"+"#depth1_"+data.depth1_id);
                 $("#depth1_"+data.depth1_id).attr("rowspan",Number(depth1Row)+1);
                 //depth2_row
                 var depth2Row = $("#depth2_"+data.depth2_id).attr("rowspan");
-                console.log(depth2Row);
                 if(!depth2Row){
                     depth2Row = 1;
                 }
-                console.log(depth2Row);
                 $("#depth2_"+data.depth2_id).attr("rowspan",Number(depth2Row)+1);
 
-
-
                 var tr = document.createElement("tr");
-                tr.setAttribute("rowspan","");
-                //tr.setAttribute("id","depth2"+add_id);
-
+                tr.setAttribute("class","");
                 //depth3
                 var td3 = document.createElement("td");
-                td3.setAttribute("class", "category");
+                td3.setAttribute("class", "category parent_"+parent_id);
                 td3.setAttribute("id", "depth3_"+data.depth3_id);
                 var depth3_input = document.createElement("input");
                 depth3_input.setAttribute("name", "depth3[]");
                 depth3_input.setAttribute("type", "text");
                 depth3_input.setAttribute("class", "center");
+                depth3_input.setAttribute("onkeyup","fnUpdate('"+data.pk_id3+"',$(this).val(),'depth3')");
                 var depth3_delete = document.createElement("input");
                 depth3_delete.setAttribute("type", "button");
                 depth3_delete.setAttribute("value", "삭제");
                 depth3_delete.setAttribute("class", "del");
+                depth3_delete.setAttribute("onclick","fnDepth3Del('"+data.pk_id3+"','"+data.depth3_id+"')");
 
                 //depth4
                 var td4 = document.createElement("td");
-                td4.setAttribute("class", "category");
+                td4.setAttribute("class", "category parent_"+parent_id);
                 td4.setAttribute("id", "depth4_"+data.depth4_id);
                 var depth4_input = document.createElement("input");
                 depth4_input.setAttribute("name", "depth4[]");
                 depth4_input.setAttribute("type", "text");
                 depth4_input.setAttribute("class", "center");
+                depth4_input.setAttribute("onkeyup","fnUpdate('"+data.pk_id4+"',$(this).val(),'depth4')");
                 var depth4_delete = document.createElement("input");
                 depth4_delete.setAttribute("type", "button");
                 depth4_delete.setAttribute("value", "삭제");
                 depth4_delete.setAttribute("class", "del");
+                depth4_delete.setAttribute("onclick","fnDepth4Del('"+data.pk_id4+"','"+data.depth4_id+"')");
+
 
                 //depth5
                 var td5 = document.createElement("td");
-                td5.setAttribute("class", "category");
+                td5.setAttribute("class", "category parent_"+parent_id);
                 td5.setAttribute("id", "depth5_"+data.depth5_id);
                 var depth5_input = document.createElement("input");
                 depth5_input.setAttribute("name", "depth5[]");
                 depth5_input.setAttribute("type", "text");
                 depth5_input.setAttribute("class", "left");
+                depth5_input.setAttribute("onkeyup","fnUpdate('"+data.pk_id5+"',$(this).val(),'content')");
                 var depth5_delete = document.createElement("input");
                 depth5_delete.setAttribute("type", "button");
                 depth5_delete.setAttribute("value", "삭제");
                 depth5_delete.setAttribute("class", "del");
+                depth5_delete.setAttribute("onclick","fnDepth5Del('"+data.pk_id5+"','"+data.depth5_id+"')");
+
 
                 //depth6
                 var td6 = document.createElement("td");
@@ -715,7 +808,7 @@ while($row=sql_fetch_array($res)){
                 var depth6_delete = document.createElement("input");
                 depth6_delete.setAttribute("type", "button");
                 depth6_delete.setAttribute("value", "수정");
-                depth6_delete.setAttribute("onclick","depth5ConAdd('"+data.depth5_id+"')");
+                depth6_delete.setAttribute("onclick","depth5ConAdd('"+data.pk_id5+"')");
                 var divlinks = document.createElement("div");
                 divlinks.setAttribute("id","links");
                 var divetc1 = document.createElement("div");
@@ -725,13 +818,14 @@ while($row=sql_fetch_array($res)){
 
 
                 //depth7
-                var td7 = document.createElement("td");
+                /*var td7 = document.createElement("td");
                 var depth7_input = document.createElement("input");
                 depth7_input.setAttribute("name", "depth5_report[]");
                 depth7_input.setAttribute("type", "text");
                 depth7_input.setAttribute("class", "center");
                 depth7_input.setAttribute("id", data.depth5_id);
-                depth7_input.setAttribute("onkeyup","fnUpdate2('"+data.depth5_id+"',$(this).val())");
+                depth7_input.setAttribute("value","0");
+                depth7_input.setAttribute("onkeyup","fnUpdate2('"+data.pk_id5+"',$(this).val())");*/
 
                 td3.appendChild(depth3_input);
                 td3.appendChild(depth3_delete);
@@ -743,13 +837,13 @@ while($row=sql_fetch_array($res)){
                 td6.appendChild(divetc1);
                 td6.appendChild(divfiles);
                 td6.appendChild(depth6_delete);
-                td7.appendChild(depth7_input);
+                //td7.appendChild(depth7_input);
 
                 tr.appendChild(td3);
                 tr.appendChild(td4);
                 tr.appendChild(td5);
                 tr.appendChild(td6);
-                tr.appendChild(td7);
+                //tr.appendChild(td7);
 
                 $("td[id^='depth3_']").each(function(){
                     var id = $(this).attr("id");
@@ -760,8 +854,20 @@ while($row=sql_fetch_array($res)){
                     }
                 });
 
-                //$("#depth1_" + ).attr("rowspan", Number(depth1row) + 1);
-                parentTr.before(tr);
+                if(finish.indexOf("finish")!=-1){
+                    if(finish.indexOf("depth")!=-1) {
+                        var resetfinish = finish.split(" ");
+                        parentTr.removeClass(resetfinish[1]);
+                        tr.setAttribute("class", resetfinish[1]);
+                        parentTr.after(tr);
+                    }else{
+                        tr.setAttribute("class", finish);
+                        parentTr.after(tr);
+                        parentTr.removeClass(finish);
+                    }
+                }else {
+                    parentTr.before(tr);
+                }
             });
         }
         if(depthnum==4){
@@ -770,9 +876,19 @@ while($row=sql_fetch_array($res)){
             if(!findTr){
                 findTr=1;
             }
+
+            var parentclass = $(this).attr("class");
+            var parent_row = parentclass.split(" ");
+            var parent_id = parent_row[1].replace("parent_","");
+            var depth1row = $("#depth1_"+parent_id).attr("rowspan");
+
             var currentRow = $(this).parent().index();
-            var parentTr = $("#edit_table tr").eq(Number(currentRow)+Number(findTr));
-            console.log(findTr+"//"+currentRow);
+            var finish = $(this).parent().attr("class");
+            if(finish.indexOf("finish")!=-1){
+                var parentTr = $("#edit_table tr").eq(currentRow);
+            }else{
+                var parentTr = $("#edit_table tr").eq(Number(currentRow)+Number(findTr));
+            }
             $.ajax({
                 url:g5_url+"/admin/ajax.depth_add.php",
                 type:"POST",
@@ -801,34 +917,36 @@ while($row=sql_fetch_array($res)){
                 $("#depth3_"+data.depth3_id).attr("rowspan",Number(depth3Row)+1);
 
                 var tr = document.createElement("tr");
-                tr.setAttribute("rowspan","");
-                //tr.setAttribute("id","depth2"+add_id);
-
+                tr.setAttribute("class","");
                 //depth4
                 var td4 = document.createElement("td");
-                td4.setAttribute("class", "category");
+                td4.setAttribute("class", "category parent_"+parent_id);
                 td4.setAttribute("id", "depth4_"+data.depth4_id);
                 var depth4_input = document.createElement("input");
                 depth4_input.setAttribute("name", "depth4[]");
                 depth4_input.setAttribute("type", "text");
                 depth4_input.setAttribute("class", "center");
+                depth4_input.setAttribute("onkeyup","fnUpdate('"+data.pk_id4+"',$(this).val(),'depth4')");
                 var depth4_delete = document.createElement("input");
                 depth4_delete.setAttribute("type", "button");
                 depth4_delete.setAttribute("value", "삭제");
                 depth4_delete.setAttribute("class", "del");
+                depth4_delete.setAttribute("onclick","fnDepth4Del('"+data.pk_id4+"','"+data.depth4_id+"')");
 
                 //depth5
                 var td5 = document.createElement("td");
-                td5.setAttribute("class", "category");
+                td5.setAttribute("class", "category parent_"+parent_id);
                 td5.setAttribute("id", "depth5_"+data.depth5_id);
                 var depth5_input = document.createElement("input");
                 depth5_input.setAttribute("name", "depth5[]");
                 depth5_input.setAttribute("type", "text");
                 depth5_input.setAttribute("class", "left");
+                depth5_input.setAttribute("onkeyup","fnUpdate('"+data.pk_id5+"',$(this).val(),'content')");
                 var depth5_delete = document.createElement("input");
                 depth5_delete.setAttribute("type", "button");
                 depth5_delete.setAttribute("value", "삭제");
                 depth5_delete.setAttribute("class", "del");
+                depth5_delete.setAttribute("onclick","fnDepth5Del('"+data.pk_id5+"','"+data.depth5_id+"')");
 
                 //depth6
                 var td6 = document.createElement("td");
@@ -837,7 +955,7 @@ while($row=sql_fetch_array($res)){
                 var depth6_delete = document.createElement("input");
                 depth6_delete.setAttribute("type", "button");
                 depth6_delete.setAttribute("value", "수정");
-                depth6_delete.setAttribute("onclick","depth5ConAdd('"+data.depth5_id+"')");
+                depth6_delete.setAttribute("onclick","depth5ConAdd('"+data.pk_id5+"')");
                 var divlinks = document.createElement("div");
                 divlinks.setAttribute("id","links");
                 var divetc1 = document.createElement("div");
@@ -847,13 +965,14 @@ while($row=sql_fetch_array($res)){
 
 
                 //depth7
-                var td7 = document.createElement("td");
+                /*var td7 = document.createElement("td");
                 var depth7_input = document.createElement("input");
                 depth7_input.setAttribute("name", "depth5_report[]");
                 depth7_input.setAttribute("type", "text");
                 depth7_input.setAttribute("class", "center");
                 depth7_input.setAttribute("id", data.depth5_id);
-                depth7_input.setAttribute("onkeyup","fnUpdate2('"+data.depth5_id+"',$(this).val())");
+                depth7_input.setAttribute("value","0");
+                depth7_input.setAttribute("onkeyup","fnUpdate2('"+data.pk_id5+"',$(this).val())");*/
 
                 td4.appendChild(depth4_input);
                 td4.appendChild(depth4_delete);
@@ -863,12 +982,12 @@ while($row=sql_fetch_array($res)){
                 td6.appendChild(divetc1);
                 td6.appendChild(divfiles);
                 td6.appendChild(depth6_delete);
-                td7.appendChild(depth7_input);
+                //td7.appendChild(depth7_input);
 
                 tr.appendChild(td4);
                 tr.appendChild(td5);
                 tr.appendChild(td6);
-                tr.appendChild(td7);
+                //tr.appendChild(td7);
 
                 $("td[id^='depth4_']").each(function(){
                     var id = $(this).attr("id");
@@ -878,7 +997,20 @@ while($row=sql_fetch_array($res)){
                         $(this).attr("id","depth4_"+newNum);
                     }
                 });
-                parentTr.before(tr);
+                if(finish.indexOf("finish")!=-1){
+                    if(finish.indexOf("depth")!=-1) {
+                        var resetfinish = finish.split(" ");
+                        parentTr.removeClass(resetfinish[1]);
+                        tr.setAttribute("class", resetfinish[1]);
+                        parentTr.after(tr);
+                    }else{
+                        tr.setAttribute("class", finish);
+                        parentTr.after(tr);
+                        parentTr.removeClass(finish);
+                    }
+                }else {
+                    parentTr.before(tr);
+                }
             });
         }
         if(depthnum==5){
@@ -887,16 +1019,25 @@ while($row=sql_fetch_array($res)){
             if(!findTr){
                 findTr=1;
             }
+
+            var parentclass = $(this).attr("class");
+            var parent_row = parentclass.split(" ");
+            var parent_id = parent_row[1].replace("parent_","");
+            var depth1row = $("#depth1_"+parent_id).attr("rowspan");
+
             var currentRow = $(this).parent().index();
-            var parentTr = $("#edit_table tr").eq(Number(currentRow)+Number(findTr));
-            console.log(findTr+"//"+currentRow);
+            var finish = $(this).parent().attr("class");
+            if(finish.indexOf("finish")!=-1){
+                var parentTr = $("#edit_table tr").eq(currentRow);
+            }else{
+                var parentTr = $("#edit_table tr").eq(Number(currentRow)+Number(findTr));
+            }
             $.ajax({
                 url:g5_url+"/admin/ajax.depth_add.php",
                 type:"POST",
                 data:{thisid:id,id:add_id,depth:5,me_code:me_code},
                 dataType:"json"
             }).done(function(data) {
-                console.log(data);
                 //depth1_row
                 var depth1Row = $("#depth1_"+data.depth1_id).attr("rowspan");
                 if(!depth1Row){
@@ -925,21 +1066,21 @@ while($row=sql_fetch_array($res)){
                 $("#depth4_"+data.depth4_id).attr("rowspan",Number(depth4Row)+1);
 
                 var tr = document.createElement("tr");
-                tr.setAttribute("rowspan","");
-                //tr.setAttribute("id","depth2"+add_id);
-
+                tr.setAttribute("class","");
                 //depth5
                 var td5 = document.createElement("td");
-                td5.setAttribute("class", "category");
+                td5.setAttribute("class", "category parent_"+parent_id);
                 td5.setAttribute("id", "depth5_"+data.depth5_id);
                 var depth5_input = document.createElement("input");
                 depth5_input.setAttribute("name", "depth5[]");
                 depth5_input.setAttribute("type", "text");
                 depth5_input.setAttribute("class", "left");
+                depth5_input.setAttribute("onkeyup","fnUpdate('"+data.pk_id5+"',$(this).val(),'content')");
                 var depth5_delete = document.createElement("input");
                 depth5_delete.setAttribute("type", "button");
                 depth5_delete.setAttribute("value", "삭제");
                 depth5_delete.setAttribute("class", "del");
+                depth5_delete.setAttribute("onclick","fnDepth5Del('"+data.pk_id5+"','"+data.depth5_id+"')");
 
                 //depth6
                 var td6 = document.createElement("td");
@@ -948,7 +1089,7 @@ while($row=sql_fetch_array($res)){
                 var depth6_delete = document.createElement("input");
                 depth6_delete.setAttribute("type", "button");
                 depth6_delete.setAttribute("value", "수정");
-                depth6_delete.setAttribute("onclick","depth5ConAdd('"+data.depth5_id+"')");
+                depth6_delete.setAttribute("onclick","depth5ConAdd('"+data.pk_id5+"')");
                 var divlinks = document.createElement("div");
                 divlinks.setAttribute("id","links");
                 var divetc1 = document.createElement("div");
@@ -958,13 +1099,14 @@ while($row=sql_fetch_array($res)){
 
 
                 //depth7
-                var td7 = document.createElement("td");
+                /*var td7 = document.createElement("td");
                 var depth7_input = document.createElement("input");
                 depth7_input.setAttribute("name", "depth5_report[]");
                 depth7_input.setAttribute("type", "text");
                 depth7_input.setAttribute("class", "center");
                 depth7_input.setAttribute("id", data.depth5_id);
-                depth7_input.setAttribute("onkeyup","fnUpdate2('"+data.depth5_id+"',$(this).val())");
+                depth7_input.setAttribute("value","0");
+                depth7_input.setAttribute("onkeyup","fnUpdate2('"+data.pk_id5+"',$(this).val())");*/
 
                 td5.appendChild(depth5_input);
                 td5.appendChild(depth5_delete);
@@ -972,11 +1114,11 @@ while($row=sql_fetch_array($res)){
                 td6.appendChild(divetc1);
                 td6.appendChild(divfiles);
                 td6.appendChild(depth6_delete);
-                td7.appendChild(depth7_input);
+                //td7.appendChild(depth7_input);
 
                 tr.appendChild(td5);
                 tr.appendChild(td6);
-                tr.appendChild(td7);
+                //tr.appendChild(td7);
 
                 $("td[id^='depth5_']").each(function(){
                     var id = $(this).attr("id");
@@ -986,7 +1128,20 @@ while($row=sql_fetch_array($res)){
                         $(this).attr("id","depth5_"+newNum);
                     }
                 });
-                parentTr.before(tr);
+                if(finish.indexOf("finish")!=-1){
+                    if(finish.indexOf("depth")!=-1) {
+                        var resetfinish = finish.split(" ");
+                        parentTr.removeClass(resetfinish[1]);
+                        tr.setAttribute("class", resetfinish[1]);
+                        parentTr.after(tr);
+                    }else{
+                        tr.setAttribute("class", finish);
+                        parentTr.after(tr);
+                        parentTr.removeClass(finish);
+                    }
+                }else {
+                    parentTr.before(tr);
+                }
             });
         }
     });
@@ -1012,37 +1167,37 @@ while($row=sql_fetch_array($res)){
         });
     }
 
-    function fnDepth1Del(id){
+    function fnDepth1Del(pk_id,id){
         if(confirm("해당 항목을 삭제하시겠습니까? \n하위 항목이 있을경우 모두 삭제됩니다.")){
-            location.href=g5_url+'/admin/construction_delete.php?id='+id+"&menu_id=1&depth=1";
+            location.href=g5_url+'/admin/construction_delete.php?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=1";
         }else{
             return false;
         }
     }
-    function fnDepth2Del(id){
+    function fnDepth2Del(pk_id,id){
         if(confirm("해당 항목을 삭제하시겠습니까? \n하위 항목이 있을경우 모두 삭제됩니다.")){
-            location.href=g5_url+'/admin/construction_delete.php?id='+id+"&menu_id=1&depth=2";
+            location.href=g5_url+'/admin/construction_delete.php?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=2";
         }else{
             return false;
         }
     }
-    function fnDepth3Del(id){
+    function fnDepth3Del(pk_id,id){
         if(confirm("해당 항목을 삭제하시겠습니까? \n하위 항목이 있을경우 모두 삭제됩니다.")){
-            location.href=g5_url+'/admin/construction_delete.php?id='+id+"&menu_id=1&depth=3";
+            location.href=g5_url+'/admin/construction_delete.php?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=3";
         }else{
             return false;
         }
     }
-    function fnDepth4Del(id){
+    function fnDepth4Del(pk_id,id){
         if(confirm("해당 항목을 삭제하시겠습니까? \n하위 항목이 있을경우 모두 삭제됩니다.")){
-            location.href=g5_url+'/admin/construction_delete.php?id='+id+"&menu_id=1&depth=4";
+            location.href=g5_url+'/admin/construction_delete.php?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=4";
         }else{
             return false;
         }
     }
-    function fnDepth5Del(id){
+    function fnDepth5Del(pk_id,id){
         if(confirm("해당 항목을 삭제하시겠습니까? \n하위 항목이 있을경우 모두 삭제됩니다.")){
-            location.href=g5_url+'/admin/construction_delete.php?id='+id+"&menu_id=1&depth=5";
+            location.href=g5_url+'/admin/construction_delete.php?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=5";
         }else{
             return false;
         }
@@ -1062,13 +1217,23 @@ while($row=sql_fetch_array($res)){
         $("#etc1name_1").val('');
         $("#etc1name_2").val('');
         $("#etc1name_3").val('');
+        $("#etc1_1").val('');
+        $("#etc1_2").val('');
+        $("#etc1_3").val('');
+        $("#filename1").val('');
+        $("#filename2").val('');
+        $("#filename3").val('');
+        $("#filesnames1").val('');
+        $("#filesnames2").val('');
+        $("#filesnames3").val('');
         $("#content_id").val(id);
         $.ajax({
             url:g5_url+"/admin/get_content.php",
             type:"POST",
-            data:{id:id},
+            data:{pk_id:id},
             dataType:"json"
         }).done(function(data){
+            console.log(data);
             if(data.status==0){
                 alert("선택된 항목이 없습니다.");
                 return false;
@@ -1110,6 +1275,24 @@ while($row=sql_fetch_array($res)){
                 if(data.etcname1_2) {
                     $("#etcname1_3").val(data.etcname1_2)
                 }
+                if(data.filename0){
+                    $("#filename1").val(data.filename0);
+                }
+                if(data.filename1){
+                    $("#filename2").val(data.filename1);
+                }
+                if(data.filename2){
+                    $("#filename3").val(data.filename2);
+                }
+                if(data.filesname0){
+                    $("#filesnames1").val(data.filesname0);
+                }
+                if(data.filesname1){
+                    $("#filesnames2").val(data.filesname1);
+                }
+                if(data.filesname2){
+                    $("#filesnames3").val(data.filesname2);
+                }
                 if(data.file0) {
                     $(".add_file1").html('');
                     $(".add_file1").append("<span>" + data.file0 + "</span><input type='checkbox' name='fileDel1'> 삭제<br>");
@@ -1123,16 +1306,16 @@ while($row=sql_fetch_array($res)){
                     $(".add_file3").append("<span>" + data.file2 + "</span><input type='checkbox' name='fileDel3'> 삭제<br>");
                 }
                 if(data.files0) {
-                    $(".add_file3").html('');
-                    $(".add_file3").append("<span>" + data.files0 + "</span><input type='checkbox' name='fileDel4'> 삭제<br>");
+                    $(".add_files1").html('');
+                    $(".add_files1").append("<span>" + data.files0 + "</span><input type='checkbox' name='fileDel4'> 삭제<br>");
                 }
                 if(data.files1) {
-                    $(".add_file3").html('');
-                    $(".add_file3").append("<span>" + data.files1 + "</span><input type='checkbox' name='fileDel5'> 삭제<br>");
+                    $(".add_files2").html('');
+                    $(".add_files2").append("<span>" + data.files1 + "</span><input type='checkbox' name='fileDel5'> 삭제<br>");
                 }
                 if(data.files2) {
-                    $(".add_file3").html('');
-                    $(".add_file3").append("<span>" + data.files2 + "</span><input type='checkbox' name='fileDel6'> 삭제<br>");
+                    $(".add_files3").html('');
+                    $(".add_files3").append("<span>" + data.files2 + "</span><input type='checkbox' name='fileDel6'> 삭제<br>");
                 }
                 dialog.dialog("open","modal",true);
             }else if(data.status==2){
@@ -1156,7 +1339,7 @@ while($row=sql_fetch_array($res)){
             $.ajax({
                 url:g5_url+"/admin/ajax.all_update.php",
                 type:"POST",
-                data:{id:id,text:text,depth:depth,me_id:me_id,me_code:me_code}
+                data:{pk_id:id,text:text,depth:depth,me_id:me_id,me_code:me_code}
             }).done(function(data){
                 if(data=="2"){
                     alert('현재 작성하신 글이 업데이트 하지 못했습니다,\n새로고침후 다시 이용해 보세요.');
@@ -1181,7 +1364,7 @@ while($row=sql_fetch_array($res)){
             $.ajax({
                 url:g5_url+"/admin/ajax.all_update2.php",
                 type:"POST",
-                data:{id:id,text:text}
+                data:{pk_id:id,text:text}
             }).done(function(data){
                 if(data=="2"){
                     alert('제출일 업데이트가 실패 하였습니다.,\n새로고침후 다시 이용해 보세요.');

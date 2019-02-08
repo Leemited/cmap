@@ -9,41 +9,47 @@
         <input type="hidden" value="" name="content_id" id="content_id">
         <fieldset>
             <label for="name">참고링크</label>
-            <input type="text" name="linkname[]" id="linkname1" value="" class="text ui-widget-content ui-corner-all" placeholder="링크명">
-            <input type="text" name="link[]" id="link1" value="" class="text ui-widget-content ui-corner-all" placeholder="링크">
+            <input type="text" name="linkname[]" id="linkname1" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="링크명">
+            <input type="text" name="link[]" id="link1" value="" class="text ui-widget-content ui-corner-all grid_70" placeholder="링크">
             <label for="name">참고링크</label>
-            <input type="text" name="linkname[]" id="linkname2" value="" class="text ui-widget-content ui-corner-all" placeholder="링크명">
-            <input type="text" name="link[]" id="link2" value="" class="text ui-widget-content ui-corner-all" placeholder="링크">
+            <input type="text" name="linkname[]" id="linkname2" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="링크명">
+            <input type="text" name="link[]" id="link2" value="" class="text ui-widget-content ui-corner-all grid_70" placeholder="링크">
             <label for="name">참고링크</label>
-            <input type="text" name="linkname[]" id="linkname3" value="" class="text ui-widget-content ui-corner-all" placeholder="링크명">
-            <input type="text" name="link[]" id="link3" value="" class="text ui-widget-content ui-corner-all" placeholder="링크">
+            <input type="text" name="linkname[]" id="linkname3" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="참고파일명">
+            <input type="text" name="link[]" id="link3" value="" class="text ui-widget-content ui-corner-all grid_70" placeholder="링크">
             <label for="file1">참고파일 1</label>
-            <input type="file" name="file[]" id="file1" class="text ui-widget-content ui-corner-all" >
+            <input type="text" name="filenames[]" id="filename1" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="참고파일명">
+            <input type="file" name="file[]" id="file1" class="text ui-widget-content ui-corner-all grid_70" >
             <div class="add_file1"></div>
             <label for="file2">참고파일 2</label>
-            <input type="file" name="file[]" id="file2" class="text ui-widget-content ui-corner-all" >
+            <input type="text" name="filenames[]" id="filename2" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="참고파일명">
+            <input type="file" name="file[]" id="file2" class="text ui-widget-content ui-corner-all grid_70" >
             <div class="add_file2"></div>
             <label for="file3">참고파일 3</label>
-            <input type="file" name="file[]" id="file3" class="text ui-widget-content ui-corner-all" >
+            <input type="text" name="filenames[]" id="filename3" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="링크명">
+            <input type="file" name="file[]" id="file3" class="text ui-widget-content ui-corner-all grid_70" >
             <div class="add_file3"></div>
             <label for="name">사례1</label>
-            <input type="text" name="etc1name[]" id="etcname1_1" value="" class="text ui-widget-content ui-corner-all" placeholder="사례명">
-            <input type="text" name="etc1[]" id="etc1_1" value="" class="text ui-widget-content ui-corner-all">
+            <input type="text" name="etc1name[]" id="etcname1_1" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="사례명">
+            <input type="text" name="etc1[]" id="etc1_1" value="" class="text ui-widget-content ui-corner-all grid_70">
             <label for="name">사례2</label>
-            <input type="text" name="etc1name[]" id="etcname1_2" value="" class="text ui-widget-content ui-corner-all" placeholder="사례명">
-            <input type="text" name="etc1[]" id="etc1_2" value="" class="text ui-widget-content ui-corner-all">
+            <input type="text" name="etc1name[]" id="etcname1_2" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="사례명">
+            <input type="text" name="etc1[]" id="etc1_2" value="" class="text ui-widget-content ui-corner-all grid_70">
             <label for="name">사례3</label>
-            <input type="text" name="etc1name[]" id="etcname1_3" value="" class="text ui-widget-content ui-corner-all" placeholder="사례명">
-            <input type="text" name="etc1[]" id="etc1_3" value="" class="text ui-widget-content ui-corner-all">
+            <input type="text" name="etc1name[]" id="etcname1_3" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="사례명">
+            <input type="text" name="etc1[]" id="etc1_3" value="" class="text ui-widget-content ui-corner-all grid_70">
             <label for="files1">사례파일 1</label>
-            <input type="file" name="files[]" id="files1" class="text ui-widget-content ui-corner-all" >
-            <div class="add_file1"></div>
+            <input type="text" name="filenames2[]" id="filesname1" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="참고파일명">
+            <input type="file" name="files[]" id="files1" class="text ui-widget-content ui-corner-all grid_70" >
+            <div class="add_files1"></div>
             <label for="files2">사례파일 2</label>
-            <input type="file" name="files[]" id="files2" class="text ui-widget-content ui-corner-all" >
-            <div class="add_file2"></div>
+            <input type="text" name="filenames2[]" id="filesnames2" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="참고파일명">
+            <input type="file" name="files[]" id="files2" class="text ui-widget-content ui-corner-all grid_70" >
+            <div class="add_files2"></div>
             <label for="files3">사례파일 3</label>
-            <input type="file" name="files[]" id="files3" class="text ui-widget-content ui-corner-all" >
-            <div class="add_file3"></div>
+            <input type="text" name="filenames2[]" id="filesname3" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="참고파일명">
+            <input type="file" name="files[]" id="files3" class="text ui-widget-content ui-corner-all grid_70" >
+            <div class="add_files3"></div>
             <!-- Allow form submission with keyboard without duplicating the dialog button -->
             <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
         </fieldset>
@@ -66,6 +72,12 @@
     </form>
 </div>
 
+<div class="restore_modal">
+    <ul class="list">
+
+    </ul>
+</div>
+
 <script type="text/javascript" src="<?php echo G5_JS_URL; ?>/jquery.accordion.js"></script><!--아코디언-->
 <script type="text/javascript">
     $('.accordion').accordion({
@@ -75,7 +87,7 @@
 <script src="<?php echo G5_JS_URL ?>/jquery-ui.min.js"></script>
 
 <script>
-    var dialog,img_dialog,menu_dialog;
+    var dialog,img_dialog,menu_dialog,restore_modal;
     $(function(){
         dialog = $( ".modal" ).dialog({
             autoOpen: false,
@@ -131,6 +143,24 @@
                 //allFields.removeClass( "ui-state-error" );
             }
         });
+
+        restore_modal = $( ".restore_modal" ).dialog({
+            autoOpen: false,
+            height: 320,
+            width: 600,
+            modal: true,
+            draggable:false,
+            title:"복구",
+            buttons: {
+                Cancel: function() {
+                    restore_modal.dialog( "close" );
+                }
+            },
+            close: function() {
+                //form[ 0 ].reset();
+                //allFields.removeClass( "ui-state-error" );
+            }
+        });
     });
     function addEtc(){
         var form = $("#etcform")[0];
@@ -143,14 +173,15 @@
             data: formData,
             dataType:"json",
             success: function(data){
+                console.log(data);
                 alert(data.msg);
                 $("#"+data.id+" #links").html('');
                 $("#"+data.id+" #etc1").html('');
                 $("#"+data.id+" #files").html('');
 
                 if(data.links!=""){
-                    var addlink = data.links.split(",");
-                    var addlinkname = data.linknames.split(",");
+                    var addlink = data.links.split("``");
+                    var addlinkname = data.linknames.split("``");
                     for(var i = 0 ; i < addlink.length; i++){
                         if(addlink[i] != "") {
                             if(addlinkname[i]!="") {
@@ -163,8 +194,8 @@
                     }
                 }
                 if(data.etc1s!=""){
-                    var addetc = data.etc1s.split(",");
-                    var addetcname = data.etc1names.split(",");
+                    var addetc = data.etc1s.split("``");
+                    var addetcname = data.etc1names.split("``");
                     for(var i = 0 ; i < addetc.length; i++){
                         if(addetc[i] != "") {
                             if(addetcname[i] != ""){
@@ -177,19 +208,33 @@
                     }
                 }
                 if(data.filename){
-                    var addfile = data.filename.split(",");
+                    var addfile = data.filename.split("``");
+                    var addfilename = data.file_names.split("``");
+                    var basicname = "파일";
                     for(var i = 0 ; i < addfile.length; i++){
                         if(addfile[i] != "") {
-                            var fileitem = '<a href="javascript:fnImage(\'' + addfile[i] + '\')" >파일'+(i+1)+'</a><br>';
+                            if(addfilename[i] != "") {
+                                basicname = addfilename[i];
+                            }else{
+                                basicname = basicname + i;
+                            }
+                            var fileitem = '<a href="javascript:fnImage(\'' + addfile[i] + '\')" >'+basicname+'</a><br>';
                             $("#"+data.id+" #files").append(fileitem);
                         }
                     }
                 }
                 if(data.filename2){
-                    var addfile = data.filename2.split(",");
+                    var addfile = data.filename2.split("``");
+                    var addfilename = data.file_names2.split("``");
+                    var basicname = "사례파일";
                     for(var i = 0 ; i < addfile.length; i++){
                         if(addfile[i] != "") {
-                            var fileitem = '<a href="javascript:fnImage(\'' + addfile[i] + '\')" >사례파일'+(i+1)+'</a><br>';
+                            if(addfilename[i] != "") {
+                                basicname = addfilename[i];
+                            }else{
+                                basicname = basicname + i;
+                            }
+                            var fileitem = '<a href="javascript:fnImage(\'' + addfile[i] + '\')" >'+basicname+'</a><br>';
                             $("#"+data.id+" #files2").append(fileitem);
                         }
                     }
@@ -219,6 +264,55 @@
                 }else if(data=="2" || data=="3"){
                     alert("등록 실패");
                 }
+            }
+        });
+    }
+    function fnBackup(){
+        if(confirm("백업은 현재 화면 및 메뉴에 해당하는 데이터의 전체 백업입니다. \r백업을 진행 하시겠습니까?")) {
+            $.ajax({
+                url: g5_url + "/admin/ajax.backup.php",
+                method: "POST"
+            }).done(function (data) {
+                if(data.indexOf("백업파일") != -1){
+                    alert("백업 되었습니다.\r백업 복구는 복구 버튼을 통해 가능합니다.");
+                }
+            });
+        }
+    }
+    function fnRestore(){
+        $.ajax({
+            url:g5_url+"/admin/ajax.getBackupList.php",
+            method:"post"
+        }).done(function(data){
+            if(data){
+                $(".restore_modal .list").html('');
+                $(".restore_modal .list").append(data);
+                restore_modal.dialog("open", "restore_modal", true);
+            }else{
+                alert("백업된 데이터가 없습니다.");
+            }
+        });
+    }
+
+    function fnRestoreItem(file){
+        $.ajax({
+            url:g5_url+"/admin/ajax.restore.php",
+            method:"post",
+            data:{filename:file}
+        }).done(function(data){
+            console.log(data);
+        });
+    }
+    function fnRestoreDel(file,id){
+        $.ajax({
+            url:g5_url+"/admin/ajax.restoreDel.php",
+            method:"post",
+            data:{filename:file}
+        }).done(function(data){
+            if(data==1){
+                $("#restore_"+id).remove();
+            }else if(data==2){
+                alert("백업파일 삭제를 할 수 없습니다.");
             }
         });
     }

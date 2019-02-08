@@ -18,13 +18,13 @@ while($row = sql_fetch_array($result)){
             <p><strong>주의!</strong> 메뉴삭제시 해당 메뉴에 포함된 모든 정보가 삭제상태로 변경 됩니다.</p>
         </div>
         
-        <div>
+        <div class="menu_tab">
             <ul>
-                <li>사용메뉴</li>
+                <li class="active">사용메뉴</li>
                 <li onclick="location.href='<?php echo G5_URL?>/admin/menu_del_list.php'">삭제메뉴</li>
             </ul>
         </div>
-
+        <div class="clear"></div>
         <form action="<?php echo G5_URL?>/admin/menu_list_update.php" method="post" >
             <input type="hidden" name="type" value="in">
             <input type="hidden" name="menu_depth" value="1">
@@ -101,7 +101,7 @@ while($row = sql_fetch_array($result)){
                                 </td>
                                 <td class="td_mng">
                                     <?php if(strlen($menus[$i]['menu_code']) == 2) { ?>
-                                        <button type="button" class="btn_add_submenu btn_03 " onclick="fnAddMenu('<?php echo $menus[$i]['menu_name'];?>','<?php echo $menus[$i]['menu_code'];?>')">추가</button>
+                                        <button type="button" class="btn_add_submenu btn_03 " onclick="fnAddMenu('<?php echo $menus[$i]['menu_name'];?>','<?php echo $menus[$i]['menu_code'];?>','')">추가</button>
                                     <?php } ?>
                                     <button onclick="fnUpdateMenu('<?php echo G5_URL?>/admin/menu_list_update.php','<?php echo $menus[$i]["me_id"];?>','<?php echo $menus[$i]["menu_depth"];?>')" >수정</button>
                                     <button type="button" class="btn_del_menu btn_02" onclick="fnDelMenu('<?php echo G5_URL?>/admin/menu_list_update.php?type=del&menu_depth=0&me_id=<?php echo $menus[$i]["me_id"]?>&menu_code=<?php echo $menus[$i]["menu_code"];?>');">삭제</button>

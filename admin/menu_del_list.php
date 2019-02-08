@@ -18,13 +18,13 @@ while($row = sql_fetch_array($result)){
             <p><strong>주의!</strong> 메뉴삭제시 해당 메뉴에 포함된 모든 정보가 삭제상태로 변경 됩니다.</p>
         </div>
         
-        <div>
+        <div class="menu_tab">
             <ul>
                 <li onclick="location.href='<?php echo G5_URL?>/admin/menu_list.php'">사용메뉴</li>
-                <li >삭제메뉴</li>
+                <li class="active" >삭제메뉴</li>
             </ul>
         </div>
-
+        <div class="clear"></div>
         <!--<form name="fmenulist" id="fmenulist" method="post" action="./menu_list_update.php" >-->
             <input type="hidden" name="token" value="">
             <div class="admin_content">
@@ -76,7 +76,7 @@ while($row = sql_fetch_array($result)){
                                 </td>-->
                                 <?php if($chk==false){?>
                                 <td class="td_mng">
-                                        <button type="button" class="btn_add_submenu btn_03 " onclick="alert('준비중')">복원</button>
+                                        <button type="button" class="btn_add_submenu btn_03 " onclick="fnReset('<?php echo $menus[$i]["me_id"];?>','<?php echo $menus[$i]['menu_depth']?>')">복원</button>
                                 </td>
                                 <?php }?>
                             </tr>
@@ -95,7 +95,7 @@ while($row = sql_fetch_array($result)){
                                     <input type="text" name="me_link[]" value="<?php /*echo $row['me_link'] */?>" id="me_link_<?php /*echo $i; */?>" required class="required tbl_input full_input">
                                 </td>-->
                                     <td class="td_mng">
-                                        <button type="button" class="btn_add_submenu btn_03 " onclick="alert('준비중')">복원</button>
+                                        <button type="button" class="btn_add_submenu btn_03 " onclick="fnReset('<?php echo $row["me_id"];?>','<?php echo $row['menu_depth']?>')">복원</button>
                                     </td>
                                 </tr>
                             <?php
@@ -117,23 +117,8 @@ while($row = sql_fetch_array($result)){
     </section>
 </div>
 <script>
-    function fnUpdateMenu(url,id,depth){
-        var cate_name = $("#me_name_"+id).val();
-        var order = $("#me_order_"+id).val();
-        var menu_status = $("#me_target_"+id).val();
-        location.href=url+"?me_id="+id+"&type=up&cate_name="+cate_name+"&menu_depth="+depth+"&menu_order="+order+"&menu_status="+menu_status;
-    }
-
-    function fnDelMenu(url){
-        if(confirm("해당 메뉴를 삭제할 경우 해당 메뉴에 등록된 자료 와 사용자 화면 및 설정에 영향을 줄 수 있습니다.\r\n삭제하시겠습니까?")) {
-            location.href = url;
-        }
-    }
-
-    function fnAddMenu(menu,code){
-        $(".submenu_modal .menu_code").val(code);
-        menu_dialog.dialog({title:menu+" 서브메뉴 추가"});
-        menu_dialog.dialog("open", "img_modal", true);
+    function fnReset(me_id, depth){
+        location.href='menu_list_update.php?type=reset&me_id='+me_id+'&menu_depth='+depth;
     }
 </script>
 <?php

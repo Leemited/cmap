@@ -1,1 +1,43 @@
 .full-width{width:100%;position:relative;margin:0;padding:0;}
+
+.login {position:absolute;right:0;height:300px;width:60px;top:50%;margin-top:-150px;}
+.login .login_btns > .my_profile{width:323px;position:absolute;right:-323px;top:0;height:100%;}
+.login .login_btns.active > .my_profile{}
+
+.login_body{height:100vh;}
+
+.login_ft{position:absolute;bottom:0;left:0;width:100%;background-color:RGBA(0,0,0,0.7)}
+
+.sub_ft{position:fixed;bottom:0;left:0;width:100%;background-color:#ebebeb}
+.sub_ft #ft_catch{color:#808080}
+.sub_ft #ft_link a{color:#808080}
+.view {padding:20px 20px 160px 20px;height: 100%;display: inline-block;background-color:#FFF;width:100%}
+
+.view .menu_table{width:200px;float:left;margin-right:20px;height:100%;border-spacing: 2px;}
+.view table tr:nth-child(2){border-bottom:4px;}
+.view .menu_table tr th{background-color:#002d62;color:#fff;font-size:18px;text-align: center ;padding:6px 0;}
+.view .menu_table tr td{background-color: transparent;border:none;}
+.view .menu_table tr td .depth_btn{background-color:#f1f1f1;color:#000;font-size:15px;text-align: center;width:100%;border:1px solid #c8c8c8;padding:4px 0;}
+.view .menu_table tr td .depth_btn.active,
+.view .menu_table tr td .depth_btn:hover{background-color: #666;border:1px solid #666;color:#fff;}
+.view .view_table{float:left;width:calc(100% - 220px);border-spacing:4px;}
+.view .view_table tr th{background-color:#002d62;color:#fff;font-size:18px;text-align: center ;padding:6px 0;border-spacing:4px;}
+.view .view_table tr td{background-color:#f6f6f6;padding:5px;font-size:15px;}
+.view .view_table tr td.depth1{text-align:center;vertical-align: middle;color:#fff;background-color:#9ca0ae;border-spacing:4px;}
+.view .view_table tr td.depth2{text-align:left;vertical-align: middle;color:#000;background-color:#e6e6e2;border-spacing:4px;}
+.view .view_table tr td.depth3{text-align:left;vertical-align: middle;color:#000;border-spacing:4px;}
+.view .view_table tr td.depth4{text-align:left;vertical-align: middle;color:#000;border-spacing:4px;}
+.view .view_table tr td.depth5{text-align:center;vertical-align: middle;color:#000;border-spacing:4px;}
+.view .view_table tr td.depth6{text-align:center;vertical-align: middle;color:#000;border-spacing:4px;}
+.view .view_table tr.finish td{margin-bottom:4px;}
+
+.search{padding:10px;background-color:#f3f4f6}
+.search select{padding:5px;border:1px solid #c8c8c8;color:#000;font-size:16px;text-align: center;-ms-text-align-last: center;text-align-last: center; }
+
+.etc_view {display:block;padding:20px;z-index:999;width:640px;min-width:640px;height:calc(100vh - 40px);position:fixed;right:-640px;top:0;background-color:#fff;-webkit-transition: all 0.5s ease-in-out;-moz-transition: all 0.5s ease-in-out;-ms-transition: all 0.5s ease-in-out;-o-transition: all 0.5s ease-in-out;transition: all 0.5s ease-in-out;}
+.etc_view.active{right:0;}
+.etc_view .etc_title h2{width:100%;background-color: #ababab;font-size:20px;padding:10px;}
+.etc_view .close{font-size:14px;position:absolute;top:20px;right:20px;}
+.etc_view.images{width:100%;height:calc(70vh - 50px);margin-bottom:10px;background-color:#ddd}
+.etc_view.links{width:100%;height:15vh;background-color:#303030}
+.etc_view.files{width:100%;height:15vh;background-color: #ed3b00}

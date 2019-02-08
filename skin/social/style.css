@@ -146,3 +146,26 @@ html.remodal-is-locked {overflow-y:scroll !important}
 @media only screen and (min-width: 641px) {
     #sns-link-pnl.remodal{max-width:400px;padding:50px}
 }
+
+
+#sns_login{border: 0; margin-top: 0; padding: 40px 0; border-top: 1px dashed #dddddd;}
+
+#sns_login h3{line-height: 40px; padding: 0; color: #012b5d; font-size: 20px; width: calc(100% - 72.6%); float: left;}
+#sns_login .sns-icon{
+display: block;
+height: 40px;
+line-height: 40px;
+width: calc(100% - 66%);
+float: left;
+margin: 0;
+padding-left: 40px;
+text-align: left;
+color: #fff;
+border-radius: 2px;}
+.sns-wrap{margin: 0;}
+#sns_login .sns-kakao{margin-right:30px; background-color: #ffeb00; background-position: 6px 5px; border-bottom: 1px solid rgba(0,0,0,0.05);}
+#sns_login .sns-kakao span.txt{color: #3c1e1e;}
+#sns_login .sns-naver{background-color: #1ec800; background-position: 5px 5px; border: 1px solid #1eb400;}
+
+.sns-wrap-over .sns-kakao{background-size: 29px auto;}
+.sns-wrap-over .sns-naver{background-size: 29px auto;}

@@ -5,40 +5,71 @@ if (!defined('_GNUBOARD_')) exit; // 개별 페이지 접근 불가
 add_stylesheet('<link rel="stylesheet" href="'.$member_skin_url.'/style.css">', 0);
 ?>
 
+<style>
+
+</style>
+
+
+
+
+<div class="login_hd">
+    <div class="head">
+        <div class="line"></div>
+        <h2>로그인</h2>
+        <p>건설관리지도 C.MAP에 오신 것을 환영합니다.</p>
+    </div>
+    <div class="close">
+        <img src="<?php echo G5_IMG_URL?>/close_icon.svg" alt="">
+    </div>
+
+
 <!-- 로그인 시작 { -->
-<div id="mb_login" class="mbskin">
-    <h1><?php echo $g5['title'] ?></h1>
+	<div id="mb_login" class="mbskin">
+		<h1><span class="color_s">C</span>onstruction Management <span class="color_s">Map</span></h1>
 
-    <form name="flogin" action="<?php echo $login_action_url ?>" onsubmit="return flogin_submit(this);" method="post">
-    <input type="hidden" name="url" value="<?php echo $login_url ?>">
+		<form name="flogin" action="<?php echo $login_action_url ?>" onsubmit="return flogin_submit(this);" method="post">
+		<input type="hidden" name="url" value="<?php echo $login_url ?>">
 
-    <fieldset id="login_fs">
-        <legend>회원로그인</legend>
-        <label for="login_id" class="sound_only">회원아이디<strong class="sound_only"> 필수</strong></label>
-        <input type="text" name="mb_id" id="login_id" required class="frm_input required" size="20" maxLength="20" placeholder="아이디">
-        <label for="login_pw" class="sound_only">비밀번호<strong class="sound_only"> 필수</strong></label>
-        <input type="password" name="mb_password" id="login_pw" required class="frm_input required" size="20" maxLength="20" placeholder="비밀번호">
-        <input type="submit" value="로그인" class="btn_submit">
-        <input type="checkbox" name="auto_login" id="login_auto_login">
-        <label for="login_auto_login">자동로그인</label>
-    </fieldset>
+		<fieldset id="login_fs">
+			<legend>회원로그인</legend>
+			<label for="login_id" class="sound_only">회원아이디<strong class="sound_only"> 필수</strong></label>
+			<input type="text" name="mb_id" id="login_id" required class="frm_input required" size="20" maxLength="20" placeholder="아이디">
 
-    <?php
-    // 소셜로그인 사용시 소셜로그인 버튼
-    @include_once(get_social_skin_path().'/social_login.skin.php');
-    ?>
+			<label for="login_pw" class="sound_only">비밀번호<strong class="sound_only"> 필수</strong></label>
+			<input type="password" name="mb_password" id="login_pw" required class="frm_input required" size="20" maxLength="20" placeholder="비밀번호">
 
-    <aside id="login_info">
-        <h2>회원로그인 안내</h2>
-        <div>
-            <a href="<?php echo G5_BBS_URL ?>/password_lost.php" target="_blank" id="login_password_lost">아이디 비밀번호 찾기</a>
-            <a href="./register.php">회원 가입</a>
-        </div>
-    </aside>
+			<input type="checkbox" name="auto_login" id="login_auto_login">
+			<label for="login_auto_login">로그인 상태 유지</label>
 
-    </form>
+			<input type="submit" value="로그인" class="btn_submit">
 
 
+
+	<!--
+			<input type="submit" value="로그인" class="btn_submit">
+			<input type="checkbox" name="auto_login" id="login_auto_login">
+			<label for="login_auto_login">자동로그인</label>
+	-->
+
+		</fieldset>
+
+		<?php
+		// 소셜로그인 사용시 소셜로그인 버튼
+		@include_once(get_social_skin_path().'/social_login.skin.php');
+		?>
+
+		<aside id="login_info">
+			<h2>회원로그인 안내</h2>
+			<div>
+				<a href="<?php echo G5_BBS_URL ?>/password_lost.php" target="_blank" id="login_password_lost">아이디<span class="lost_line"></span>비밀번호 찾기</a>
+				<a href="./register.php">회원 가입</a>
+			</div>
+		</aside>
+
+		</form>
+
+
+	</div>
 </div>
 
 <script>

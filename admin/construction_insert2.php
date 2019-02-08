@@ -42,23 +42,18 @@ if($cnt > 1) {
             $all['depth1'][] = $data->sheets[$j]['cells'][$i][1];
             $all['depth2'][] = $data->sheets[$j]['cells'][$i][2];
             $all['depth3'][] = $data->sheets[$j]['cells'][$i][3];
-            $all['depth4'][] = $data->sheets[$j]['cells'][$i][4];
-            $all['depth5'][] = $data->sheets[$j]['cells'][$i][5];
         }
     }
 }else if($cnt==1){
     for ($i = 2; $i <= $data->sheets[0]['numRows']+2; $i++) {
-        $all['depth1'][$i] = $data->sheets[0]['cells'][$i][1];
-        $all['depth2'][$i] = $data->sheets[0]['cells'][$i][2];
-        $all['depth3'][$i] = $data->sheets[0]['cells'][$i][3];
-        $all['depth4'][$i] = $data->sheets[0]['cells'][$i][4];
-        $all['depth5'][$i] = $data->sheets[0]['cells'][$i][5];
+        $all['depth1'][] = $data->sheets[0]['cells'][$i][1];
+        $all['depth2'][] = $data->sheets[0]['cells'][$i][2];
+        $all['depth3'][] = $data->sheets[0]['cells'][$i][3];
     }
 }else{
     alert("엑셀 파일에 오류가 있습니다.\\r\\n다시 확인후 업로드 바랍니다.");
     return false;
 }
-
 
 for($i=0;$i<count($all["depth1"]);$i++){
 
@@ -88,31 +83,6 @@ for($i=0;$i<count($all["depth1"]);$i++){
         //$depth2_id = sql_insert_id();
     }
     if($all['depth3'][$i]!=""){
-        $sql = "select MAX(id) as max from `cmap_depth3`";
-        $maxid = sql_fetch($sql);
-        if($maxid["max"]==0){
-            $depth3_max_id = 1;
-        }else {
-            $depth3_max_id = $maxid["max"] + 1;
-        }
-
-        $sql = "insert into `cmap_depth3` set depth_name = '{$all['depth3'][$i]}', depth1_id = '{$first_id}', depth2_id = '{$depth2_max_id}' , id = {$depth3_max_id}";
-        sql_query($sql);
-        //$depth3_id = sql_insert_id();
-    }
-    if($all['depth4'][$i]!=""){
-        $sql = "select MAX(id) as max from `cmap_depth4`";
-        $maxid = sql_fetch($sql);
-        if($maxid["max"]==0){
-            $depth4_max_id = 1;
-        }else {
-            $depth4_max_id = $maxid["max"] + 1;
-        }
-        $sql = "insert into `cmap_depth4` set depth_name = '{$all['depth4'][$i]}', depth1_id = '{$first_id}', depth2_id = '{$depth2_max_id}', depth3_id = '{$depth3_max_id}' , id = {$depth4_max_id}";
-        sql_query($sql);
-        //$depth4_id = sql_insert_id();
-    }
-    if($all['depth5'][$i]!=""){
         $sql = "select MAX(id) as max from `cmap_content`";
         $maxid = sql_fetch($sql);
         if($maxid["max"]==0){
@@ -120,8 +90,10 @@ for($i=0;$i<count($all["depth1"]);$i++){
         }else {
             $depth5_max_id = $maxid["max"] + 1;
         }
-        $sql = "insert into `cmap_content` set content = '{$all['depth5'][$i]}', depth1_id = '{$first_id}', depth2_id = '{$depth2_max_id}', depth3_id = '{$depth3_max_id}', depth4_id = '{$depth4_max_id}' , id = {$depth5_max_id}";
+
+        $sql = "insert into `cmap_content` set content = '{$all['depth3'][$i]}', depth1_id = '{$first_id}', depth2_id = '{$depth2_max_id}', id = {$depth5_max_id}";
         sql_query($sql);
+        //$depth3_id = sql_insert_id();
     }
 }
 

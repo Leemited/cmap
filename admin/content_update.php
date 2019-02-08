@@ -13,43 +13,55 @@ if(!$content_id){
 
 $sql = "select * from `cmap_content` where id = '{$content_id}'";
 $filechk = sql_fetch($sql);
-$orifile_name = explode(",",$filechk["attachment"]);
-$orifile_name2 = explode(",",$filechk["attachment2"]);
-
+$orifile_name = explode("``",$filechk["attachment"]);
+$orifile_name2 = explode("``",$filechk["attachment2"]);
+$ori_name = explode("``",$filechk["attachmentname"]);
+$ori_name2 = explode("``",$filechk["attachmentname2"]);
 //$result["orifile2"] = $orifile_name;
 
 //파일 삭제
 if($fileDel1){
     @unlink(G5_DATA_URL . '/cmap_content/' . $orifile_name[0]);
     $orifile_name[0] = "";
+    $ori_name[0] = "";
 }
 if($fileDel2){
     @unlink(G5_DATA_URL . '/cmap_content/' . $orifile_name[1]);
     $orifile_name[1] = "";
+    $ori_name[1] = "";
 }
 if($fileDel3){
     @unlink(G5_DATA_URL . '/cmap_content/' . $orifile_name[2]);
     $orifile_name[2] = "";
+    $ori_name[2] = "";
 }
 
 //파일 삭제
 if($fileDel4){
     @unlink(G5_DATA_URL . '/cmap_content/' . $orifile_name[0]);
     $orifile_name2[0] = "";
+    $ori_name2[0] = "";
 }
 if($fileDel5){
     @unlink(G5_DATA_URL . '/cmap_content/' . $orifile_name[1]);
     $orifile_name2[1] = "";
+    $ori_name2[1] = "";
 }
 if($fileDel6){
     @unlink(G5_DATA_URL . '/cmap_content/' . $orifile_name[2]);
     $orifile_name2[2] = "";
+    $ori_name2[2] = "";
 }
 
-$uplink_title = implode(",",array_filter($linkname));
-$uplink = implode(",",array_filter($link));
-$upetcname = implode(",",array_filter($etc1name));
-$upetc = implode(",",array_filter($etc1));
+$uplink_title = implode("``",array_filter($linkname));
+$uplink = implode("``",array_filter($link));
+$upetcname = implode("``",array_filter($etc1name));
+$upetc = implode("``",array_filter($etc1));
+$filenames = implode("``",array_filter($filenames));
+$filenames2 = implode("``",array_filter($filenames2));
+
+$result["filename"] = $filenames;
+$result["filename2"] = $filenames2;
 
 for ($i=0; $i<3; $i++) {
     if($_FILES["file"]["tmp_name"][$i]!=""){
@@ -120,7 +132,7 @@ if(count($upload["filename"]) !=0 ){
     }
 }
 $result["orifile"] = $orifile_name;
-$filename = implode(",",$orifile_name);
+$filename = implode("``",$orifile_name);
 $files = " , attachment = '{$filename}'";
 
 if(count($upload["filenames"]) !=0 ){
@@ -129,10 +141,10 @@ if(count($upload["filenames"]) !=0 ){
     }
 }
 $result["orifiles"] = $orifile_name2;
-$filename2 = implode(",",$orifile_name2);
+$filename2 = implode("``",$orifile_name2);
 $files2 = " , attachment2 = '{$filename2}'";
 
-$sql = "update `cmap_content` set link = '{$uplink}', linkname = '{$uplink_title}', etc1 = '{$upetc}', etcname1 = '{$upetcname}' {$files} {$files2} where id = '{$content_id}'";
+$sql = "update `cmap_content` set link = '{$uplink}', linkname = '{$uplink_title}', etc1 = '{$upetc}', etcname1 = '{$upetcname}', attachmentname1	= '{$filenames}', attachmentname2 = '{$filenames2}' {$files} {$files2} where pk_id = '{$content_id}'";
 $result["sql"]=$sql;
 if(sql_query($sql)){
     $result["id"] = $content_id;
@@ -149,6 +161,8 @@ if(sql_query($sql)){
     if(count($etc1)!=0){
         $result["etc1s"] = $upetc;
     }
+    $result["file_names"] = $filenames;
+    $result["file_names2"] = $filenames2;
     //if(count($upload["filename"])!=0){
     $result["filename"] = $filename;
     $result["filename2"] = $filename2;
