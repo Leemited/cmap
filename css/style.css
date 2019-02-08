@@ -24,12 +24,14 @@
 .view .view_table tr th{background-color:#002d62;color:#fff;font-size:18px;text-align: center ;padding:6px 0;border-spacing:4px;}
 .view .view_table tr td{background-color:#f6f6f6;padding:5px;font-size:15px;}
 .view .view_table tr td.depth1{text-align:center;vertical-align: middle;color:#fff;background-color:#9ca0ae;border-spacing:4px;}
-.view .view_table tr td.depth2{text-align:left;vertical-align: middle;color:#000;background-color:#e6e6e2;border-spacing:4px;}
+.view .view_table tr td.depth2{text-align:center;vertical-align: middle;color:#000;background-color:#e6e6e2;border-spacing:4px;}
 .view .view_table tr td.depth3{text-align:left;vertical-align: middle;color:#000;border-spacing:4px;}
 .view .view_table tr td.depth4{text-align:left;vertical-align: middle;color:#000;border-spacing:4px;}
 .view .view_table tr td.depth5{text-align:center;vertical-align: middle;color:#000;border-spacing:4px;}
 .view .view_table tr td.depth6{text-align:center;vertical-align: middle;color:#000;border-spacing:4px;}
 .view .view_table tr.finish td{margin-bottom:4px;}
+.view .view_table tr td.etc{text-align:center;}
+.view .view_table tr td.etc input[type=button]{border:none;background-image:url("../img/ic_preview.svg");background-repeat:no-repeat;background-size:contain;background-position:center;font-size:0;width:28px;height:28px;padding:0;}
 
 .search{padding:10px;background-color:#f3f4f6}
 .search select{padding:5px;border:1px solid #c8c8c8;color:#000;font-size:16px;text-align: center;-ms-text-align-last: center;text-align-last: center; }

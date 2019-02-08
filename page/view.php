@@ -59,21 +59,21 @@ while ($row = sql_fetch_array($res)) {
         $list[$i]['depth2'][$j] = $row2;
         $sql = "select *,a.id as id, COUNT(*) as cnt,a.pk_id from `cmap_depth3` as a left join `cmap_content` as b on a.id = b.depth3_id where a.depth1_id = {$row['id']} and a.depth2_id = {$row2['id']}  group by a.id order by a.id asc";
         $res3 = sql_query($sql);
-        $num = sql_num_rows($res3);
-        if($num > 0) {
+        $num3 = sql_num_rows($res3);
+        if($num3 > 0) {
             while ($row3 = sql_fetch_array($res3)) {
                 $l = 0;
                 $list[$i]['depth2'][$j]['depth3'][$k] = $row3;
                 $sql = "select *,a.id as id, COUNT(*) as cnt,a.pk_id from `cmap_depth4` as a left join `cmap_content` as b on a.id = b.depth4_id where a.depth1_id = {$row['id']} and a.depth2_id = {$row2['id']} and a.depth3_id = {$row3['id']}  group by a.id order by a.id asc";
                 $res4 = sql_query($sql);
-                $num = sql_num_rows($res4);
-                if($num > 0) {
+                $num4 = sql_num_rows($res4);
+                if($num4 > 0) {
                     while ($row4 = sql_fetch_array($res4)) {
                         $m = 0;
                         $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l] = $row4;
                         $sql = "select * from `cmap_content` where depth1_id = {$row['id']} and depth2_id = {$row2['id']} and depth3_id = {$row3['id']} and depth4_id = {$row4['id']} order by id asc";
                         $res5 = sql_query($sql);
-                        //$num = sql_num_rows($res5);
+                        $depth5num = sql_num_rows($res5);
                         while ($row5 = sql_fetch_array($res5)) {
                             $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m] = $row5;
                             $m++;
@@ -83,6 +83,7 @@ while ($row = sql_fetch_array($res)) {
                 }else{
                     $sql = "select * from `cmap_content` where depth1_id = {$row['id']} and depth2_id = {$row2['id']} and depth3_id = {$row3['id']} order by id asc";
                     $res6 = sql_query($sql);
+                    $num4 = sql_num_rows($res6);
                     while ($row6 = sql_fetch_array($res6)) {
                         $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l] = $row6;
                         $l++;
@@ -93,9 +94,10 @@ while ($row = sql_fetch_array($res)) {
         }else{
             $sql = "select * from `cmap_content` where depth1_id = {$row['id']} and depth2_id = {$row2['id']} order by id asc";
             $res7 = sql_query($sql);
+            $num3 = sql_num_rows($res7);
             while ($row7 = sql_fetch_array($res7)) {
                 //$l = 0;
-                $list[$i]['depth2'][$j]['depth3'][$k] = $row3;
+                $list[$i]['depth2'][$j]['depth3'][$k] = $row7;
                 $k++;
             }
         }
@@ -220,7 +222,7 @@ $myconstruction = false;
         </table>
         <table class="view_table" >
             <?php
-            if($menu_id==10 || $menu_id==40) {
+            if($depth5num > 0) {
             ?>
             <colgroup>
                 <!--<col width="10%">-->
@@ -276,7 +278,7 @@ $myconstruction = false;
                                 <?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['content'];?>
                             </td>
                             <td class="etc" id="">
-                                <input type="button" value="파일보기" onclick="fnViewEtc('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>')">
+                                <input type="button" value="미리보기" onclick="fnViewEtc('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>')">
                             </td>
                             <?php if($is_member && $myconstruction){?>
                             <td class="confirm" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>">
@@ -302,8 +304,10 @@ $myconstruction = false;
                         $depth_last = 1;
                 }
              }?>
-            <?php }else if($menu_id==30 ){?>
-                <?php if($me_id=="3035"){?>
+            <?php }else {
+                ?>
+                <?php if($num4 > 0 && $num3 > 0){
+                    ?>
             <colgroup>
                 <col width="10%">
                 <col width="12%">
@@ -340,7 +344,7 @@ $myconstruction = false;
                 <?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['content'];?>
             </td>
             <td class="etc">
-                <input type="button" value="파일보기" onclick="fnViewEtc('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>')">
+                <input type="button" value="미리보기" onclick="fnViewEtc('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>')">
             </td>
             <td class="depth6">
                 <?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['submit_date'];?>
@@ -353,7 +357,9 @@ $myconstruction = false;
                 }
                 } $depth_last = 1;
                 }?>
-                <?}else{?>
+                <?php }
+                if($num3 > 0 && (!$num4 || $num4 == 0)){
+                    ?>
                     <colgroup>
                         <!--<col width="10%">-->
                         <col width="12%">
@@ -382,7 +388,7 @@ $myconstruction = false;
                                     <?php echo $list[$i]['depth2'][$j]['depth3'][$k]['content']; ?>
                                 </td>
                                 <td class="etc" >
-                                    <input type="button" value="파일보기" onclick="fnViewEtc('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>')">
+                                    <input type="button" value="미리보기" onclick="fnViewEtc('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>')">
                                 </td>
                                 </tr>
                                 <?php if($list[$i]['cnt'] >= $depth_last){?>
@@ -393,9 +399,7 @@ $myconstruction = false;
                     }
                     ?>
                 <?php }?>
-            <?php }//else if($menu_id==40){?>
-                <!--<tr><td>afaea</td></tr>-->
-            <?php //}?>
+            <?php } ?>
         </table>
     </div>
 </div>
