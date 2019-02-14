@@ -114,6 +114,7 @@ if ($w == "") {
     alert('w 값이 제대로 넘어오지 않았습니다.');
 }
 
+$sub = "login";
 include_once('./_head.php');
 
 // 회원아이콘 경로

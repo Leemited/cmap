@@ -5,6 +5,7 @@ include_once(G5_LIB_PATH.'/register.lib.php');
 include_once(G5_LIB_PATH.'/mailer.lib.php');
 include_once(G5_LIB_PATH.'/thumbnail.lib.php');
 
+print_r2($_POST);
 // 리퍼러 체크
 referer_check();
 
@@ -35,12 +36,13 @@ $mb_password    = trim($_POST['mb_password']);
 $mb_password_re = trim($_POST['mb_password_re']);
 $mb_name        = trim($_POST['mb_name']);
 $mb_nick        = trim($_POST['mb_nick']);
-$mb_email       = trim($_POST['mb_email']);
+$mb_email       = trim($_POST['mb_email'])."@".trim($_POST["mb_email2"]);
 $mb_sex         = isset($_POST['mb_sex'])           ? trim($_POST['mb_sex'])         : "";
 $mb_birth       = isset($_POST['mb_birth'])         ? trim($_POST['mb_birth'])       : "";
 $mb_homepage    = isset($_POST['mb_homepage'])      ? trim($_POST['mb_homepage'])    : "";
 $mb_tel         = isset($_POST['mb_tel'])           ? trim($_POST['mb_tel'])         : "";
-$mb_hp          = isset($_POST['mb_hp'])            ? trim($_POST['mb_hp'])          : "";
+//$mb_hp          = isset($_POST['mb_hp'])            ? trim($_POST['mb_hp'])          : "2";
+$mb_hp          = is_array($_POST["mb_hp"])         ? implode("-",$_POST["mb_hp"])       : "";
 $mb_zip1        = isset($_POST['mb_zip'])           ? substr(trim($_POST['mb_zip']), 0, 3) : "";
 $mb_zip2        = isset($_POST['mb_zip'])           ? substr(trim($_POST['mb_zip']), 3)    : "";
 $mb_addr1       = isset($_POST['mb_addr1'])         ? trim($_POST['mb_addr1'])       : "";
@@ -54,7 +56,8 @@ $mb_mailling    = isset($_POST['mb_mailling'])      ? trim($_POST['mb_mailling']
 $mb_sms         = isset($_POST['mb_sms'])           ? trim($_POST['mb_sms'])         : "";
 $mb_1           = isset($_POST['mb_1'])             ? trim($_POST['mb_1'])           : "";
 $mb_2           = isset($_POST['mb_2'])             ? trim($_POST['mb_2'])           : "";
-$mb_3           = isset($_POST['mb_3'])             ? trim($_POST['mb_3'])           : "";
+//$mb_3           = isset($_POST['mb_3'])             ? trim($_POST['mb_3'])           : "";
+$mb_3           = is_array($_POST['mb_3'])             ? implode("-",$_POST['mb_3'])           : "";
 $mb_4           = isset($_POST['mb_4'])             ? trim($_POST['mb_4'])           : "";
 $mb_5           = isset($_POST['mb_5'])             ? trim($_POST['mb_5'])           : "";
 $mb_6           = isset($_POST['mb_6'])             ? trim($_POST['mb_6'])           : "";

@@ -89,6 +89,8 @@
 <script>
     var dialog,img_dialog,menu_dialog,restore_modal;
     $(function(){
+        //$('table.resizable').resizableColumns();
+
         dialog = $( ".modal" ).dialog({
             autoOpen: false,
             height: 600,

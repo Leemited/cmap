@@ -166,7 +166,7 @@ while($row=sql_fetch_array($res)){
                 </form>
             </div>
             <div class="edit_content">
-                <table id="edit_table">
+                <table id="edit_table" class="resizable">
                     <colgroup>
                         <col width="10%">
                         <col width="10%">

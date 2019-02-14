@@ -96,6 +96,11 @@ document.onselectstart = new Function('return false');   // 선택 방지
 <script src="<?php echo G5_JS_URL ?>/common.js?ver=<?php echo G5_JS_VER; ?>"></script>
 <script src="<?php echo G5_JS_URL ?>/wrest.js?ver=<?php echo G5_JS_VER; ?>"></script>
 <script src="<?php echo G5_JS_URL ?>/placeholders.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"
+        integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ"
+        crossorigin="anonymous">
+</script>
+<script src="<?php echo G5_JS_URL ?>/jQuery.resizableColumns.js"></script>
 <link rel="stylesheet" href="<?php echo G5_JS_URL ?>/font-awesome/css/font-awesome.min.css">
 <?php
 if(G5_IS_MOBILE) {
@@ -103,9 +108,10 @@ if(G5_IS_MOBILE) {
 }
 if(!defined('G5_IS_ADMIN'))
     echo $config['cf_add_script'];
+
 ?>
 </head>
-<body<?php echo isset($g5['body_script']) ? $g5['body_script'] : ''; ?> class="<?php if($main){?>main <?php }else{?>sub <?php }?><?php if($sub=="login"){?>login_body<?php }?>" id="test" >
+<body<?php echo isset($g5['body_script']) ? $g5['body_script'] : ''; ?> class="<?php if($main){?>main <?php }else{?>sub <?php }?> <?php if($sub=="login"){?>login_body<?php }else if($sub=="register"){?> register_body<?php }?>" id="test" >
 <?php
 if ($is_member) { // 회원이라면 로그인 중이라는 메세지를 출력해준다.
     $sr_admin_msg = '';
@@ -117,3 +123,5 @@ if ($is_member) { // 회원이라면 로그인 중이라는 메세지를 출력�
     echo '<a href="'.G5_BBS_URL.'/logout.php">로그아웃</a></div>';
 }
 ?>
+
+<div class="modalpopup"></div>

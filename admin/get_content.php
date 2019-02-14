@@ -36,11 +36,15 @@ if($con = sql_fetch($sql)){
     }
     $filename1 = explode("``",$con["attachmentname1"]);
     for($i=0;$i<count($filename1);$i++){
-        $result["filename{$i}"] = $filename1[$i];
+        if($file[$i]!="") {
+            $result["filename{$i}"] = $filename1[$i];
+        }
     }
     $filename2 = explode("``",$con["attachmentname2"]);
     for($i=0;$i<count($filename2);$i++){
-        $result["filesname{$i}"] = $filename2[$i];
+        if($file2[$i]!="") {
+            $result["filesname{$i}"] = $filename2[$i];
+        }
     }
     $result["status"] = 1;
 }else{

@@ -206,7 +206,7 @@ if($menu_code!="3035" && $menu_code!="30") {
                 </div>-->
             </div>
             <div class="edit_content">
-                <table id="edit_table">
+                <table id="edit_table" class="resizable">
                     <?php if($menu_code!="3035" && $menu_code!="30"){?>
                     <colgroup>
                         <col width="10%">

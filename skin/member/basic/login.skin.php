@@ -17,9 +17,9 @@ add_stylesheet('<link rel="stylesheet" href="'.$member_skin_url.'/style.css">', 
         <div class="line"></div>
         <h2>로그인</h2>
         <p>건설관리지도 C.MAP에 오신 것을 환영합니다.</p>
-    </div>
-    <div class="close">
-        <img src="<?php echo G5_IMG_URL?>/close_icon.svg" alt="">
+        <div class="close" onclick="location.href=g5_url">
+            <img src="<?php echo G5_IMG_URL?>/close_icon.svg" alt="">
+        </div>
     </div>
 
 
@@ -39,11 +39,9 @@ add_stylesheet('<link rel="stylesheet" href="'.$member_skin_url.'/style.css">', 
 			<input type="password" name="mb_password" id="login_pw" required class="frm_input required" size="20" maxLength="20" placeholder="비밀번호">
 
 			<input type="checkbox" name="auto_login" id="login_auto_login">
-			<label for="login_auto_login">로그인 상태 유지</label>
+			<label for="login_auto_login"><span></span>로그인 상태 유지</label>
 
 			<input type="submit" value="로그인" class="btn_submit">
-
-
 
 	<!--
 			<input type="submit" value="로그인" class="btn_submit">
@@ -61,8 +59,12 @@ add_stylesheet('<link rel="stylesheet" href="'.$member_skin_url.'/style.css">', 
 		<aside id="login_info">
 			<h2>회원로그인 안내</h2>
 			<div>
-				<a href="<?php echo G5_BBS_URL ?>/password_lost.php" target="_blank" id="login_password_lost">아이디<span class="lost_line"></span>비밀번호 찾기</a>
-				<a href="./register.php">회원 가입</a>
+                <div class="fpasswd">
+                    <a href="javascript:fnFindId()" id="login_password_lost">아이디 찾기</a>
+                    <span class="lost_line"></span>
+                    <a href="javascript:fnFindPw()" id="login_password_lost">비밀번호 찾기</a>
+                </div>
+				<a href="./register.php" class="registers">회원 가입</a>
 			</div>
 		</aside>
 
@@ -84,6 +86,17 @@ $(function(){
 function flogin_submit(f)
 {
     return true;
+}
+function fnFindId(){
+    $.ajax({
+        url:g5_url+"/page/modal/ajax.find_id.php",
+        method:"post"
+    }).done(function(data){
+        fnShowModal(data);
+    });
+}
+function fnFindPw(){
+
 }
 </script>
 <!-- } 로그인 끝 -->

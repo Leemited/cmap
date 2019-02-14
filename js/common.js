@@ -321,10 +321,10 @@ var win_password_lost = function(href) {
 }
 
 $(document).ready(function(){
-    $("#login_password_lost, #ol_password_lost").click(function(){
+    /*$("#login_password_lost, #ol_password_lost").click(function(){
         win_password_lost(this.href);
         return false;
-    });
+    });*/
 });
 
 /**
@@ -741,6 +741,26 @@ function get_write_token(bo_table)
     return token;
 }
 
+function fnShowModal(data){
+    $(".modalpopup").html(data);
+    $(".modalpopup").addClass("active");
+    fnModalTop();
+    $("html").attr("style","height:100vh;overflow:hidden;");
+}
+
+function fnCloseModal(){
+    $(".modalpopup").html('');
+    $(".modalpopup").removeClass("active");
+    $("html").attr("style","height:auto;overflow:auto");
+}
+
+function fnModalTop(){
+    var height = $(".modalpopup .modal_in").height() + 40; //40은 style 속성 고정값
+    var documentHeight = $("html").height();
+    var top = height / 2;
+    $(".modalpopup .modal_in").attr("style","top:50%;margin-top: -"+top+"px");
+}
+
 $(function() {
     $(document).on("click", "form[name=fwrite] input:submit, form[name=fwrite] button:submit, form[name=fwrite] input:image", function() {
         var f = this.form;
@@ -765,5 +785,20 @@ $(function() {
         $f.find("input[name=token]").val(token);
 
         return true;
+    });
+
+    $(document).on("click",".modalpopup.active span", function(){
+       //$(".modal").removeClass("active");
+        fnCloseModal();
+    });
+
+    $(document).on("click",".modalpopup .downmenu h3", function(){
+        if($(this).parent().hasClass("active")){
+            $(this).parent().removeClass("active");
+        }else {
+            $(this).parent().addClass("active");
+            $(".modalpopup .downmenu").not($(this).parent()).removeClass("active");
+        }
+        fnModalTop();
     });
 });

@@ -166,8 +166,9 @@ while($row=sql_fetch_array($res)){
                 </div>-->
             </div>
             <div class="edit_content">
-                <table id="edit_table">
-                    <colgroup>
+                <table id="edit_table" class="resizable">
+                    <thead>
+                    <!--<colgroup>
                         <col width="10%">
                         <col width="10%">
                         <col width="12%">
@@ -175,17 +176,18 @@ while($row=sql_fetch_array($res)){
                         <col width="*">
                         <col width="10%">
                         <col width="6%">
-                    </colgroup>
-                    <tbody>
+                    </colgroup>-->
                     <tr>
-                        <th>유형</th>
-                        <th>직업선택</th>
-                        <th>구분</th>
-                        <th>항목</th>
-                        <th>주요확인내용</th>
-                        <th>참고</th>
-                        <th>기준일</th>
+                        <th style="width:10%">유형</th>
+                        <th style="width:10%">직업선택</th>
+                        <th style="width:12%">구분</th>
+                        <th style="width:12%">항목</th>
+                        <th style="width:*">주요확인내용</th>
+                        <th style="width:10%">참고</th>
+                        <th style="width:6%">기준일</th>
                     </tr>
+                    </thead>
+                    <tbody>
                     <?php
                     $depth_last = 1;
                     for($i=0;$i<count($list);$i++){
@@ -1266,7 +1268,6 @@ function depth5ConAdd(id){
             alert("선택된 항목이 없습니다.");
             return false;
         }else if(data.status==1){
-            console.log(data);
             if(data.link0) {
                 $("#link1").val(data.link0)
             }
@@ -1322,22 +1323,22 @@ function depth5ConAdd(id){
                 $("#filesnames3").val(data.filesname2);
             }
             if(data.file0) {
-                $(".add_file1").append("<span>" + data.file0 + "</span><input type='checkbox' name='fileDel1'> 삭제<br>");
+                $(".add_file1").append("<span>" + data.file0 + "</span><input type='checkbox' name='fileDel1' value='1'> 삭제<br>");
             }
             if(data.file1) {
-                $(".add_file2").append("<span>" + data.file1 + "</span><input type='checkbox' name='fileDel2'> 삭제<br>");
+                $(".add_file2").append("<span>" + data.file1 + "</span><input type='checkbox' name='fileDel2' value='1'> 삭제<br>");
             }
             if(data.file2) {
-                $(".add_file3").append("<span>" + data.file2 + "</span><input type='checkbox' name='fileDel3'> 삭제<br>");
+                $(".add_file3").append("<span>" + data.file2 + "</span><input type='checkbox' name='fileDel3' value='1'> 삭제<br>");
             }
             if(data.files0) {
-                $(".add_files1").append("<span>" + data.files0 + "</span><input type='checkbox' name='fileDel4'> 삭제<br>");
+                $(".add_files1").append("<span>" + data.files0 + "</span><input type='checkbox' name='fileDel4' value='1'> 삭제<br>");
             }
             if(data.files1) {
-                $(".add_files2").append("<span>" + data.files1 + "</span><input type='checkbox' name='fileDel5'> 삭제<br>");
+                $(".add_files2").append("<span>" + data.files1 + "</span><input type='checkbox' name='fileDel5' value='1'> 삭제<br>");
             }
             if(data.files2) {
-                $(".add_files3").append("<span>" + data.files2 + "</span><input type='checkbox' name='fileDel6'> 삭제<br>");
+                $(".add_files3").append("<span>" + data.files2 + "</span><input type='checkbox' name='fileDel6' value='1'> 삭제<br>");
             }
             dialog.dialog("open","modal",true);
         }else if(data.status==2){
@@ -1413,7 +1414,7 @@ function fnImage(file){
     }
 }
 
-$(function() {
+/*$(function() {
     var pressed = false;
     var start = undefined;
     var startX, startWidth;
@@ -1438,7 +1439,7 @@ $(function() {
             pressed = false;
         }
     });
-});
+});*/
 </script>
 <?php
 include_once (G5_PATH."/admin/admin.tail.php");

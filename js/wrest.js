@@ -69,12 +69,11 @@ function wrestTelNum(fld)
 function wrestEmail(fld)
 {
     if (!wrestTrim(fld)) return;
-
     //var pattern = /(\S+)@(\S+)\.(\S+)/; 이메일주소에 한글 사용시
     var pattern = /([0-9a-zA-Z_-]+)@([0-9a-zA-Z_-]+)\.([0-9a-zA-Z_-]+)/;
     if (!pattern.test(fld.value)) {
         if (wrestFld == null) {
-            wrestMsg = wrestItemname(fld) + " : 이메일주소 형식이 아닙니다.\n";
+            wrestMsg = wrestItemname(fld) + " : 이메일주소 형식이 아닙니다.\n" + fld.value;
             wrestFld = fld;
         }
     }
@@ -293,10 +292,11 @@ function wrestSubmit()
             // 배열의 길이만큼 돌려라
             for (var k=0; k<array_css.length; k++) {
                 var css = array_css[k];
+
                 switch (css) {
                     case "required"     : wrestRequired(el); break;
                     case "trim"         : wrestTrim(el); break;
-                    case "email"        : wrestEmail(el); break;
+                    //case "email"        : wrestEmail(el); break;
                     case "hangul"       : wrestHangul(el); break;
                     case "hangul2"      : wrestHangul2(el); break;
                     case "hangulalpha"  : wrestHangulAlpha(el); break;

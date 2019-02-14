@@ -401,11 +401,12 @@ $myconstruction = false;
                 <?php }?>
             <?php } ?>
         </table>
+        <div class="clear"></div>
     </div>
 </div>
 <div class="etc_view">
     <div class="etc_title">
-        <h2>참고 자료</h2>
+        <h2><img src="<?php echo G5_IMG_URL?>/ic_preview.svg" alt=""> 참고 자료</h2>
     </div>
     <div class="close" onclick="fnEtcClose()">닫기</div>
     <div class="content">
@@ -420,8 +421,13 @@ $myconstruction = false;
     </div>-->
     </div>
 </div>
+<span class="etc_view_bg"></span>
 <script>
 $(function(){
+    var tbl_width = $(".menu_table").width();
+    tbl_width = tbl_width + 24;
+    $(".view_table").attr("style","width:calc(100% - "+tbl_width+"px)");
+
     $("#menu_code").change(function(){
         //선택된 값으로 2dpeth의 옵션 갑 변경
         location.href=g5_url+'/page/view.php?me_id='+$(this).val();
@@ -429,6 +435,16 @@ $(function(){
     $("#depth1_id").change(function(){
         location.href=g5_url+'/page/view.php?me_id=<?php echo $me_id;?>&depth1_id='+$(this).val();
     });
+
+    $(".etc_view_bg").click(function(){
+        fnEtcClose();
+    });
+
+    window.onkeydown = function(){
+        if(event.keyCode==27 && $(".etc_view").hasClass("active")){
+            fnEtcClose();
+        }
+    }
 })
 
 function fnViewEtc(pk_id){
@@ -441,15 +457,19 @@ function fnViewEtc(pk_id){
         $(".etc_view .content").html('');
         if(!$(".etc_view").hasClass("active")){
             $(".etc_view .content").html(data);
-           $(".etc_view").addClass("active");
+            $(".etc_view").addClass("active");
+            $(".etc_view_bg").addClass("active");
         }else{
             $(".etc_view").removeClass("active");
+            $(".etc_view_bg").removeClass("active");
         }
     });
 }
 function fnEtcClose(){
     $(".etc_view").removeClass("active");
+    $(".etc_view_bg").removeClass("active");
 }
+
 </script>
 <?php
 $sub="sub";

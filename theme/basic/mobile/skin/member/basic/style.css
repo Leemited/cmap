@@ -142,7 +142,7 @@ box-shadow: 2px 2px 3px 0px rgba(0,0,0,0.2);}
 
 #mb_login_notmb{background:#fff;border-bottom:1px solid #ccc;padding:20px;}
 #mb_login_notmb h2{font-size:1.25em;padding:10px;background:#f3f3f3}
-#mb_login_notmb p{border:0;padding:0;margin:10px;color:#}
+#mb_login_notmb p{border:0;padding:0;margin:10px;color:#000}
 #guest_privacy p{border:1px solid #ddd;background:#fff;color:#666;min-height:20px;height:200px;padding:10px;text-align:left;overflow-y:auto;margin:10px 0}
 #mb_login_notmb .btn_submit{width:100%;display:block;height:40px;line-height:40px}
 
