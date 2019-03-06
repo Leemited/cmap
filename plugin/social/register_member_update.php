@@ -46,11 +46,9 @@ if( ! $mb_nick || ! $mb_name ){
     $mb_name = $mb_name ? $mb_name : $tmp[0];
 }
 
-if( ! isset($mb_password) || ! $mb_password ){
-
+/*if( ! isset($mb_password) || ! $mb_password ){
     $mb_password = md5(pack('V*', rand(), rand(), rand(), rand()));
-
-}
+}*/
 
 if ($msg = empty_mb_name($mb_name))       alert($msg, "", true, true);
 if ($msg = empty_mb_nick($mb_nick))     alert($msg, "", true, true);

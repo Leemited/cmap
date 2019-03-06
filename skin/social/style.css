@@ -1,5 +1,63 @@
 @charset "utf-8";
 
+/* 회원가입 약관 */
+#fregister p{text-align:center;color: #c7254e;background: #f9f2f4;padding:10px;border:1px solid #ecc7d2;margin:0 0 5px}
+#fregister section {;margin:10px auto 10px;position:relative;}
+#fregister_chkall{text-align:right}
+ h2 {text-align:left;padding:15px 0;font-size:20px;font-family: "nsr", Sans-serif;font-weight:lighter}
+ h2 i{width:13px;height:13px;display: inline-block;background-color:#666;margin-right:5px;}
+#fregister textarea {display:block;padding:20px;width:100%;height:150px;background:#fff;border:0;line-height:1.6em;border:1px solid #ddd;resize: none}
+#fregister div.info li{list-style: disc;margin-left: 20px;font-size: 16px;line-height: 21px;margin-bottom: 6px;letter-spacing: -1px;word-break: keep-all;}
+#fregister .fregister_agree {position:relative;top:0;right:0;;padding:15px;text-align: right}
+#fregister .fregister_agree input{display:none;}
+#fregister .fregister_agree input + label {font-size:1.2em;}
+#fregister .fregister_agree input + label span{
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border: 3px solid #ddd;
+    vertical-align: middle;
+    margin-right: 7px;
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -ms-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+}
+#fregister .fregister_agree input:checked + label span{border:3px solid #0d9edf}
+
+#user_connect{border-top:2px dashed #ddd;padding-top:30px;margin-top:30px;}
+#user_connect .info li{list-style: disc;margin-left: 20px;font-size: 16px;line-height: 21px;margin-bottom: 6px;letter-spacing: -1px;word-break: keep-all;}
+
+#user_connect .btn_confirm{text-align: center;margin:20px 0 0;}
+#user_connect .btn_submit{height:50px;padding:0 40px;font-weight:bold;font-size:1.65em;text-align: center}
+
+.float{float:left;}
+
+#login_auto_login + label {font-size:1.2em;padding:16px 0}
+#login_auto_login + label  span{
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border: 3px solid #ddd;
+    vertical-align: middle;
+    margin-right: 7px;
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -ms-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+}
+#login_auto_login:checked + label span{border:3px solid #0d9edf}
+
+#fregister_private div{padding:0;background:#fff}
+#fregister_private table{width:100%;border-collapse:collapse}
+#fregister_private table caption {position:absolute;font-size:0;line-height:0;overflow:hidden}
+#fregister_private table  th{background:#646982;width:33.33%;color:#fff;padding:10px;border:1px solid #555971}
+#fregister_private table  td{border:1px solid #ddd;padding:10px;}
+#fregister .btn_confirm{text-align:center;}
+#fregister .btn_confirm .btn_submit{height:50px;padding:0 40px;font-weight:bold;font-size:1.65em;text-align: center}
+
 .social_info_guide{background:#f3f3f3;border:1px solid #ddd;margin:0 10px 10px;padding:10px 15px;line-height:1.5em}
 .bg-warning{margin:0 10px 10px;padding:10px 15px;line-height:1.5em}
 .bg-warning1{background:#f7dfe4;border:1px solid #eac3cb}
@@ -92,7 +150,7 @@
 #sns_register .sns-google{background-color:#db4a3a;background-position:5px 5px;border-bottom:1px solid #c03121}
 #sns_register .sns-twitter{background-color:#1ea1f2;background-position:5px 5px;border-bottom:1px solid #1e82c0}
 #sns_register .sns-payco{background-color:#df0b00;background-position:5px 5px;border-bottom:1px solid #9d0800}
-#sns_register .txt{text-align:;padding-left:10px;border-left:1px solid rgba(0,0,0,0.1);display:block;font-weight:bold}
+#sns_register .txt{text-align:center;padding-left:10px;border-left:1px solid rgba(0,0,0,0.1);display:block;font-weight:bold}
 #sns_register .txt:hover{background:rgba(0,0,0,0.07)}
 
 /*기존 계정에 연결하기*/
@@ -127,7 +185,7 @@
 
 #sns-link-pnl #login_fs{margin:0 auto;width:100%;text-align:left}
 #sns-link-pnl #login_fs label{display:block;display: block;font-size: 0.93em;color: #7a7a7a;margin: 5px 0;}
-#sns-link-pnl #login_fs .lg_id,#sns-link-pnl #login_fs .lg_pw{width:100%;margin-bottom:5px;}
+#sns-link-pnl #login_fs .lg_id,#sns-link-pnl #login_fs .lg_pw{width:100%;margin-bottom:5px;float:left}
 #sns-link-pnl #login_id,#sns-link-pnl #login_pw{width:100%}
 #sns-link-pnl #login_fs .login_submit{width: 100%;height: 44px;font-size:1.167em;margin:10px auto 0;font-weight:bold;cursor:pointer;display:block;}
 #sns-link-pnl .connect-fg {height:320px;text-align:left}
@@ -169,3 +227,47 @@ border-radius: 2px;}
 
 .sns-wrap-over .sns-kakao{background-size: 29px auto;}
 .sns-wrap-over .sns-naver{background-size: 29px auto;}
+
+
+.login_hd{position: relative; top: 0; left: 0; margin:5% auto; display: inline-block; width: 100%;}
+.login_hd .head{margin: 0 auto;position: relative;
+    display: table;
+    width: 820px;}
+
+.login_hd .head .line{width:23px; height:3px; background-color:#002d62; margin-bottom:12px;}
+.login_hd .head h2{color:#3f3f3f; font-weight:bold; font-size:32px;}
+.login_hd .head p{color:#4d4d4d; font-size:18px; padding:14px 0 25px;}
+.login_hd .close{position: absolute; right: 0; top: 24%; height: auto; z-index: 9;}
+.login_hd .close img{width: 38px; height: 38px;}
+
+
+.mbskin:before, .mbskin:after{-webkit-box-shadow:unset; box-shadow:unset; border-radius:0; left:0; right:0;}
+
+.btn_submit{border-radius: 3px; background-color: #012b5d; color: #fff; cursor: pointer; border: 0; -webkit-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.2); -moz-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.2); box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.2);}
+.btn_submit:hover{background-color: #012b5d; -webkit-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.2); -moz-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.2); box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.2); -webkit-box-shadow: inset 1px 4px 12px 0px rgba(34,34,34,0.47); -moz-box-shadow: inset 1px 4px 12px 0px rgba(34,34,34,0.47); box-shadow: inset 1px 4px 12px 0px rgba(34,34,34,0.47);}
+.frm_input{height:46px;}
+input, button{font-size: 1.2em;}
+.mbskin{border-top: 2px solid #1b386e; border-bottom: 1px solid #e8e8e9; border-left: 1px solid #e8e8e9; border-right: 1px solid #e8e8e9; width: 820px;  padding: 50px 76px 60px; margin:0 auto;background-color:#FFF}
+#mb_login h1{font-family: 'Nanum Myeongjo', serif; font-weight: 900; margin: 0 0 12px; font-size: 28px; height:auto; color: #333333; font-size:28px;}
+#mb_login h1 .color_s{color: #0aa1df;}
+.wr_content textarea, .tbl_frm01 textarea, .form_01 textarea, .frm_input{padding: 15px; border: 1px solid #dddddd; color: #333333;}
+input[type=text]:focus, input[type=password]:focus, textarea:focus, select:focus{border: 1px solid #0aa1df !important;}
+input[id="login_auto_login"] + label{display: inline-block; /*background:url('../img/login_checkbox.svg') no-repeat 0 0; */text-align: left; width: calc(100% - 22%); height: 14px; font-size:14px; line-height:14px; padding-left:25px; vertical-align:middle; cursor: pointer;}
+input[id="login_auto_login"]:checked + label{/*background:url('../img/login_checkbox_c.svg') no-repeat 0 0;*/}
+input[id="login_auto_login"] {display: none;}
+#mb_login #login_fs .btn_submit{margin: 0 0 30px; width: 20.2%; font-size: 1.65em; float: right;}
+#mb_login{text-align: left;}
+
+#login_fs{padding: 0;}
+#mb_login #login_fs .frm_input{border-radius: 0;}
+
+
+#mb_login #login_info{    padding: 30px 0 0;
+    border-top: 1px solid #dddddd;
+    margin: 40px 0 0;    background: 0;}
+#mb_login #login_info a{font-size:20px; font-weight:bold; color:#666666;}
+#mb_login #login_info a.registers{float: right; color:#ac162c;}
+/*#mb_login #login_info a{float: right; color:#ac162c;}*/
+#mb_login #login_info span{float:left;margin: 0 13px; height: 17px; background-color: #acacac; width: 1px; display: inline-table;}
+#login_password_lost{border-right:unset;}
+

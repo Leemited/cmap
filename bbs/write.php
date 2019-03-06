@@ -1,5 +1,7 @@
 <?php
 include_once('./_common.php');
+$bbody = "board";
+$sub = "sub";
 include_once(G5_EDITOR_LIB);
 include_once(G5_CAPTCHA_PATH.'/captcha.lib.php');
 

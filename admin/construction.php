@@ -184,7 +184,7 @@ while($row=sql_fetch_array($res)){
                         <th style="width:12%">항목</th>
                         <th style="width:*">주요확인내용</th>
                         <th style="width:10%">참고</th>
-                        <th style="width:6%">기준일</th>
+                        <th style="width:15%">기준일</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -262,7 +262,7 @@ while($row=sql_fetch_array($res)){
                                                                     if($filenames[$q] != ""){
                                                                         $basicname = $filenames[$q];
                                                                     }else{
-                                                                        $basicname = "파일".$i;
+                                                                        $basicname = "미리보기파일".$i;
                                                                     }
                                                                     ?>
                                                                     <a href="javascript:fnImage('<?php echo $files[$q]; ?>');" ><?php echo $basicname; ?></a><br>
@@ -294,7 +294,7 @@ while($row=sql_fetch_array($res)){
                                                                     if($filenames[$q] != ""){
                                                                         $basicname = $filenames[$q];
                                                                     }else{
-                                                                        $basicname = "사례파일".$i;
+                                                                        $basicname = "첨부파일".$i;
                                                                     }
                                                                     ?>
                                                                     <a href="javascript:fnImage('<?php echo $files[$q]; ?>');" ><?php echo $basicname; ?></a><br>
@@ -307,7 +307,14 @@ while($row=sql_fetch_array($res)){
                                                 <input type="button" value="수정" onclick="depth5ConAdd('<?php echo $list[$i]["depth2"][$j]["depth3"][$k]["depth4"][$l]["depth5"][$m]["pk_id"];?>');" >
                                             </td>
                                             <td>
-                                                <input type="text" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date'];?>" name="depth5_report[]" class="center" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["id"];?>" onkeyup="fnUpdate2('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>',$(this).val())">
+                                                <select name="submit_date_type[]" style="width:50%;float:left;padding:3px 10px;height:auto" id="submit_date_type<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" onchange="fnTypeUpdate(this.value,'<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>');">
+                                                    <option value="0" <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type']==0 ){?>selected<?php }?>>착수일</option>
+                                                    <option value="1" <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type']==1){?>selected<?php }?>>시험일1</option>
+                                                    <option value="2" <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type']==2){?>selected<?php }?>>시험일2</option>
+                                                    <option value="3" <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type']==3){?>selected<?php }?>>완료일</option>
+                                                    <option value="-1" <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type']==-1 || $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type']==''){?>selected<?php }?>>미적용</option>
+                                                </select>
+                                                <input type="text" style="width:50%;float:left" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date'];?>" name="depth5_report[]" class="center" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["id"];?>" onkeyup="fnUpdate2('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>',$(this).val())">
                                             </td>
                                         </tr>
                                         <?php if($list[$i]['cnt'] >= $depth_last){?>
@@ -335,6 +342,7 @@ $(function(){
             });
         }
     });
+
     <?php if($cmap_depth1){ ?> // depth2
         getOption("<?php echo $cmap_depth1;?>",0, '<?php echo $cmap_depth2;?>');
     <?php } if($cmap_depth2){ ?> // depth3
@@ -378,7 +386,8 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
             dataType:"json"
         }).done(function(data){
             if(data.status==1){
-                var tr = document.createElement("tr");
+                location.reload();
+                /*var tr = document.createElement("tr");
                 tr.setAttribute("id","depth1"+add_id);
                 tr.setAttribute("class","depth finish_"+add_id);
 
@@ -533,23 +542,19 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
                 });
                 //parentTr.after(tr);
                 if(finish.indexOf("finish")!=-1){
-                    console.log("depth1 A");
                     if(finish.indexOf("depth")!=-1) {
-                        console.log("depth1 B");
                         var resetfinish = finish.split(" ");
                         parentTr.removeClass(resetfinish[1]);
                         tr.setAttribute("class", "depth " + resetfinish[1]);
                         parentTr.after(tr);
                     }else{
-                        console.log("depth1 C");
                         tr.setAttribute("class", "depth " + finish);
                         parentTr.after(tr);
                         parentTr.removeClass(finish);
                     }
                 }else {
-                    console.log("depth1 D // ");
                     parentTr.after(tr);
-                }
+                }*/
 
             }
             if(data.status == 2){
@@ -570,7 +575,7 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
             console.log("A");
             var parentTr = $("#edit_table tr").eq(trnum - 1);
         }else{
-            if(Number(rowspan)>1) {
+            if(Number(rowspan)>=1) {
                 console.log("B 1 // " + (Number(currentRow) + Number(rowspan)));
                 var parentTr = $("#edit_table tr").eq(Number(currentRow) + Number(rowspan) - 1);
             }else{
@@ -590,7 +595,8 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
             data:{parent_id:parent_id,id:add_id,depth:2,me_code:me_code},
             dataType:"json"
         }).done(function(data) {
-            var tr = document.createElement("tr");
+            location.reload();
+            /*var tr = document.createElement("tr");
             tr.setAttribute("class","");
             //tr.setAttribute("id","depth2"+add_id);
 
@@ -713,21 +719,25 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
 
             $("#depth1_" + parent_id).attr("rowspan", Number(depth1row) + 1);
 
-            //console.log("after : " + after);
+            console.log(parentTr);
             if(finish.indexOf("finish")!=-1){
+                console.log("A");
                 if(finish.indexOf("depth")!=-1) {
+                    console.log("B");
                     var resetfinish = finish.split(" ");
                     parentTr.removeClass(resetfinish[1]);
                     tr.setAttribute("class", resetfinish[1]);
                     parentTr.after(tr);
                 }else{
+                    console.log("C");
                     tr.setAttribute("class", finish);
                     parentTr.after(tr);
                     parentTr.removeClass(finish);
                 }
             }else {
-                parentTr.after(tr);
-            }
+                console.log("E");
+                parentTr.before(tr);
+            }*/
 
         });
     }
@@ -757,8 +767,9 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
             data:{thisid:id,id:add_id,depth:3,me_code:me_code},
             dataType:"json"
         }).done(function(data) {
+            location.reload();
             //depth1_row
-            var depth1Row = $("#depth1_"+data.depth1_id).attr("rowspan");
+            /*var depth1Row = $("#depth1_"+data.depth1_id).attr("rowspan");
             if(!depth1Row){
                 depth1Row = 1;
             }
@@ -885,7 +896,7 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
                 }
             }else {
                 parentTr.before(tr);
-            }
+            }*/
         });
     }
     if(depthnum==4){
@@ -913,7 +924,8 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
             data:{thisid:id,id:add_id,depth:4,me_code:me_code},
             dataType:"json"
         }).done(function(data) {
-            console.log(data);
+            location.reload();
+            /*console.log(data);
             //depth1_row
             var depth1Row = $("#depth1_"+data.depth1_id).attr("rowspan");
             if(!depth1Row){
@@ -1028,7 +1040,8 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
                 }
             }else {
                 parentTr.before(tr);
-            }
+            }*/
+
         });
     }
     if(depthnum==5){
@@ -1056,6 +1069,8 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
             data:{thisid:id,id:add_id,depth:5,me_code:me_code},
             dataType:"json"
         }).done(function(data) {
+            location.reload();
+            /*
             //depth1_row
             var depth1Row = $("#depth1_"+data.depth1_id).attr("rowspan");
             if(!depth1Row){
@@ -1159,7 +1174,7 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
                 }
             }else {
                 parentTr.before(tr);
-            }
+            }*/
         });
     }
 });
@@ -1286,7 +1301,7 @@ function depth5ConAdd(id){
             if(data.linkname2) {
                 $("#linkname3").val(data.linkname2)
             }
-            if(data.etc1_0) {
+            /*if(data.etc1_0) {
                 $("#etc1_1").val(data.etc1_0)
             }
             if(data.etc1_1) {
@@ -1303,7 +1318,7 @@ function depth5ConAdd(id){
             }
             if(data.etcname1_2) {
                 $("#etcname1_3").val(data.etcname1_2)
-            }
+            }*/
             if(data.filename0){
                 $("#filename1").val(data.filename0);
             }
@@ -1412,6 +1427,16 @@ function fnImage(file){
     }else{
         location.href = './download.php?file='+file;
     }
+}
+
+function fnTypeUpdate(value,id){
+    $.ajax({
+        url:g5_url+"/admin/ajax.submit_type_update.php",
+        method:"post",
+        data:{type:value,pk_id:id}
+    }).done(function(data){
+        console.log(data);
+    });
 }
 
 /*$(function() {

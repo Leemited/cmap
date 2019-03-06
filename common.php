@@ -638,4 +638,23 @@ header('Cache-Control: pre-check=0, post-check=0, max-age=0'); // HTTP/1.1
 header('Pragma: no-cache'); // HTTP/1.0
 
 $html_process = new html_process();
+
+//내 현장
+$mycont = sql_fetch("select * from `cmap_mymenu_theme` where mb_id ='{$member["mb_id"]}'");
+
+//내 설정 가져오기
+$myset = sql_fetch("select * from `cmap_mymenu_theme` where mb_id ='{$member["mb_id"]}'");
+//퀵메뉴 로드
+$setquick = sql_fetch("select * from `cmap_myquick` where mb_id ='{$member["mb_id"]}'");
+$quickcnt =  count($setquick);
+if($quickcnt>0){
+    $menuorder = explode("``",$setquick["quick_menu"]);
+    $menuordername = explode("``",$setquick["quick_menu_name"]);
+    $menuorderstatus = explode("``",$setquick["quick_menu_status"]);
+    for($i=0;$i<count($menuorder);$i++){
+        if($menuorderstatus[$i]==1){
+            $quickmenu[] = "<li class='quickmenus ".$menuorder[$i]."'><label>".$menuordername[$i]."</label><div class='img'><img src='".G5_IMG_URL."/ic_".$menuorder[$i].".svg' alt='".$menuorder[$i]."'></div><div class='clear'></div></li>";
+        }
+    }
+}
 ?>

@@ -1,0 +1,23 @@
+.mycmap .cmap_menu{display:inline-block !important;width:100%;margin:10px 0;position:relative;}
+/*.mycmap .cmap_menu .cmap_menu_td{background-color:#fff;width:50%;margin-left:10px;}
+.mycmap .cmap_menu .cmap_menu_td:first-child{margin-left:0;}
+.mycmap .cmap_menu .cmap_menu_td .cmap_menu_top{width:100%;margin-bottom:10px;}
+.mycmap .cmap_menu .cmap_menu_td .cmap_menu_bottom{width:100%;}
+.mycmap .cmap_menu .cmap_menu_td.full_td{width:100%;}*/
+.mycmap .cmap_menu .cmap_menu_td{background-color:#fff;}
+.mycmap .cmap_menu .cmap_menu_td.cmenu1{position:absolute;top:0;left:0;width:calc(50% - 5px);height:60px;}
+.mycmap .cmap_menu .cmap_menu_td.cmenu2{position:absolute;top:70px;left:0;width:calc(50% - 5px);height:60px}
+.mycmap .cmap_menu .cmap_menu_td.cmenu3{position:absolute;top:0;left:calc(50% + 5px);width:calc(50% - 5px);height:130px;}
+.mycmap .cmap_menu .cmap_menu_td.cmenu4{position: absolute;top: 140px;left: 0px;width: calc(50% - 5px);height: 60px;}
+.mycmap .cmap_menu .cmap_menu_td.cmenu5{position: absolute;top: 140px;left: calc(50% + 5px);width: calc(50% - 5px);height: 60px;}
+.mycmap .cmap_menu .cmap_menu_td.cmenu6{position: absolute;top: 210px;width: calc(50% - 5px);left: 0px;height: 60px;}
+.mycmap .cmap_menu .cmap_menu_td.cmenu7{position: absolute;top: 210px;left: calc(50% + 5px);width: calc(50% - 5px);height: 60px;}
+.mycmap .cmap_menu .cmap_menu_td.cmenu8{position: absolute;top: 280px;left: 0px;width: 100%;}
+.mycmap .cmap_menu .cmap_menu_td.cmenu9{position: absolute;top: 430px;left: 0px;width: 100%;}
+.mycmap .cmap_menu .cmap_menu_td.cmenu10{position: absolute;left: 0px;width: 100%;top: 620px;height: 50px;}
+.mycmap .cmap_menu .cmap_menu_td.cmenu11{position: absolute;left: 0px;width: 100%;top: 680px;height: 50px;}
+/*.mycmap .cmap_menu .cmap_menu_td img{width:40%;margin-right:6px;}
+.mycmap .cmap_menu .cmap_menu_td .img{padding:5px;}
+.mycmap .cmap_menu .cmap_menu_td .img img{width:70%;margin-right:0}
+.mycmap .cmap_menu .cmap_menu_td div.counts{font-size: 18px;margin-top:0;text-align: right;padding-right: 5px;}
+.mycmap .cmap_menu .cmap_menu_td div.counts span{color:#ff3636;font-size: 22px;}*/

@@ -34,6 +34,7 @@ if($etc["attachment"]!=""){
         if($attachment[$i]!=""){
             $ext = array_pop(explode(".",$attachment[$i]));
             if(strpos($ext,"jpge,jpg,gif,png")===false){
+                $attachment[$i] = iconv("UTF-8","EUC-KR",$attachment[$i]);
                 $pdf1[] = G5_DATA_URL."/cmap_content/".$attachment[$i];
                 if($attachmentname[$i]!="") {
                     $pdf1name[] = $attachmentname[$i].".".$ext;
@@ -102,7 +103,9 @@ if($etc["attachment2"]!=""){
             }*/?>
         </div>
     --><?php /*}*/?>
-    <?php if(count($pdf1) > 0 || count($pdf2) > 0){?>
+    <?php if(count($pdf1) > 0 || count($pdf2) > 0){
+
+        ?>
         <h2 id="preview_title"><?php echo $pdf1name[0];?></h2>
         <iframe src="<?php echo $pdf1[0];?>" frameborder="0" width="100%" height="95%" id="previewer"></iframe>
     <?php }else{?>
@@ -135,7 +138,7 @@ if($etc["attachment2"]!=""){
         <td>
             <?php if($item1[$i]!="" || $pdf1[$i] != ""){
                 if($pdf1[$i]!=""){?>
-                    <?php echo $pdf1name[$i];?> <input type="button" onclick="fnFileView('<?php echo $pdf1[$i];?>','<?php echo $pdf1name[$i];?>')" value="보기">
+                    <a href="javascript:fnFileView('<?php echo $pdf1[$i];?>','<?php echo $pdf1name[$i];?>')"><?php echo $pdf1name[$i];?></a>
             <?php }
                 }else{ ?>
                 -
@@ -154,7 +157,7 @@ if($etc["attachment2"]!=""){
         <td>
             <?php if($item2[$i]!="" || $pdf2[$i] != ""){
                 if($pdf2[$i]!=""){?>
-                    <?php echo $pdf2name[$i];?> <input type="button" onclick="fnFileView('<?php echo $pdf2[$i];?>','<?php echo $pdf2name[$i];?>')" value="보기">
+                    <a href=""><?php echo $pdf2name[$i];?></a> <!--<input type="button" onclick="fnFileView('<?php /*echo $pdf2[$i];*/?>','<?php /*echo $pdf2name[$i];*/?>')" value="보기">-->
                 <?php }
             }else{ ?>
                 -
@@ -169,4 +172,76 @@ if($etc["attachment2"]!=""){
         $("#previewer").attr("src",file);
         $("#preview_title").html(filename);
     }
+
+    var getAcrobatInfo = function () {
+
+        var getBrowserName = function () {
+            return this.name = this.name || function () {
+                    var userAgent = navigator ? navigator.userAgent.toLowerCase() : "other";
+
+                    if (userAgent.indexOf("chrome") > -1) { return "chrome"; }
+                    else if (userAgent.indexOf("safari") > -1) { return "safari"; }
+                    else if (userAgent.indexOf("msie") > -1 || userAgent.indexOf("trident") > -1) { return "ie"; }
+                    else if (userAgent.indexOf("firefox") > -1) { return "firefox";}
+                    return userAgent;
+                }();
+        };
+
+        var getActiveXObject = function (name) {
+            try { return new ActiveXObject(name); } catch (e) { }
+        };
+
+        var getNavigatorPlugin = function (name) {
+            try {
+                for (key in navigator.plugins) {
+                    var plugin = navigator.plugins[key];
+                    if (plugin.name.toLowerCase().indexOf(name) > -1) { return plugin; }
+                }
+            } catch (e) {
+
+            }
+
+        };
+
+        var getPDFPlugin = function () {
+            return this.plugin = this.plugin || function () {
+                    if (getBrowserName() == 'ie') {
+                        return getActiveXObject('AcroPDF.PDF') || getActiveXObject('PDF.PdfCtrl');
+                    }
+                    else {
+                        return getNavigatorPlugin('adobe acrobat') || getNavigatorPlugin('pdf') || getNavigatorPlugin('foxit reader');  // works for all plugins which has word like 'adobe acrobat', 'pdf' and 'foxit reader'.
+                    }
+                }();
+        };
+
+        var isAcrobatInstalled = function () {
+            return !!getPDFPlugin();
+        };
+
+        var getAcrobatVersion = function () {
+            try {
+                var plugin = getPDFPlugin();
+
+                if (getBrowserName() == 'ie') {
+                    var versions = plugin.GetVersions().split(',');
+                    var latest = versions[0].split('=');
+                    return parseFloat(latest[1]);
+                }
+
+                if (plugin.version) return parseInt(plugin.version);
+                return plugin.name
+
+            }
+            catch (e) {
+                return null;
+            }
+        };
+
+        return {
+            browser: getBrowserName(),      // Return browser name
+            acrobat: isAcrobatInstalled() ? true : false,   // return pdf viewer is enabled or not
+            acrobatVersion: getAcrobatVersion()  // reurn acrobat version for browser
+        };
+    }
+
 </script>

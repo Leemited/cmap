@@ -120,9 +120,9 @@ while($rows = sql_fetch_array($ress)){
                     if($inmenu[$i]["menu_name"]=="건설사업관리점검") {
                         $link = "evaluation.php";
                     }else if($inmenu[$i]["menu_name"]=="시공평가") {
-                        $link = "evaluation2.php";
-                    }else{ //if($inmenu[$i]["menu_code"]=="") {
                         $link = "evaluation3.php";
+                    }else{ //if($inmenu[$i]["menu_code"]=="") {
+                        $link = "evaluation2.php";
                     }
                     ?>
                     <li <?php if ($inmenu[$i]["menu_code"] == $menu_code || (strlen($menu_code)==2 && $i==0)){ ?>class="active"<?php } ?> onclick="location.href=g5_url+'/admin/<?php echo $link;?>?menu_code=<?php echo $inmenu[$i]["menu_code"]; ?>&menu_name=<?php echo urlencode($menu_name); ?>'">
@@ -176,35 +176,22 @@ while($rows = sql_fetch_array($ress)){
             </div>
             <div class="edit_content">
                 <table id="edit_table" class="resizable">
-                    <colgroup>
-                        <col width="6%">
-                        <col width="6%">
-                        <col width="*">
-                        <col width="5%">
-                        <col width="8%">
-                        <col width="8%">
-                        <col width="8%">
-                        <col width="8%">
-                        <col width="8%">
-                        <col width="6%">
-                        <col width="6%">
-                    </colgroup>
                     <tbody>
                     <tr>
-                        <th rowspan="2">구분</th>
-                        <th rowspan="2">평가항목</th>
-                        <th rowspan="2">평가방법</th>
-                        <th rowspan="2">배점</th>
+                        <th rowspan="2" style="width:6%">구분</th>
+                        <th rowspan="2" style="width:*">평가항목</th>
+                        <th rowspan="2" >평가방법</th>
+                        <th rowspan="2" style="width:5%">배점</th>
                         <th colspan="5">평가기준/점수</th>
-                        <th rowspan="2">항목관리</th>
-                        <th rowspan="2">평가방법</th>
+                        <th rowspan="2" style="width:6%">항목관리</th>
+                        <th rowspan="2" style="width:6%">평가방법</th>
                     </tr>
                     <tr>
-                        <th>1</th>
-                        <th>2</th>
-                        <th>3</th>
-                        <th>4</th>
-                        <th>5</th>
+                        <th style="width:8%">1</th>
+                        <th style="width:8%">2</th>
+                        <th style="width:8%">3</th>
+                        <th style="width:8%">4</th>
+                        <th style="width:8%">5</th>
                     </tr>
                     <?php
                     $depth_last = 1;
@@ -240,15 +227,19 @@ while($rows = sql_fetch_array($ress)){
                                 <?php
                                 for ($l = 0; $l < count($list[$i]['depth2'][$j]['depth3'][$k]['depth4']); $l++) {
                                     $total += (float)$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth_name'];
+                                    if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth_name']==0){
+                                        echo "";
+                                    }else{
+                                    //if($chk==true){continue;$chk='';}
                                     //if($l!=0 && $list[$i]['depth2'][$j]['depth3'][$k]['cnt'] == $l+1){?>
                                     <!--<tr>-->
                                     <?php //}?>
-                                    <td rowspan="<?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['cnt']>1){echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['cnt'];}?>" id="depth4_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['id'];?>">
+                                    <td rowspan="<?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['cnt']>1){echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['cnt']; $chk=true;}?>" id="depth4_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['id'];?>">
                                         <input type="text" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth_name'];?>" name="depth4[]" class="center" onkeyup="fnUpdate('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['pk_id'];?>',$(this).val(),'depth4','','');">
                                         <!--<input type="button" value="추가" onclick="fnDepth4Add('<?php /*echo $list[$i]["id"];*/?>','<?php /*echo $list[$i]['depth2'][$j]["id"];*/?>','<?php /*echo $list[$i]['depth2'][$j]['depth3'][$k]["id"];*/?>','<?php /*echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]["id"];*/?>');">-->
 
                                     </td>
-                                    <?php
+                                    <?php }
                                     for ($m = 0; $m < count($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5']); $m++) {
                                         //link
                                         $linknames = array_values(array_filter(array_map("trim",explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["linkname"]))));
@@ -271,15 +262,72 @@ while($rows = sql_fetch_array($ress)){
 
                                         $depth_last++;
                                         ?>
-                                        <td class="etc">
-                                            <?php if(count($linknames)>0){?>
-                                                <div class="linke">
-                                                    <?php for($q=0;$q<count($links);$q++){ ?>
-                                                        <a href="<?php echo $links[$q];?>" target="_blank"><?php echo ($linknames[$q])?$linknames[$q]:"링크 ".($q+1);?></a><br>
-                                                    <?php }?>
-                                                </div>
-                                            <?php }?>
-                                            <input type='button' value='수정' onclick="fnLinks('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"];?>')">
+                                        <td class="etc" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>">
+                                            <div id="links">
+                                                <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['link']){
+                                                    $links = array_filter(explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['link']));
+                                                    $linknames = array_filter(explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['linkname']));
+                                                    if(count($links)!=0){
+                                                        for($q=0;$q<count($links);$q++){ ?>
+                                                            <a href="<?php echo $links[$q];?>" target="_blank"><?php echo ($linknames[$q])?$linknames[$q]:"링크 ".($q+1);?></a><br>
+                                                        <?php }
+                                                    }
+                                                } ?>
+                                            </div>
+                                            <div id="files">
+                                                <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachment']){?>
+                                                    <?php
+                                                    $files = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachment']);
+                                                    $filenames = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachmentname1']);
+                                                    if(count($files)!=0){
+                                                        for($q=0;$q<count($files);$q++) {
+                                                            if ($files[$q] != "") {
+                                                                if($filenames[$q] != ""){
+                                                                    $basicname = $filenames[$q];
+                                                                }else{
+                                                                    $basicname = "미리보기파일".$i;
+                                                                }
+                                                                ?>
+                                                                <a href="javascript:fnImage('<?php echo $files[$q]; ?>');" ><?php echo $basicname; ?></a><br>
+                                                            <?php }
+                                                        }
+                                                    }
+                                                    ?>
+                                                <?php }?>
+                                            </div>
+                                            <div id="etc1">
+                                                <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['etc1']){
+                                                    $etc1 = array_filter(explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['etc1']));
+                                                    $etc1name = array_filter(explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['etcname1']));
+                                                    if(count($etc1)!=0){
+                                                        for($q=0;$q<count($etc1);$q++){ ?>
+                                                            <a href="<?php echo $etc1[$q];?>" target="_blank"><?php echo ($etc1name[$q])?$etc1name[$q]:"사례 ".($q+1);?></a><br>
+                                                        <?php }
+                                                    }
+                                                } ?>
+                                            </div>
+                                            <div id="files2">
+                                                <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachment2']){?>
+                                                    <?php
+                                                    $files = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachment2']);
+                                                    $filenames = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachmentname2']);
+                                                    if(count($files)!=0){
+                                                        for($q=0;$q<count($files);$q++) {
+                                                            if ($files[$q] != "") {
+                                                                if($filenames[$q] != ""){
+                                                                    $basicname = $filenames[$q];
+                                                                }else{
+                                                                    $basicname = "첨부파일".$i;
+                                                                }
+                                                                ?>
+                                                                <a href="javascript:fnImage('<?php echo $files[$q]; ?>');" ><?php echo $basicname; ?></a><br>
+                                                            <?php }
+                                                        }
+                                                    }
+                                                    ?>
+                                                <?php }?>
+                                            </div>
+                                            <input type='button' value='수정' onclick="depth5ConAdd('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"];?>')">
                                         </td>
                                         <?php if($list[$i]['cnt'] >= $depth_last){?>
 
@@ -601,6 +649,18 @@ while($rows = sql_fetch_array($ress)){
         $("#filesnames1").val('');
         $("#filesnames2").val('');
         $("#filesnames3").val('');
+        $(".add_file1").html('');
+        $(".add_file2").html('');
+        $(".add_file3").html('');
+        $(".add_files1").html('');
+        $(".add_files2").html('');
+        $(".add_files3").html('');
+        $("#file1").val('');
+        $("#file2").val('');
+        $("#file3").val('');
+        $("#files1").val('');
+        $("#files2").val('');
+        $("#files3").val('');
         $("#content_id").val(id);
         $.ajax({
             url:g5_url+"/admin/get_content.php",
@@ -613,7 +673,6 @@ while($rows = sql_fetch_array($ress)){
                 alert("선택된 항목이 없습니다.");
                 return false;
             }else if(data.status==1){
-                console.log(data);
                 if(data.link0) {
                     $("#link1").val(data.link0)
                 }
@@ -632,24 +691,24 @@ while($rows = sql_fetch_array($ress)){
                 if(data.linkname2) {
                     $("#linkname3").val(data.linkname2)
                 }
-                if(data.etc1_0) {
-                    $("#etc1_1").val(data.etc1_0)
-                }
-                if(data.etc1_1) {
-                    $("#etc1_2").val(data.etc1_1)
-                }
-                if(data.etc1_2) {
-                    $("#etc1_3").val(data.etc1_2)
-                }
-                if(data.etcname1_0) {
-                    $("#etcname1_1").val(data.etcname1_0)
-                }
-                if(data.etcname1_1) {
-                    $("#etcname1_2").val(data.etcname1_1)
-                }
-                if(data.etcname1_2) {
-                    $("#etcname1_3").val(data.etcname1_2)
-                }
+                /*if(data.etc1_0) {
+                 $("#etc1_1").val(data.etc1_0)
+                 }
+                 if(data.etc1_1) {
+                 $("#etc1_2").val(data.etc1_1)
+                 }
+                 if(data.etc1_2) {
+                 $("#etc1_3").val(data.etc1_2)
+                 }
+                 if(data.etcname1_0) {
+                 $("#etcname1_1").val(data.etcname1_0)
+                 }
+                 if(data.etcname1_1) {
+                 $("#etcname1_2").val(data.etcname1_1)
+                 }
+                 if(data.etcname1_2) {
+                 $("#etcname1_3").val(data.etcname1_2)
+                 }*/
                 if(data.filename0){
                     $("#filename1").val(data.filename0);
                 }
@@ -669,28 +728,22 @@ while($rows = sql_fetch_array($ress)){
                     $("#filesnames3").val(data.filesname2);
                 }
                 if(data.file0) {
-                    $(".add_file1").html('');
-                    $(".add_file1").append("<span>" + data.file0 + "</span><input type='checkbox' name='fileDel1'> 삭제<br>");
+                    $(".add_file1").append("<span>" + data.file0 + "</span><input type='checkbox' name='fileDel1' value='1'> 삭제<br>");
                 }
                 if(data.file1) {
-                    $(".add_file2").html('');
-                    $(".add_file2").append("<span>" + data.file1 + "</span><input type='checkbox' name='fileDel2'> 삭제<br>");
+                    $(".add_file2").append("<span>" + data.file1 + "</span><input type='checkbox' name='fileDel2' value='1'> 삭제<br>");
                 }
                 if(data.file2) {
-                    $(".add_file3").html('');
-                    $(".add_file3").append("<span>" + data.file2 + "</span><input type='checkbox' name='fileDel3'> 삭제<br>");
+                    $(".add_file3").append("<span>" + data.file2 + "</span><input type='checkbox' name='fileDel3' value='1'> 삭제<br>");
                 }
                 if(data.files0) {
-                    $(".add_files1").html('');
-                    $(".add_files1").append("<span>" + data.files0 + "</span><input type='checkbox' name='fileDel4'> 삭제<br>");
+                    $(".add_files1").append("<span>" + data.files0 + "</span><input type='checkbox' name='fileDel4' value='1'> 삭제<br>");
                 }
                 if(data.files1) {
-                    $(".add_files2").html('');
-                    $(".add_files2").append("<span>" + data.files1 + "</span><input type='checkbox' name='fileDel5'> 삭제<br>");
+                    $(".add_files2").append("<span>" + data.files1 + "</span><input type='checkbox' name='fileDel5' value='1'> 삭제<br>");
                 }
                 if(data.files2) {
-                    $(".add_files3").html('');
-                    $(".add_files3").append("<span>" + data.files2 + "</span><input type='checkbox' name='fileDel6'> 삭제<br>");
+                    $(".add_files3").append("<span>" + data.files2 + "</span><input type='checkbox' name='fileDel6' value='1'> 삭제<br>");
                 }
                 dialog.dialog("open","modal",true);
             }else if(data.status==2){

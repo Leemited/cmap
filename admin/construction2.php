@@ -130,6 +130,7 @@ if($menu_code!="3035" && $menu_code!="30") {
     }
 }
 
+
 ?>
 <div id="wrap">
 
@@ -208,20 +209,22 @@ if($menu_code!="3035" && $menu_code!="30") {
             <div class="edit_content">
                 <table id="edit_table" class="resizable">
                     <?php if($menu_code!="3035" && $menu_code!="30"){?>
-                    <colgroup>
+                    <!--<colgroup>
                         <col width="10%">
                         <col width="20%">
                         <col width="*">
                         <col width="10%">
                         <col width="6%">
-                    </colgroup>
-                    <tbody>
+                    </colgroup>-->
+                    <thead>
                     <tr>
-                        <th>구분</th>
-                        <th>공정단계별</th>
-                        <th>주요검사항목</th>
-                        <th>참고</th>
+                        <th style="width:10%">구분</th>
+                        <th style="width:10%">공정단계별</th>
+                        <th style="width:auto">주요검사항목</th>
+                        <th style="width:10%">참고</th>
                     </tr>
+                    </thead>
+                    <tbody>
                     <?php
                     $depth_last = 1;
                     for ($i = 0; $i < count($list); $i++) {
@@ -255,64 +258,73 @@ if($menu_code!="3035" && $menu_code!="30") {
                                     <input type="text" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['content']; ?>" name="dpeth5[]" class="left" onkeyup="fnUpdate('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['pk_id']; ?>',$(this).val(),'content','','');">
                                     <input type="button" value="삭제" onclick="fnDepth5Del('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]["pk_id"]; ?>','<?php echo $list[$i]['depth2'][$j]['depth3'][$k]["id"]; ?>');" class="del">
                                 </td>
-                                <td class="etc" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['id']; ?>">
+                                <td class="etc" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['pk_id']; ?>">
                                     <div id="links">
-                                        <?php if ($list[$i]['depth2'][$j]['depth3'][$k]['link']) {
-                                            $links = array_filter(explode(",", $list[$i]['depth2'][$j]['depth3'][$k]['link']));
-                                            $linknames = array_filter(explode(",", $list[$i]['depth2'][$j]['depth3'][$k]['linkname']));
-                                            if (count($links) != 0) {
-                                                for ($q = 0; $q < count($links); $q++) { ?>
-                                                    <a href="<?php echo $links[$q]; ?>"
-                                                       target="_blank"><?php echo ($linknames[$q]) ? $linknames[$q] : "링크 " . ($q + 1); ?></a>
-                                                    <br>
+                                        <?php if($list[$i]['depth2'][$j]['depth3'][$k]['link']){
+                                            $links = array_filter(explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['link']));
+                                            $linknames = array_filter(explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['linkname']));
+                                            if(count($links)!=0){
+                                                for($q=0;$q<count($links);$q++){ ?>
+                                                    <a href="<?php echo $links[$q];?>" target="_blank"><?php echo ($linknames[$q])?$linknames[$q]:"링크 ".($q+1);?></a><br>
                                                 <?php }
                                             }
                                         } ?>
                                     </div>
                                     <div id="files">
-                                        <?php if ($list[$i]['depth2'][$j]['depth3'][$k]['attachment']) { ?>
+                                        <?php if($list[$i]['depth2'][$j]['depth3'][$k]['attachment']){?>
                                             <?php
-                                            $files = explode(",", $list[$i]['depth2'][$j]['depth3'][$k]['attachment']);
-                                            if (count($files) != 0) {
-                                                for ($q = 0; $q < count($files); $q++) {
+                                            $files = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['attachment']);
+                                            $filenames = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['attachmentname1']);
+                                            if(count($files)!=0){
+                                                for($q=0;$q<count($files);$q++) {
                                                     if ($files[$q] != "") {
+                                                        if($filenames[$q] != ""){
+                                                            $basicname = $filenames[$q];
+                                                        }else{
+                                                            $basicname = "미리보기파일".$i;
+                                                        }
                                                         ?>
-                                                        <a href="javascript:fnImage('<?php echo $files[$q]; ?>');">파일<?php echo($q + 1); ?></a>
-                                                        <br>
+                                                        <a href="javascript:fnImage('<?php echo $files[$q]; ?>');" ><?php echo $basicname; ?></a><br>
                                                     <?php }
                                                 }
                                             }
                                             ?>
-                                        <?php } ?>
+                                        <?php }?>
                                     </div>
                                     <div id="etc1">
-                                        <?php if ($list[$i]['depth2'][$j]['depth3'][$k]['etc1']) {
-                                            $etc1 = array_filter(explode(",", $list[$i]['depth2'][$j]['depth3'][$k]['etc1']));
-                                            $etc1name = array_filter(explode(",", $list[$i]['depth2'][$j]['depth3'][$k]['etcname1']));
-                                            if (count($etc1) != 0) {
-                                                for ($q = 0; $q < count($etc1); $q++) { ?>
-                                                    <a href="<?php echo $etc1[$q]; ?>" target="_blank"><?php echo ($etc1name[$q]) ? $etc1name[$q] : "사례 " . ($q + 1); ?></a>
-                                                    <br>
+                                        <?php if($list[$i]['depth2'][$j]['depth3'][$k]['etc1']){
+                                            $etc1 = array_filter(explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['etc1']));
+                                            $etc1name = array_filter(explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['etcname1']));
+                                            if(count($etc1)!=0){
+                                                for($q=0;$q<count($etc1);$q++){ ?>
+                                                    <a href="<?php echo $etc1[$q];?>" target="_blank"><?php echo ($etc1name[$q])?$etc1name[$q]:"사례 ".($q+1);?></a><br>
                                                 <?php }
                                             }
                                         } ?>
                                     </div>
                                     <div id="files2">
-                                        <?php if ($list[$i]['depth2'][$j]['depth3'][$k]['attachment2']) { ?>
+                                        <?php if($list[$i]['depth2'][$j]['depth3'][$k]['attachment2']){?>
                                             <?php
-                                            $files = explode(",", $list[$i]['depth2'][$j]['depth3'][$k]['attachment2']);
-                                            if (count($files) != 0) {
-                                                for ($q = 0; $q < count($files); $q++) {
+                                            $files = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['attachment2']);
+                                            $filenames = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['attachmentname2']);
+                                            if(count($files)!=0){
+                                                for($q=0;$q<count($files);$q++) {
                                                     if ($files[$q] != "") {
+                                                        if($filenames[$q] != ""){
+                                                            $basicname = $filenames[$q];
+                                                        }else{
+                                                            $basicname = "첨부파일".$i;
+                                                        }
                                                         ?>
-                                                        <a href="javascript:fnImage('<?php echo $files[$q]; ?>');">사례파일<?php echo($q + 1); ?></a>
-                                                        <br>
+                                                        <a href="javascript:fnImage('<?php echo $files[$q]; ?>');" ><?php echo $basicname; ?></a><br>
                                                     <?php }
                                                 }
                                             }
                                             ?>
-                                        <?php } ?>
+                                        <?php }?>
                                     </div>
+                                    <!-- -->
+
                                     <input type="button" value="수정" onclick="depth5ConAdd('<?php echo $list[$i]["depth2"][$j]["depth3"][$k]["pk_id"]; ?>');">
                                 </td>
                                 </tr>
@@ -324,23 +336,25 @@ if($menu_code!="3035" && $menu_code!="30") {
                         }
                     ?>
                     <?php }else{?>
-                    <colgroup>
+                    <!--<colgroup>
                         <col width="10%">
                         <col width="10%">
                         <col width="12%">
                         <col width="*">
                         <col width="10%">
                         <col width="6%">
-                    </colgroup>
-                    <tbody>
+                    </colgroup>-->
+                    <thead>
                     <tr>
-                        <th>구분</th>
-                        <th>구분</th>
-                        <th>항목</th>
-                        <th>주요확인내용</th>
-                        <th>참고</th>
-                        <th>기준일</th>
+                        <th style="width:10%;" >구분</th>
+                        <th style="width:10%;">구분</th>
+                        <th style="width:12%;">항목</th>
+                        <th style="width:auto;">주요확인내용</th>
+                        <th style="width:10%;">참고</th>
+                        <th style="width:6%;">기준일</th>
                     </tr>
+                    </thead>
+                    <tbody>
                     <?php
                     $depth_last = 1;
                     for($i=0;$i<count($list);$i++){?>
@@ -372,11 +386,11 @@ if($menu_code!="3035" && $menu_code!="30") {
                                             <input type="text" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['content'];?>" name="dpeth5[]" class="left" onkeyup="fnUpdate('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['pk_id'];?>',$(this).val(),'content','','');">
                                             <input type="button" value="삭제" onclick="fnDepth5Del('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]["pk_id"];?>','<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]["id"];?>');" class="del">
                                         </td>
-                                        <td class="etc" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['id'];?>">
+                                        <td class="etc" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['pk_id'];?>">
                                             <div id="links">
                                                 <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['link']){
-                                                    $links = array_filter(explode(",",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['link']));
-                                                    $linknames = array_filter(explode(",",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['linkname']));
+                                                    $links = array_filter(explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['link']));
+                                                    $linknames = array_filter(explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['linkname']));
                                                     if(count($links)!=0){
                                                         for($q=0;$q<count($links);$q++){ ?>
                                                             <a href="<?php echo $links[$q];?>" target="_blank"><?php echo ($linknames[$q])?$linknames[$q]:"링크 ".($q+1);?></a><br>
@@ -387,7 +401,7 @@ if($menu_code!="3035" && $menu_code!="30") {
                                             <div id="files">
                                                 <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['attachment']){?>
                                                     <?php
-                                                    $files = explode(",",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['attachment']);
+                                                    $files = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['attachment']);
                                                     if(count($files)!=0){
                                                         for($q=0;$q<count($files);$q++) {
                                                             if ($files[$q] != "") {
@@ -401,8 +415,8 @@ if($menu_code!="3035" && $menu_code!="30") {
                                             </div>
                                             <div id="etc1">
                                                 <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['etc1']){
-                                                    $etc1 = array_filter(explode(",",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['etc1']));
-                                                    $etc1name = array_filter(explode(",",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['etcname1']));
+                                                    $etc1 = array_filter(explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['etc1']));
+                                                    $etc1name = array_filter(explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['etcname1']));
                                                     if(count($etc1)!=0){
                                                         for($q=0;$q<count($etc1);$q++){ ?>
                                                             <a href="<?php echo $etc1[$q];?>" target="_blank"><?php echo ($etc1name[$q])?$etc1name[$q]:"사례 ".($q+1);?></a><br>
@@ -413,7 +427,7 @@ if($menu_code!="3035" && $menu_code!="30") {
                                             <div id="files2">
                                                 <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['attachment2']){?>
                                                     <?php
-                                                    $files = explode(",",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['attachment2']);
+                                                    $files = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['attachment2']);
                                                     if(count($files)!=0){
                                                         for($q=0;$q<count($files);$q++) {
                                                             if ($files[$q] != "") {
@@ -425,7 +439,7 @@ if($menu_code!="3035" && $menu_code!="30") {
                                                     ?>
                                                 <?php }?>
                                             </div>
-                                            <input type="button" value="수정" onclick="depth5ConAdd('<?php echo $list[$i]["depth2"][$j]["depth3"][$k]["depth4"][$l]["depth5"][$m]["pk_id"];?>');" >
+                                            <input type="button" value="수정" onclick="depth5ConAdd('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]["pk_id"];?>');" >
                                         </td>
                                         <td>
                                             <input type="text" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['submit_date'];?>" name="depth5_report[]" class="center" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]["id"];?>" onkeyup="fnUpdate2('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['pk_id'];?>',$(this).val())">
@@ -498,14 +512,15 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
             dataType:"json"
         }).done(function(data){
             if(data.status==1){
-                var tr = document.createElement("tr");
+                location.reload();
+                /*var tr = document.createElement("tr");
                 tr.setAttribute("id","depth1"+add_id);
                 tr.setAttribute("class","depth finish_"+add_id);
 
                 //depth1
                 var td = document.createElement("td");
                 td.setAttribute("rowspan","1");
-                td.setAttribute("class","category parent_"+add_id);
+                td.setAttribute("class","category ");
                 td.setAttribute("id","depth1_"+add_id);
                 var depth1_input = document.createElement("input");
                 depth1_input.setAttribute("name","depth1[]");
@@ -612,7 +627,7 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
                     }
                 }else {
                     parentTr.after(tr);
-                }
+                }*/
             }
             if(data.status == 2){
                 alert("항목을 추가하지 못했습니다.");
@@ -628,7 +643,8 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
                 alert("request / "+request+"   status / "+status+"   error:" + error);
             }
         }).done(function(data){
-            console.log(data);
+            location.reload();
+            /*console.log(data);
             if(data.status==1){
                 var tr = document.createElement("tr");
                 tr.setAttribute("id","depth1"+add_id);
@@ -637,7 +653,7 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
                 //depth1
                 var td = document.createElement("td");
                 td.setAttribute("rowspan","1");
-                td.setAttribute("class","category parent_"+add_id);
+                td.setAttribute("class","category ");
                 td.setAttribute("id","depth1_"+add_id);
                 var depth1_input = document.createElement("input");
                 depth1_input.setAttribute("name","depth1[]");
@@ -782,7 +798,7 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
             }
             if(data.status == 2){
                 alert("항목을 추가하지 못했습니다.");
-            }
+            }*/
         });
         <?php }?>
     }
@@ -818,7 +834,8 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
             data:{parent_id:parent_id,id:add_id,depth:2,me_code:me_code,menu_chk:30},
             dataType:"json"
         }).done(function(data) {
-            var tr = document.createElement("tr");
+            location.reload();
+            /*var tr = document.createElement("tr");
             tr.setAttribute("class","");
             tr.setAttribute("id","depth2"+add_id);
 
@@ -905,7 +922,7 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
                 }
             }else {
                 parentTr.after(tr);
-            }
+            }*/
 
         });
         <?php }else{?>
@@ -939,7 +956,8 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
             data:{parent_id:parent_id,id:add_id,depth:2,me_code:me_code,menu_chk:302},
             dataType:"json"
         }).done(function(data) {
-            var tr = document.createElement("tr");
+            location.reload();
+            /*var tr = document.createElement("tr");
             tr.setAttribute("class","");
             tr.setAttribute("id","depth2"+add_id);
 
@@ -1055,7 +1073,7 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
                 }
             }else {
                 parentTr.after(tr);
-            }
+            }*/
 
         });
         <?php } ?>
@@ -1087,6 +1105,8 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
             data:{thisid:id,id:add_id,depth:3,me_code:me_code,menu_chk:302},
             dataType:"json"
         }).done(function(data) {
+            location.reload();
+            /*
             //depth1_row
             var depth1Row = $("#depth1_"+data.depth1_id).attr("rowspan");
             if(!depth1Row){
@@ -1194,7 +1214,7 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
                 }
             }else {
                 parentTr.after(tr);
-            }
+            }*/
         });
     }
 
@@ -1218,8 +1238,9 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
             data:{thisid:id,id:add_id,depth:5,me_code:me_code,menu_chk:30},
             dataType:"json"
         }).done(function(data) {
+            location.reload();
             //depth1_row
-            var depth1Row = $("#depth1_"+data.depth1_id).attr("rowspan");
+            /*var depth1Row = $("#depth1_"+data.depth1_id).attr("rowspan");
             if(!depth1Row){
                 depth1Row = 1;
             }
@@ -1282,20 +1303,25 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
                     $(this).attr("id","depth5_"+newNum);
                 }
             });
+            console.log(finish);
             if(finish.indexOf("finish")!=-1){
+                console.log("A");
                 if(finish.indexOf("depth")!=-1) {
+                    console.log("B");
                     var resetfinish = finish.split(" ");
                     parentTr.removeClass(resetfinish[1]);
                     tr.setAttribute("class", resetfinish[1]);
                     parentTr.after(tr);
                 }else{
+                    console.log("C");
                     tr.setAttribute("class", finish);
                     parentTr.after(tr);
                     parentTr.removeClass(finish);
                 }
             }else {
+                console.log("D");
                 parentTr.after(tr);
-            }
+            }*/
         });
         <?php }else{ ?>
         $.ajax({
@@ -1304,7 +1330,8 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
             data:{thisid:id,id:add_id,depth:5,me_code:me_code,menu_chk:302},
             dataType:"json"
         }).done(function(data) {
-            console.log(data);
+            location.reload();
+            /*console.log(data);
             //depth1_row
             var depth1Row = $("#depth1_"+data.depth1_id).attr("rowspan");
             if(!depth1Row){
@@ -1401,7 +1428,7 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
                 }
             }else {
                 parentTr.after(tr);
-            }
+            }*/
         });
         <?php } ?>
     }
@@ -1457,7 +1484,6 @@ function fnDepth5Del(pk_id,id){
     }
 }
 
-
 function depth5ConAdd(id){
     $("#link1").val('');
     $("#link2").val('');
@@ -1480,6 +1506,18 @@ function depth5ConAdd(id){
     $("#filesnames1").val('');
     $("#filesnames2").val('');
     $("#filesnames3").val('');
+    $(".add_file1").html('');
+    $(".add_file2").html('');
+    $(".add_file3").html('');
+    $(".add_files1").html('');
+    $(".add_files2").html('');
+    $(".add_files3").html('');
+    $("#file1").val('');
+    $("#file2").val('');
+    $("#file3").val('');
+    $("#files1").val('');
+    $("#files2").val('');
+    $("#files3").val('');
     $("#content_id").val(id);
     $.ajax({
         url:g5_url+"/admin/get_content.php",
@@ -1492,7 +1530,6 @@ function depth5ConAdd(id){
             alert("선택된 항목이 없습니다.");
             return false;
         }else if(data.status==1){
-            console.log(data);
             if(data.link0) {
                 $("#link1").val(data.link0)
             }
@@ -1511,24 +1548,24 @@ function depth5ConAdd(id){
             if(data.linkname2) {
                 $("#linkname3").val(data.linkname2)
             }
-            if(data.etc1_0) {
-                $("#etc1_1").val(data.etc1_0)
-            }
-            if(data.etc1_1) {
-                $("#etc1_2").val(data.etc1_1)
-            }
-            if(data.etc1_2) {
-                $("#etc1_3").val(data.etc1_2)
-            }
-            if(data.etcname1_0) {
-                $("#etcname1_1").val(data.etcname1_0)
-            }
-            if(data.etcname1_1) {
-                $("#etcname1_2").val(data.etcname1_1)
-            }
-            if(data.etcname1_2) {
-                $("#etcname1_3").val(data.etcname1_2)
-            }
+            /*if(data.etc1_0) {
+             $("#etc1_1").val(data.etc1_0)
+             }
+             if(data.etc1_1) {
+             $("#etc1_2").val(data.etc1_1)
+             }
+             if(data.etc1_2) {
+             $("#etc1_3").val(data.etc1_2)
+             }
+             if(data.etcname1_0) {
+             $("#etcname1_1").val(data.etcname1_0)
+             }
+             if(data.etcname1_1) {
+             $("#etcname1_2").val(data.etcname1_1)
+             }
+             if(data.etcname1_2) {
+             $("#etcname1_3").val(data.etcname1_2)
+             }*/
             if(data.filename0){
                 $("#filename1").val(data.filename0);
             }
@@ -1548,28 +1585,22 @@ function depth5ConAdd(id){
                 $("#filesnames3").val(data.filesname2);
             }
             if(data.file0) {
-                $(".add_file1").html('');
-                $(".add_file1").append("<span>" + data.file0 + "</span><input type='checkbox' name='fileDel1'> 삭제<br>");
+                $(".add_file1").append("<span>" + data.file0 + "</span><input type='checkbox' name='fileDel1' value='1'> 삭제<br>");
             }
             if(data.file1) {
-                $(".add_file2").html('');
-                $(".add_file2").append("<span>" + data.file1 + "</span><input type='checkbox' name='fileDel2'> 삭제<br>");
+                $(".add_file2").append("<span>" + data.file1 + "</span><input type='checkbox' name='fileDel2' value='1'> 삭제<br>");
             }
             if(data.file2) {
-                $(".add_file3").html('');
-                $(".add_file3").append("<span>" + data.file2 + "</span><input type='checkbox' name='fileDel3'> 삭제<br>");
+                $(".add_file3").append("<span>" + data.file2 + "</span><input type='checkbox' name='fileDel3' value='1'> 삭제<br>");
             }
             if(data.files0) {
-                $(".add_files1").html('');
-                $(".add_files1").append("<span>" + data.files0 + "</span><input type='checkbox' name='fileDel4'> 삭제<br>");
+                $(".add_files1").append("<span>" + data.files0 + "</span><input type='checkbox' name='fileDel4' value='1'> 삭제<br>");
             }
             if(data.files1) {
-                $(".add_files2").html('');
-                $(".add_files2").append("<span>" + data.files1 + "</span><input type='checkbox' name='fileDel5'> 삭제<br>");
+                $(".add_files2").append("<span>" + data.files1 + "</span><input type='checkbox' name='fileDel5' value='1'> 삭제<br>");
             }
             if(data.files2) {
-                $(".add_files3").html('');
-                $(".add_files3").append("<span>" + data.files2 + "</span><input type='checkbox' name='fileDel6'> 삭제<br>");
+                $(".add_files3").append("<span>" + data.files2 + "</span><input type='checkbox' name='fileDel6' value='1'> 삭제<br>");
             }
             dialog.dialog("open","modal",true);
         }else if(data.status==2){

@@ -9,6 +9,7 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
 <script src="<?php echo G5_JS_URL; ?>/viewimageresize.js"></script>
 
 <!-- 게시물 읽기 시작 { -->
+<div class="width-fixed">
 
 <article id="bo_v" style="width:<?php echo $width; ?>">
     <header>
@@ -35,6 +36,12 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
     <section id="bo_v_atc">
         <h2 id="bo_v_atc_title">본문</h2>
 
+
+
+        <!-- 본문 내용 시작 { -->
+        <div id="bo_v_con"><?php echo get_view_thumbnail($view['content']); ?></div>
+        <?php //echo $view['rich_content']; // {이미지:0} 과 같은 코드를 사용할 경우 ?>
+        <!-- } 본문 내용 끝 -->
         <?php
         // 파일 출력
         $v_img_count = count($view['file']);
@@ -50,13 +57,7 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
 
             echo "</div>\n";
         }
-         ?>
-
-        <!-- 본문 내용 시작 { -->
-        <div id="bo_v_con"><?php echo get_view_thumbnail($view['content']); ?></div>
-        <?php //echo $view['rich_content']; // {이미지:0} 과 같은 코드를 사용할 경우 ?>
-        <!-- } 본문 내용 끝 -->
-
+        ?>
         <?php if ($is_signature) { ?><p><?php echo $signature ?></p><?php } ?>
 
 
@@ -90,19 +91,19 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
         <!-- }  추천 비추천 끝 -->
     </section>
 
-    <div id="bo_v_share">
+    <!--<div id="bo_v_share">
         <?php if ($scrap_href) { ?><a href="<?php echo $scrap_href;  ?>" target="_blank" class="btn btn_b03" onclick="win_scrap(this.href); return false;"><i class="fa fa-thumb-tack" aria-hidden="true"></i> 스크랩</a><?php } ?>
 
         <?php
         include_once(G5_SNS_PATH."/view.sns.skin.php");
         ?>
-    </div>
+    </div>-->
 
     <?php
     $cnt = 0;
     if ($view['file']['count']) {
         for ($i=0; $i<count($view['file']); $i++) {
-            if (isset($view['file'][$i]['source']) && $view['file'][$i]['source'] && !$view['file'][$i]['view'])
+            //if (isset($view['file'][$i]['source']) && $view['file'][$i]['source'] && !$view['file'][$i]['view'])
                 $cnt++;
         }
     }
@@ -111,12 +112,13 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
     <?php if($cnt) { ?>
     <!-- 첨부파일 시작 { -->
     <section id="bo_v_file">
-        <h2>첨부파일</h2>
+        <!--<h2>첨부파일</h2>-->
         <ul>
         <?php
         // 가변 파일
         for ($i=0; $i<count($view['file']); $i++) {
-            if (isset($view['file'][$i]['source']) && $view['file'][$i]['source'] && !$view['file'][$i]['view']) {
+            //if (isset($view['file'][$i]['source']) && $view['file'][$i]['source'] && !$view['file'][$i]['view']) {
+            if($view["file"][$i]["href"]!=""){
          ?>
             <li>
                 <i class="fa fa-download" aria-hidden="true"></i>
@@ -169,6 +171,12 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
         <?php
         ob_start();
         ?>
+        <?php if ($prev_href || $next_href) { ?>
+            <ul class="bo_v_nb">
+                <?php if ($prev_href) { ?><li class="btn_prv"><span class="nb_tit"><i class="fa fa-caret-up" aria-hidden="true"></i> 이전글</span><a href="<?php echo $prev_href ?>"><?php echo $prev_wr_subject;?></a> <span class="nb_date"><?php echo str_replace('-', '.', substr($prev_wr_date, '2', '8')); ?></span></li><?php } ?>
+                <?php if ($next_href) { ?><li class="btn_next"><span class="nb_tit"><i class="fa fa-caret-down" aria-hidden="true"></i> 다음글</span><a href="<?php echo $next_href ?>"><?php echo $next_wr_subject;?></a>  <span class="nb_date"><?php echo str_replace('-', '.', substr($next_wr_date, '2', '8')); ?></span></li><?php } ?>
+            </ul>
+        <?php } ?>
 
         <ul class="bo_v_left">
             <?php if ($update_href) { ?><li><a href="<?php echo $update_href ?>" class="btn_b01 btn"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> 수정</a></li><?php } ?>
@@ -184,12 +192,7 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
             <?php if ($write_href) { ?><li><a href="<?php echo $write_href ?>" class="btn_b02 btn"><i class="fa fa-pencil" aria-hidden="true"></i> 글쓰기</a></li><?php } ?>
         </ul>
 
-        <?php if ($prev_href || $next_href) { ?>
-        <ul class="bo_v_nb">
-            <?php if ($prev_href) { ?><li class="btn_prv"><span class="nb_tit"><i class="fa fa-caret-up" aria-hidden="true"></i> 이전글</span><a href="<?php echo $prev_href ?>"><?php echo $prev_wr_subject;?></a> <span class="nb_date"><?php echo str_replace('-', '.', substr($prev_wr_date, '2', '8')); ?></span></li><?php } ?>
-            <?php if ($next_href) { ?><li class="btn_next"><span class="nb_tit"><i class="fa fa-caret-down" aria-hidden="true"></i> 다음글</span><a href="<?php echo $next_href ?>"><?php echo $next_wr_subject;?></a>  <span class="nb_date"><?php echo str_replace('-', '.', substr($next_wr_date, '2', '8')); ?></span></li><?php } ?>
-        </ul>
-        <?php } ?>
+
         <?php
         $link_buttons = ob_get_contents();
         ob_end_flush();
@@ -199,7 +202,7 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
 
     <?php
     // 코멘트 입출력
-    include_once(G5_BBS_PATH.'/view_comment.php');
+    //include_once(G5_BBS_PATH.'/view_comment.php');
      ?>
 
 
@@ -297,3 +300,4 @@ function excute_good(href, $el, $tx)
 }
 </script>
 <!-- } 게시글 읽기 끝 -->
+</div>

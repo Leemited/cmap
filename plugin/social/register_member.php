@@ -2,7 +2,7 @@
 include_once('./_common.php');
 //include_once(G5_CAPTCHA_PATH.'/captcha.lib.php');
 include_once(G5_LIB_PATH.'/register.lib.php');
-
+$sub="login";
 define('ASIDE_DISABLE', 1);
 
 if( ! $config['cf_social_login_use'] ){

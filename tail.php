@@ -28,7 +28,26 @@ if (G5_IS_MOBILE) {
     </div>-->
 
 <!-- } 콘텐츠 끝 -->
-
+<?php if($is_member){?>
+<?php if(!$main && $sub != "login" && $mypage != true){?>
+    <?php if($setquick["quick"]==1){
+        ?>
+        <div class="quick">
+            <div class="quick_container">
+                <ul>
+                    <?php for($i=0;$i<count($quickmenu);$i++){
+                        echo $quickmenu[$i];
+                    }?>
+                </ul>
+            </div>
+            <div class="quick_btns" onclick="fnQuickView()">
+                <img src="<?php echo G5_IMG_URL;?>/quick_btns.png" alt="">
+            </div>
+            <span></span>
+        </div>
+    <?php } ?>
+<?php } ?>
+<?php } ?>
 <!-- 하단 시작 { -->
 <div id="ft" class="<?php if($main){?>mainFt<?php } if($sub=="login"){?> login_ft<?php } if($sub=="sub"){?> sub_ft<?php }?> ">
 
@@ -43,18 +62,19 @@ if (G5_IS_MOBILE) {
             <!--<a href="<?php /*echo get_device_change_url(); */?>">모바일버전</a>-->
         </div>
     </div>
-    <?php if(!$main) {?>
+
+<!--    <?php /*if(!$main) {*/?>
     <button type="button" id="top_btn"><i class="fa fa-arrow-up" aria-hidden="true"></i><span class="sound_only">상단으로</span></button>
-        <script>
-        
+    <script>
+
         $(function() {
             $("#top_btn").on("click", function() {
                 $("html, body").animate({scrollTop:0}, '500');
                 return false;
             });
         });
-        </script>
-    <?php }?>
+    </script>
+    --><?php /*}*/?>
 </div>
 
 <?php

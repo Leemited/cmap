@@ -62,8 +62,8 @@ if($fileDel6=="1"){
     $ori_name2[2] = "";
     $arrayFile2[2] = "";
 }
-$filenames = implode("``",array_filter($arrayFile1));
-$filenames2 = implode("``",array_filter($arrayFile2));
+$filenames = implode("``",$arrayFile1);
+$filenames2 = implode("``",$arrayFile2);
 
 $uplink_title = implode("``",array_filter($linkname));
 $uplink = implode("``",array_filter($link));
@@ -71,6 +71,7 @@ $upetcname = implode("``",array_filter($etc1name));
 $upetc = implode("``",array_filter($etc1));
 //$result["filename"] = $filenames;
 //$result["filename2"] = $filenames2;
+$chars_array = array_merge(range(0,9), range('a','z'), range('A','Z'));
 
 for ($i=0; $i<3; $i++) {
     if($_FILES["file"]["tmp_name"][$i]!=""){
@@ -85,6 +86,8 @@ for ($i=0; $i<3; $i++) {
 
             shuffle($chars_array);
             $shuffle = implode('', $chars_array);
+
+
 
             // 첨부파일 첨부시 첨부파일명에 공백이 포함되어 있으면 일부 PC에서 보이지 않거나 다운로드 되지 않는 현상이 있습니다. (길상여의 님 090925)
             $filename = abs(ip2long($_SERVER['REMOTE_ADDR'])) . '_' . substr($shuffle, 0, 8) . '_' . replace_filename($filename);
@@ -105,7 +108,6 @@ for ($i=0; $i<3; $i++) {
 
 for ($i=0; $i<3; $i++) {
     if($_FILES["files"]["tmp_name"][$i]!=""){
-        $result["step"] .= "A".$i."//";
         $tmp_name = $_FILES["files"]["tmp_name"][$i];
         $filename = $_FILES["files"]["name"][$i];
         $filename  = get_safe_filename($filename);
@@ -135,37 +137,35 @@ for ($i=0; $i<3; $i++) {
     }
 }
 
+
 if(count($upload["filename"]) !=0 ){
-    $result["step"] .= "B//";
     for($i=0;$i<3;$i++){
-        $orifile_name[$i] = $upload["filename"][$i];
+        if($upload["filename"][$i]!="")
+            $orifile_name[$i] = $upload["filename"][$i];
     }
     $result["orifile"] = $orifile_name;
     $filename = implode("``",$orifile_name);
     $files = " , attachment = '{$filename}'";
 }else{
-    $result["step"] .= "C//";
     $filename = $filechk["attachment"];
     $result["orifile"] = $orifile_name;
     $filename = implode("``",$orifile_name);
     $files = " , attachment = '{$filename}'";
 }
 
-
 if(count($upload["filenames"]) !=0 ){
-    $result["step"] .= "D//";
     for($i=0;$i<3;$i++){
-        $orifile_name2[$i] = $upload["filenames"][$i];
+        if($upload["filenames"][$i]!="")
+            $orifile_name2[$i] = $upload["filenames"][$i];
     }
     $result["orifiles"] = $orifile_name2;
     $filename2 = implode("``",$orifile_name2);
     $files2 = " , attachment2 = '{$filename2}'";
 }else{
-    $result["step"] .= "E//";
     $filename2 = $filechk["attachment2"];;
-    $result["orifile"] = $orifile_name;
-    $filename = implode("``",$orifile_name);
-    $files = " , attachment = '{$filename}'";
+    $result["orifiles"] = $orifile_name2;
+    $filename2 = implode("``",$orifile_name2);
+    $files2 = " , attachment2 = '{$filename2}'";
 }
 
 

@@ -5,6 +5,7 @@ if (!defined('_GNUBOARD_')) exit; // 개별 페이지 접근 불가
 add_stylesheet('<link rel="stylesheet" href="'.$member_skin_url.'/style.css">', 0);
 $email = explode("@",$member["mb_email"]);
 $hp = explode("-",$member["mb_hp"]);
+$tel = explode("-",$member["mb_tel"]);
 ?>
 
 <!-- 회원정보 입력/수정 시작 { -->
@@ -119,11 +120,11 @@ $hp = explode("-",$member["mb_hp"]);
                         <label for="reg_mb_hp" class="sound_only">휴대폰번호<?php if ($config['cf_req_hp']) { ?><strong>필수</strong><?php } ?></label>
 
                         <select name="mb_hp[]" id="mb_hp1" class="frm_input <?php echo $required;?>" <?php echo $required;?>>
-                            <option value="010">010</option>
+                            <option value="010" <?php echo get_selected($tel[0],"010");?>>010</option>
                             <!--<option value="017">017</option>
                             <option value="018">018</option>
                             <option value="019">019</option>-->
-                            <option value="070">070</option>
+                            <option value="070" <?php echo get_selected($tel[0],"070");?>>070</option>
                         </select> - <input type="text" name="mb_hp[]" id="mb_hp2" value="<?php echo $hp[0];?>" class="frm_input <?php echo $required;?>" <?php echo $required;?> maxlength="4"> - <input type="text" name="mb_hp[]" id="mb_hp3" value="<?php echo $hp[0];?>" class="frm_input <?php echo $required;?>" <?php echo $required;?> maxlength="4">
                         <?php if ($config['cf_cert_use'] && $config['cf_cert_hp']) { ?>
                         <input type="hidden" name="old_mb_hp" value="<?php echo get_text($member['mb_hp']) ?>">
@@ -171,6 +172,34 @@ $hp = explode("-",$member["mb_hp"]);
                         <input type="text" name="mb_3[]" id="reg_mb_3_1" value="<?php echo $mb3[0];?>" class="frm_input half_input left_input" placeholder="사업자번호"><span class="lab left_input"> - </span>
                         <input type="text" name="mb_3[]" id="reg_mb_3_2" value="<?php echo $mb3[0];?>" class="frm_input half_input left_input" placeholder="사업자번호"><span class="lab left_input"> - </span>
                         <input type="text" name="mb_3[]" id="reg_mb_3_3" value="<?php echo $mb3[0];?>" class="frm_input half_input left_input" placeholder="사업자번호">
+                    </li>
+
+                    <li>
+                        <label for="reg_mb_password_re" class="sound_only">회사전화번호</label>
+                        <select name="mb_tel[]" id="mb_tel1" class="frm_input left_input" >
+                            <option value="010" <?php echo get_selected($tel[0],"010");?>>010</option>
+                            <!--<option value="017">017</option>
+                            <option value="018">018</option>
+                            <option value="019">019</option>-->
+                            <option value="070" <?php echo get_selected($tel[0],"070");?>>070</option>
+                            <option value="02" <?php echo get_selected($tel[0],"02");?>>02</option>
+                            <option value="031" <?php echo get_selected($tel[0],"031");?>>031</option>
+                            <option value="032" <?php echo get_selected($tel[0],"032");?>>032</option>
+                            <option value="033" <?php echo get_selected($tel[0],"033");?>>033</option>
+                            <option value="041" <?php echo get_selected($tel[0],"041");?>>041</option>
+                            <option value="042" <?php echo get_selected($tel[0],"042");?>>042</option>
+                            <option value="043" <?php echo get_selected($tel[0],"043");?>>043</option>
+                            <option value="044" <?php echo get_selected($tel[0],"044");?>>044</option>
+                            <option value="051" <?php echo get_selected($tel[0],"051");?>>051</option>
+                            <option value="052" <?php echo get_selected($tel[0],"052");?>>052</option>
+                            <option value="053" <?php echo get_selected($tel[0],"053");?>>053</option>
+                            <option value="054" <?php echo get_selected($tel[0],"054");?>>054</option>
+                            <option value="055" <?php echo get_selected($tel[0],"055");?>>055</option>
+                            <option value="061" <?php echo get_selected($tel[0],"061");?>>061</option>
+                            <option value="062" <?php echo get_selected($tel[0],"062");?>>062</option>
+                            <option value="063" <?php echo get_selected($tel[0],"063");?>>063</option>
+                            <option value="064" <?php echo get_selected($tel[0],"064");?>>064</option>
+                        </select><span class="lab left_input"> - </span><input type="text" name="mb_tel[]" id="mb_tel2" value="<?php echo $tel[1];?>" class="frm_input left_input" maxlength="4" placeholder="회사번호"><span class="lab left_input"> - </span><input type="text" name="mb_tel[]" id="mb_tel3"  value="<?php echo $tel[2];?>" class="frm_input left_input" maxlength="4" placeholder="회사번호">
                     </li>
 
                     <?php if ($config['cf_use_addr']) { ?>

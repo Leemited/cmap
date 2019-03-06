@@ -62,15 +62,24 @@ include_once ("../../common.php");
                 data:{name:name,hp:hp,type:type},
                 dataType:"json"
             }).done(function(data){
+                console.log(data);
                 if(data.msg==2){
                     alert("일치하는 회원정보가 없습니다.");
                 }else {
                     if (data.sns == true) {
-                        alert("현재 회원님의 계정은 [" + data.snsid + "]계정으로 가입되어 있습니다.\r해당 SNS로 로그인 바랍니다.");
-                        return false;
+                        var indata = "<div class='idinfo'>";
+                        indata += "현재 회원님의 계정은 [" + data.snsid + "]계정으로 가입되어 있습니다.\r해당 SNS로 로그인 바랍니다.";
+                        indata += "</div>";
+                        indata += "<input type='button' class='modal_btn01 width100' value='확인' onclick='fnCloseModal()'>"
+                        $(".modal_content").html(indata);
                     } else {
-                        console.log(data.mb_id);
+                        var indata = "<div class='idinfo'>";
+                        indata += "회원 님의 아이디는 [" + data.mb_id + "]입니다";
+                        indata += "</div>";
+                        indata += "<input type='button' class='modal_btn01 width100' value='확인' onclick='fnCloseModal()'>"
+                        $(".modal_content").html(indata);
                     }
+                    fnModalTop();
                 }
             });
         }else if(type=="email"){
@@ -92,15 +101,25 @@ include_once ("../../common.php");
                 data:{name:name,email:email,type:type},
                 dataType:"json"
             }).done(function(data){
+                console.log(data);
                 if(data.msg==2){
                     alert("일치하는 회원정보가 없습니다.");
                 }else {
                     if (data.sns == true) {
-                        alert("현재 회원님의 계정은 [" + data.snsid + "]계정으로 가입되어 있습니다.\r해당 SNS로 로그인 바랍니다.");
-                        return false;
+                        var indata = "<div class='idinfo'>";
+                        indata += "현재 회원님의 계정은 [" + data.snsid + "]계정으로 가입되어 있습니다.\r해당 SNS로 로그인 바랍니다.";
+                        indata += "</div>";
+                        indata += "<input type='button' class='modal_btn01 width100' value='확인' onclick='fnCloseModal()'>"
+                        $(".modal_content").html(indata);
+
                     } else {
-                        console.log(data.mb_id);
+                        var indata = "<div class='idinfo'>";
+                        indata += "회원 님의 아이디는 [" + data.mb_id + "]입니다";
+                        indata += "</div>";
+                        indata += "<input type='button' class='modal_btn01 width100' value='확인' onclick='fnCloseModal()'>"
+                        $(".modal_content").html(indata);
                     }
+                    fnModalTop();
                 }
             });
         }

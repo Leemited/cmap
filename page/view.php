@@ -1,20 +1,32 @@
 <?php
 include_once ("../common.php");
-
+$sub="sub";
 include_once (G5_PATH."/_head.php");
 
 if(strlen($me_id)==2){
     $sql = "select * from `cmap_depth1` where SUBSTRING(me_code,1,2) like '%{$me_id}%' order by me_code asc limit 0,1 ";
     $codes = sql_fetch($sql);
     $incode = $codes["me_code"];
+    if(!$depth2_id){
+        $sql = "select * from `cmap_dpeth2` where depth1_id = '{$code["id"]}' order by id asc limit 0, 1";
+        $depth2 = sql_fetch($sql);
+        $depth2_id = $depth2["id"];
+        echo $depth2_id;
+    }
 }else{
     $incode = $me_id;
+    if(!$depth2_id){
+        $sql = "select * from `cmap_depth1` where me_code = '{$incode}' order by id asc limit 0,1";
+        $codes = sql_fetch($sql);
+        $sql = "select * from `cmap_depth2` where depth1_id = '{$depth1_id}' order by id asc limit 0, 1";
+        $depth2 = sql_fetch($sql);
+        $depth2_id = $depth2["id"];
+    }
 }
 
 if($depth1_id){
     $where = " and depth1_id = '{$depth1_id}'";
 }
-
 if($depth2_id){
     $where2 = " and depth2_id = '{$depth2_id}'";
 }
@@ -175,11 +187,7 @@ while ($row = sql_fetch_array($res)) {
 $myconstruction = false;
 
 ?>
-<div class="guide">
-    <div class="user">
-        <div>사용자 가이드</div>
-        <div>사용자가이드 예시입니다. 아직 개발 중입니다.</div>
-    </div>
+<div>
     <div class="menu_guide">
         <div><?php echo $list[0]["depth_name"];?> : </div>
     </div>
@@ -211,11 +219,11 @@ $myconstruction = false;
                     <td class="menu_padding"><input type="button"  value="<?php echo $depth_menu[$i]['depth_name'];?>" class="depth_btn <?php if($depth_menu[$i]["id"]==$depth2_id){?>active<?php }?>" onclick="location.href=g5_url+'/page/view.php?me_id=<?php echo $me_id;?>&depth1_id=<?php echo $depth1_id;?>&depth2_id=<?php echo $depth_menu[$i]["id"];?>'"></td>
                 </tr>
             <?php }?>
-            <tr>
+            <tr class="memo">
                 <td>
                     <h2>MEMO</h2>
                     <div class="memo_area" style="width:100%;height:500px;padding:10px;">
-
+                        <textarea name="memo_content" id="memo_content" ></textarea>
                     </div>
                 </td>
             </tr>
@@ -271,6 +279,27 @@ $myconstruction = false;
                         </td>
                             <?php
                             for ($m = 0; $m < count($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5']); $m++) {
+                                if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["attachment"]!="") {
+                                    $files = explode("``", $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["attachment"]);
+                                    $filenames = explode("``", $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["attachmentname1"]);
+                                }else{
+                                    $files = array();
+                                    $filenames = array();
+                                }
+                                if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["link"]!=""){
+                                    $links = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["link"]);
+                                    $linknames = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["linkname"]);
+                                }else{
+                                    $links = array();
+                                    $linknames = array();
+                                }
+                                if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["attachment2"]!=""){
+                                    $files2 = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["attachment2"]);
+                                    $filenames2 = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["attachmentname2"]);
+                                }else{
+                                    $files2 = array();
+                                    $filenames2 = array();
+                                }
                             $depth_last++;
                             $fileid = "files".$list[$i]["depth2"][$j]["depth3"][$k]["depth4"][$l]["depth5"][$m]["id"];
                             ?>
@@ -278,7 +307,32 @@ $myconstruction = false;
                                 <?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['content'];?>
                             </td>
                             <td class="etc" id="">
-                                <input type="button" value="미리보기" onclick="fnViewEtc('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>')">
+                                <?php if(count($files)>=1){?>
+                                    <input type="button" value="미리보기" onclick="fnViewEtc('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>')">
+                                <?php }else {?>
+                                    <!-- 참고 링크 -->
+                                    <?php if(count($links)>=1){
+                                        for($w=0;$w<count($links);$w++){?>
+                                            <input type="button" value="링크" style="background-image:url('<?php echo G5_IMG_URL;?>/ic_links.svg');"  onclick="window.open('<?php echo $links[$w];?>','_blank')" title="<?php echo $linknames[$w];?>">
+                                    <?php }
+                                    }?>
+                                    <!-- 참고 링크 -->
+                                    <?php if(count($files2)>=1){
+                                        for($w=0;$w<count($files2);$w++){
+                                            if($files2[$w]!=""){
+                                            ?>
+                                            <input type="button" value="다운로드" style="background-image:url('<?php echo G5_IMG_URL;?>/ic_attach.svg');" onclick="location.href=g5_url+'/page/view_download.php?file=<?php echo $files2[$w];?>&filename=<?php echo $filenames2[$w];?>'" title="<?php echo $filenames2[$w];?>">
+                                        <?php }
+                                            }
+                                    }?>
+                                <?php }?>
+                                <?php /*if(count($files)>0 && $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["link"]){*/?><!--
+                                    <input type="button" value="미리보기" onclick="fnViewEtc('<?php /*echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];*/?>')">
+                                <?php /*}else if(count($files)>0 && !$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["link"]){*/?>
+                                    <input type="button" value="파일" style="background-image:url('<?php /*echo G5_IMG_URL;*/?>/ic_attach.svg');" onclick="fnViewEtc('<?php /*echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];*/?>')">
+                                <?php /*}else if(count($files)==0 && $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["link"]){*/?>
+                                    <input type="button" value="링크" style="background-image:url('<?php /*echo G5_IMG_URL;*/?>/ic_link.svg');" onclick="window.open=('')">
+                                --><?php /*}*/?>
                             </td>
                             <?php if($is_member && $myconstruction){?>
                             <td class="confirm" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>">
@@ -316,13 +370,13 @@ $myconstruction = false;
                 <col width="6%">
             </colgroup>
             <tbody>
-            <tr>
-                <th>구분</th>
-                <th>항목</th>
-                <th>주요확인내용</th>
-                <th>참고</th>
-                <th>기준일</th>
-            </tr>
+                <tr>
+                    <th>구분</th>
+                    <th>항목</th>
+                    <th>주요확인내용</th>
+                    <th>참고</th>
+                    <th>기준일</th>
+                </tr>
             <tr></tr>
             <?php
             $depth_last = 1;
@@ -383,12 +437,51 @@ $myconstruction = false;
                             </td>
                             <?php
                             for ($k = 0; $k < count($list[$i]['depth2'][$j]['depth3']); $k++) {
+                                if($list[$i]['depth2'][$j]['depth3'][$k]["attachment"]!="") {
+                                    $files = explode("``", $list[$i]['depth2'][$j]['depth3'][$k]["attachment"]);
+                                    $filenames = explode("``", $list[$i]['depth2'][$j]['depth3'][$k]["attachmentname1"]);
+                                }else{
+                                    $files = array();
+                                    $filenames = array();
+                                }
+                                if($list[$i]['depth2'][$j]['depth3'][$k]["link"]!=""){
+                                    $links = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]["link"]);
+                                    $linknames = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]["linkname"]);
+                                }else{
+                                    $links = array();
+                                    $linknames = array();
+                                }
+                                if($list[$i]['depth2'][$j]['depth3'][$k]["attachment2"]!=""){
+                                    $files2 = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]["attachment2"]);
+                                    $filenames2 = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]["attachmentname2"]);
+                                }else{
+                                    $files2 = array();
+                                    $filenames2 = array();
+                                }
                                 $depth_last++; ?>
                                 <td class="depth3">
                                     <?php echo $list[$i]['depth2'][$j]['depth3'][$k]['content']; ?>
                                 </td>
                                 <td class="etc" >
-                                    <input type="button" value="미리보기" onclick="fnViewEtc('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>')">
+                                    <?php if(count($files)>=1){?>
+                                        <input type="button" value="미리보기" onclick="fnViewEtc('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['pk_id'];?>')">
+                                    <?php }else {?>
+                                        <!-- 참고 링크 -->
+                                        <?php if(count($links)>=1){
+                                            for($w=0;$w<count($links);$w++){?>
+                                                <input type="button" value="링크" style="background-image:url('<?php echo G5_IMG_URL;?>/ic_links.svg');"  onclick="window.open('<?php echo $links[$w];?>','_blank')" title="<?php echo $linknames[$w];?>">
+                                            <?php }
+                                        }?>
+                                        <!-- 참고 링크 -->
+                                        <?php if(count($files2)>=1){
+                                            for($w=0;$w<count($files2);$w++){
+                                                if($files2[$w]!=""){
+                                                    ?>
+                                                    <input type="button" value="다운로드" style="background-image:url('<?php echo G5_IMG_URL;?>/ic_attach.svg');" onclick="location.href=g5_url+'/page/view_download.php?file=<?php echo $files2[$w];?>&filename=<?php echo $filenames2[$w];?>'" title="<?php echo $filenames2[$w];?>">
+                                                <?php }
+                                            }
+                                        }?>
+                                    <?php }?>
                                 </td>
                                 </tr>
                                 <?php if($list[$i]['cnt'] >= $depth_last){?>
@@ -422,6 +515,7 @@ $myconstruction = false;
     </div>
 </div>
 <span class="etc_view_bg"></span>
+<script src="<?php echo G5_JS_URL ?>/jquery-ui-1.9.2.custom.js"></script>
 <script>
 $(function(){
     var tbl_width = $(".menu_table").width();
@@ -445,6 +539,10 @@ $(function(){
             fnEtcClose();
         }
     }
+
+    $(function(){
+        $(document).tooltip();
+    });
 })
 
 function fnViewEtc(pk_id){
@@ -453,7 +551,6 @@ function fnViewEtc(pk_id){
         method:"post",
         data:{pk_id:pk_id}
     }).done(function(data){
-        console.log(data);
         $(".etc_view .content").html('');
         if(!$(".etc_view").hasClass("active")){
             $(".etc_view .content").html(data);
@@ -472,6 +569,5 @@ function fnEtcClose(){
 
 </script>
 <?php
-$sub="sub";
 include_once (G5_PATH."/_tail.php");
 ?>

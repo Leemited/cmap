@@ -50,12 +50,14 @@ while($row = sql_fetch_array($res)){
                                 //$res = sql_query($sql);
                             ?>
                             <div >
-                                <?php if($cmap_menu[$i]["menu_name"]!="점검/평가" && $cmap_menu[$i]["menu_name"]!="시공확인(검측)"){?>
+                                <?php if($cmap_menu[$i]["menu_name"]!="건설사업관리" && $cmap_menu[$i]["menu_name"]!="시공확인/검측" && $cmap_menu[$i]["menu_name"]!="평가"){?>
                                 <a href="<?php echo G5_URL?>/admin/construction.php?menu_code=<?php echo $cmap_menu[$i]["menu_code"];?>&menu_name=<?php echo $cmap_menu[$i]["menu_name"];?>"><?php echo $cmap_menu[$i]["menu_name"];?></a>
-                                <?php }else if($cmap_menu[$i]["menu_name"]=="시공확인(검측)"){?>
+                                <?php }else if($cmap_menu[$i]["menu_name"]=="시공확인/검측"){?>
                                 <a href="<?php echo G5_URL?>/admin/construction2.php?menu_code=<?php echo $cmap_menu[$i]["menu_code"];?>&menu_name=<?php echo $cmap_menu[$i]["menu_name"];?>"><?php echo $cmap_menu[$i]["menu_name"];?></a>
-                                <?php }else if($cmap_menu[$i]["menu_name"]=="점검/평가"){?>
+                                <?php }else if($cmap_menu[$i]["menu_name"]=="건설사업관리"){?>
                                     <a href="<?php echo G5_URL?>/admin/evaluation.php?menu_code=<?php echo $cmap_menu[$i]["menu_code"];?>&menu_name=<?php echo $cmap_menu[$i]["menu_name"];?>"><?php echo $cmap_menu[$i]["menu_name"];?></a>
+                                <?php }else if($cmap_menu[$i]["menu_name"]=="평가"){?>
+                                    <a href="<?php echo G5_URL?>/admin/evaluation3.php?menu_code=<?php echo $cmap_menu[$i]["menu_code"];?>&menu_name=<?php echo $cmap_menu[$i]["menu_name"];?>"><?php echo $cmap_menu[$i]["menu_name"];?></a>
                                 <?php }?>
                             </div>
                             <!--<ul data-accordion-group id="admin-menu">

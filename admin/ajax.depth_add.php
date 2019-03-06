@@ -3,19 +3,29 @@ include_once ("_common.php");
 
 if($depth==1){
     $flag = true;
+
+    $sql = "update `cmap_depth1` set id = id+1 where id >= '{$id}'";
+    if (!sql_query($sql)) {
+        $flag = false;
+    }
+    $sql = "update `cmap_depth2` set depth1_id = depth1_id+1 where depth1_id >= '{$id}'";
+    if (!sql_query($sql)) {
+        $flag = false;
+    }
+    $sql = "update `cmap_depth3` set depth1_id = depth1_id+1 where depth1_id >= '{$id}'";
+    if (!sql_query($sql)) {
+        $flag = false;
+    }
+    $sql = "update `cmap_depth4` set depth1_id = depth1_id+1 where depth1_id >= '{$id}'";
+    if (!sql_query($sql)) {
+        $flag = false;
+    }
+    $sql = "update `cmap_content` set depth1_id = depth1_id+1 where depth1_id >= '{$id}'";
+    if (!sql_query($sql)) {
+        $flag = false;
+    }
+
     if($menu_chk==30){
-        $sql = "update `cmap_depth1` set id = id+1 where id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
-        $sql = "update `cmap_depth2` set depth1_id = depth1_id+1 where depth1_id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
-        $sql = "update `cmap_content` set depth1_id = depth1_id+1 where depth1_id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
 
         $sql = "insert into `cmap_depth1` set id='{$id}', me_code = '{$me_code}' , me_id = '" . substr($me_code, 0, 2) . "'";
         //$result["sql"] = $sql;
@@ -63,23 +73,6 @@ if($depth==1){
             $result["depth5_id"] = $depth3_id;
         }
     }else if($menu_chk==302){
-        $sql = "update `cmap_depth1` set id = id+1 where id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
-        $sql = "update `cmap_depth2` set depth1_id = depth1_id+1 where depth1_id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
-        $sql = "update `cmap_depth3` set depth1_id = depth1_id+1 where depth1_id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
-        $sql = "update `cmap_content` set depth1_id = depth1_id+1 where depth1_id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
-
         $sql = "insert into `cmap_depth1` set id='{$id}', me_code = '{$me_code}' , me_id = '" . substr($me_code, 0, 2) . "'";
         //$result["sql"] = $sql;
         if (!sql_query($sql)) {
@@ -141,26 +134,6 @@ if($depth==1){
             $result["depth5_id"] = $depth4_id;
         }
     }else {
-        $sql = "update `cmap_depth1` set id = id+1 where id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
-        $sql = "update `cmap_depth2` set depth1_id = depth1_id+1 where depth1_id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
-        $sql = "update `cmap_depth3` set depth1_id = depth1_id+1 where depth1_id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
-        $sql = "update `cmap_depth4` set depth1_id = depth1_id+1 where depth1_id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
-        $sql = "update `cmap_content` set depth1_id = depth1_id+1 where depth1_id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
 
         $sql = "insert into `cmap_depth1` set id='{$id}', me_code = '{$me_code}' , me_id = '" . substr($me_code, 0, 2) . "'";
         if (!sql_query($sql)) {
@@ -243,16 +216,26 @@ if($depth==1){
 
 if($depth==2){
     $flag = true;
-    if($menu_chk==30) {
-        $sql = "update `cmap_depth2` set id = id + 1 where id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
 
-        $sql = "update `cmap_content` set depth2_id = depth2_id+1 where depth2_id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
+    $sql = "update `cmap_depth2` set id = id + 1 where id >= '{$id}'";
+    if (!sql_query($sql)) {
+        $flag = false;
+    }
+
+    $sql = "update `cmap_depth3` set depth2_id = depth2_id+1 where depth2_id >= '{$id}'";
+    if (!sql_query($sql)) {
+        $flag = false;
+    }
+    $sql = "update `cmap_depth4` set depth2_id = depth2_id+1 where depth2_id >= '{$id}'";
+    if (!sql_query($sql)) {
+        $flag = false;
+    }
+    $sql = "update `cmap_content` set depth2_id = depth2_id+1 where depth2_id >= '{$id}'";
+    if (!sql_query($sql)) {
+        $flag = false;
+    }
+
+    if($menu_chk==30) {
 
         $sql = "insert into `cmap_depth2` set depth1_id='{$parent_id}', id = '{$id}'";
         if (!sql_query($sql)) {
@@ -287,20 +270,6 @@ if($depth==2){
             $result["depth5_id"] = $depth3_id;
         }
     }else if($menu_chk==302) {
-        $sql = "update `cmap_depth2` set id = id + 1 where id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
-
-        $sql = "update `cmap_depth3` set depth2_id = depth2_id+1 where depth2_id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
-
-        $sql = "update `cmap_content` set depth2_id = depth2_id+1 where depth2_id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
 
         $sql = "insert into `cmap_depth2` set depth1_id='{$parent_id}', id = '{$id}'";
         if (!sql_query($sql)) {
@@ -349,23 +318,6 @@ if($depth==2){
             $result["depth5_id"] = $depth4_id;
         }
     }else {
-        $sql = "update `cmap_depth2` set id = id + 1 where id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
-
-        $sql = "update `cmap_depth3` set depth2_id = depth2_id+1 where depth2_id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
-        $sql = "update `cmap_depth4` set depth2_id = depth2_id+1 where depth2_id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
-        $sql = "update `cmap_content` set depth2_id = depth2_id+1 where depth2_id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
 
         $sql = "insert into `cmap_depth2` set depth1_id='{$parent_id}', id = '{$id}'";
         if (!sql_query($sql)) {
@@ -431,27 +383,26 @@ if($depth==2){
 }
 if($depth == 3){
     $flag = true;
+    $sql = "update `cmap_depth3` set id = id + 1 where id >= '{$id}'";
+    if (!sql_query($sql)) {
+        $flag = false;
+    }
+
+    $sql = "update `cmap_depth4` set depth3_id = depth3_id+1 where depth3_id >= '{$id}'";
+    if (!sql_query($sql)) {
+        $flag = false;
+    }
+
+    $sql = "update `cmap_content` set depth3_id = depth3_id+1 where depth3_id >= '{$id}'";
+    if (!sql_query($sql)) {
+        $flag = false;
+    }
     if($menu_chk==302) {
         $sql = "select * from `cmap_depth3` where id = '{$thisid}'";
         $dep = sql_fetch($sql);
         $depth1_id = $dep["depth1_id"];
         $depth2_id = $dep["depth2_id"];
         $depth3_id = $dep["depth3_id"];
-
-        $sql = "update `cmap_depth3` set id = id + 1 where id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
-
-        $sql = "update `cmap_depth4` set depth3_id = depth3_id+1 where depth3_id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
-
-        $sql = "update `cmap_content` set depth3_id = depth3_id+1 where depth3_id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
 
         $sql = "insert into `cmap_depth3` set depth1_id='{$depth1_id}', depth2_id = '{$depth2_id}', id = '{$id}'";
         if (!sql_query($sql)) {
@@ -490,21 +441,6 @@ if($depth == 3){
         $dep = sql_fetch($sql);
         $depth1_id = $dep["depth1_id"];
         $depth2_id = $dep["depth2_id"];
-
-        $sql = "update `cmap_depth3` set id = id + 1 where id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
-
-        $sql = "update `cmap_depth4` set depth3_id = depth3_id+1 where depth3_id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
-
-        $sql = "update `cmap_content` set depth3_id = depth3_id+1 where depth3_id >= '{$id}'";
-        if (!sql_query($sql)) {
-            $flag = false;
-        }
 
         $sql = "insert into `cmap_depth3` set depth1_id='{$depth1_id}', depth2_id = '{$depth2_id}', id = '{$id}'";
         if (!sql_query($sql)) {

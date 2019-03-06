@@ -49,7 +49,7 @@ if (G5_IS_MOBILE) {
     echo '<meta name="format-detection" content="telephone=no">'.PHP_EOL;
 } else {
     echo '<meta http-equiv="imagetoolbar" content="no">'.PHP_EOL;
-    echo '<meta http-equiv="X-UA-Compatible" content="IE=Edge">'.PHP_EOL;
+    echo '<meta http-equiv="X-UA-Compatible" content="IE=Edge,Chrome=1">'.PHP_EOL;
 }
 
 if($config['cf_add_meta'])
@@ -65,10 +65,18 @@ if (defined('G5_IS_ADMIN')) {
     echo '<link rel="stylesheet" href="'.G5_CSS_URL.'/style.css?ver='.G5_CSS_VER.'">'.PHP_EOL;
 }
 ?>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="<?php echo G5_CSS_URL;?>/owl.carousel.css">
+
+
+<!--[if gte IE 8]>-->
+<link rel="stylesheet" href="<?php echo G5_CSS_URL;?>/ie.css">
+<!--<![endif]-->
 
 <!--[if lte IE 8]>
 <script src="<?php echo G5_JS_URL ?>/html5.js"></script>
 <![endif]-->
+
 <script>
 // 자바스크립트에서 사용하는 전역변수 선언
 var g5_url       = "<?php echo G5_URL ?>";
@@ -93,6 +101,7 @@ document.onselectstart = new Function('return false');   // 선택 방지
 </script>
 <script src="<?php echo G5_JS_URL ?>/jquery-1.8.3.min.js"></script>
 <script src="<?php echo G5_JS_URL ?>/jquery.menu.js?ver=<?php echo G5_JS_VER; ?>"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=66b0c8ec7fbce830de7902a16ad06d12&libraries=services"></script>
 <script src="<?php echo G5_JS_URL ?>/common.js?ver=<?php echo G5_JS_VER; ?>"></script>
 <script src="<?php echo G5_JS_URL ?>/wrest.js?ver=<?php echo G5_JS_VER; ?>"></script>
 <script src="<?php echo G5_JS_URL ?>/placeholders.min.js"></script>
@@ -101,7 +110,8 @@ document.onselectstart = new Function('return false');   // 선택 방지
         crossorigin="anonymous">
 </script>
 <script src="<?php echo G5_JS_URL ?>/jQuery.resizableColumns.js"></script>
-<link rel="stylesheet" href="<?php echo G5_JS_URL ?>/font-awesome/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="<?php echo G5_JS_URL ?>/font-awesome/css/font-awesome.min.css">
 <?php
 if(G5_IS_MOBILE) {
     echo '<script src="'.G5_JS_URL.'/modernizr.custom.70111.js"></script>'.PHP_EOL; // overflow scroll 감지
@@ -111,7 +121,7 @@ if(!defined('G5_IS_ADMIN'))
 
 ?>
 </head>
-<body<?php echo isset($g5['body_script']) ? $g5['body_script'] : ''; ?> class="<?php if($main){?>main <?php }else{?>sub <?php }?> <?php if($sub=="login"){?>login_body<?php }else if($sub=="register"){?> register_body<?php }?>" id="test" >
+<body<?php echo isset($g5['body_script']) ? $g5['body_script'] : ''; ?> class="main <?php echo $bbody; if(!$main){?> sub <?php }?> <?php if($sub=="login"){?>login_body<?php }else if($sub=="register"){?> register_body<?php }?>" id="test" >
 <?php
 if ($is_member) { // 회원이라면 로그인 중이라는 메세지를 출력해준다.
     $sr_admin_msg = '';

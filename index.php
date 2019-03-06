@@ -18,23 +18,29 @@ if (G5_IS_MOBILE) {
 
 include_once(G5_PATH.'/head.php');
 ?>
-<!-- 로그인 -->
-<div class="login">
-    <div class="login_btns">
-    <?php if(!$is_member){?>
-        <img src="<?php echo G5_IMG_URL?>/main_login_btn.png" alt="로그인" onclick="location.href='<?php echo G5_BBS_URL?>/login.php'">
-    <?php }else{?>
-        <img src="<?php echo G5_IMG_URL?>/mypage_btn.png" alt="로그인">
-    <?php }?>
-        <div class="my_profile">
-
+<div class="owl-carousel" id="main" style="z-index:-1">
+    <div class="item" style="background-image:url('<?php echo G5_IMG_URL;?>/main_bg.jpg');background-size: cover;background-position: center bottom;background-repeat: no-repeat;height: 100vh;width:100%;">
+        <div class="text">
+            <h2>함께하는 사회, 새로운 가치를 창조합니다.</h2>
+            <p>C.MAP은 전문지식이 없어도 검색을 통해 쉽고 빠르게 관련 법률을 찾을 수 있습니다.<br>이를 통해 시공 단계를 좀 더 간결하고 빠르게 처리할 수 있도록 도와줍니다.</p>
         </div>
     </div>
 </div>
-
+<script src="<?php echo G5_JS_URL ?>/owl.carousel.js"></script>
 <script>
-    $(".login_btns").click(function(){
-
+    $(function() {
+        var owl = $("#main");
+        console.log(owl);
+        owl.owlCarousel({
+            animateOut: 'fadeOut',
+            autoplay: true,
+            autoplayTimeout: 5000,
+            autoplaySpeed: 2000,
+            smartSpeed: 2000,
+            loop: true,
+            dots: true,
+            items: 1
+        });
     });
 </script>
 <?php

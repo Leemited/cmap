@@ -364,7 +364,8 @@ while($row=sql_fetch_array($res)){
                 dataType:"json"
             }).done(function(data){
                 if(data.status==1){
-                    var tr = document.createElement("tr");
+                    location.reload();
+                    /*var tr = document.createElement("tr");
                     tr.setAttribute("id","depth1"+add_id);
                     tr.setAttribute("class","depth finish_"+add_id);
 
@@ -470,7 +471,7 @@ while($row=sql_fetch_array($res)){
                     depth7_input.setAttribute("type","text");
                     depth7_input.setAttribute("class","center");
                     depth7_input.setAttribute("value","0");
-                    depth7_input.setAttribute("onkeyup","fnUpdate2('"+data.pk_id5+"',$(this).val())");*/
+                    depth7_input.setAttribute("onkeyup","fnUpdate2('"+data.pk_id5+"',$(this).val())");*
 
                     td.appendChild(depth1_input);
                     td.appendChild(depth1_delete);
@@ -531,7 +532,7 @@ while($row=sql_fetch_array($res)){
                         }
                     }else {
                         parentTr.after(tr);
-                    }
+                    }*/
 
                 }
                 if(data.status == 2){
@@ -572,7 +573,8 @@ while($row=sql_fetch_array($res)){
                 data:{parent_id:parent_id,id:add_id,depth:2,me_code:me_code},
                 dataType:"json"
             }).done(function(data) {
-                var tr = document.createElement("tr");
+                location.reload();
+                /*var tr = document.createElement("tr");
                 tr.setAttribute("class","");
                 //tr.setAttribute("id","depth2"+add_id);
 
@@ -661,7 +663,7 @@ while($row=sql_fetch_array($res)){
                 depth7_input.setAttribute("class", "center");
                 depth7_input.setAttribute("id", data.depth5_id);
                 depth7_input.setAttribute("value","0");
-                depth7_input.setAttribute("onkeyup","fnUpdate2('"+data.pk_id5+"',$(this).val())");*/
+                depth7_input.setAttribute("onkeyup","fnUpdate2('"+data.pk_id5+"',$(this).val())");*
 
                 td2.appendChild(depth2_input);
                 td2.appendChild(depth2_delete);
@@ -709,7 +711,7 @@ while($row=sql_fetch_array($res)){
                     }
                 }else {
                     parentTr.after(tr);
-                }
+                }*/
 
             });
         }
@@ -739,8 +741,9 @@ while($row=sql_fetch_array($res)){
                 data:{thisid:id,id:add_id,depth:3,me_code:me_code},
                 dataType:"json"
             }).done(function(data) {
+                location.reload();
                 //depth1_row
-                var depth1Row = $("#depth1_"+data.depth1_id).attr("rowspan");
+                /*var depth1Row = $("#depth1_"+data.depth1_id).attr("rowspan");
                 if(!depth1Row){
                     depth1Row = 1;
                 }
@@ -825,7 +828,7 @@ while($row=sql_fetch_array($res)){
                 depth7_input.setAttribute("class", "center");
                 depth7_input.setAttribute("id", data.depth5_id);
                 depth7_input.setAttribute("value","0");
-                depth7_input.setAttribute("onkeyup","fnUpdate2('"+data.pk_id5+"',$(this).val())");*/
+                depth7_input.setAttribute("onkeyup","fnUpdate2('"+data.pk_id5+"',$(this).val())");*
 
                 td3.appendChild(depth3_input);
                 td3.appendChild(depth3_delete);
@@ -867,7 +870,7 @@ while($row=sql_fetch_array($res)){
                     }
                 }else {
                     parentTr.before(tr);
-                }
+                }*/
             });
         }
         if(depthnum==4){
@@ -895,7 +898,8 @@ while($row=sql_fetch_array($res)){
                 data:{thisid:id,id:add_id,depth:4,me_code:me_code},
                 dataType:"json"
             }).done(function(data) {
-                console.log(data);
+                location.reload();
+                /*console.log(data);
                 //depth1_row
                 var depth1Row = $("#depth1_"+data.depth1_id).attr("rowspan");
                 if(!depth1Row){
@@ -972,7 +976,7 @@ while($row=sql_fetch_array($res)){
                 depth7_input.setAttribute("class", "center");
                 depth7_input.setAttribute("id", data.depth5_id);
                 depth7_input.setAttribute("value","0");
-                depth7_input.setAttribute("onkeyup","fnUpdate2('"+data.pk_id5+"',$(this).val())");*/
+                depth7_input.setAttribute("onkeyup","fnUpdate2('"+data.pk_id5+"',$(this).val())");*
 
                 td4.appendChild(depth4_input);
                 td4.appendChild(depth4_delete);
@@ -1010,7 +1014,7 @@ while($row=sql_fetch_array($res)){
                     }
                 }else {
                     parentTr.before(tr);
-                }
+                }*/
             });
         }
         if(depthnum==5){
@@ -1038,8 +1042,9 @@ while($row=sql_fetch_array($res)){
                 data:{thisid:id,id:add_id,depth:5,me_code:me_code},
                 dataType:"json"
             }).done(function(data) {
+                location.reload();
                 //depth1_row
-                var depth1Row = $("#depth1_"+data.depth1_id).attr("rowspan");
+                /*var depth1Row = $("#depth1_"+data.depth1_id).attr("rowspan");
                 if(!depth1Row){
                     depth1Row = 1;
                 }
@@ -1106,7 +1111,7 @@ while($row=sql_fetch_array($res)){
                 depth7_input.setAttribute("class", "center");
                 depth7_input.setAttribute("id", data.depth5_id);
                 depth7_input.setAttribute("value","0");
-                depth7_input.setAttribute("onkeyup","fnUpdate2('"+data.pk_id5+"',$(this).val())");*/
+                depth7_input.setAttribute("onkeyup","fnUpdate2('"+data.pk_id5+"',$(this).val())");*
 
                 td5.appendChild(depth5_input);
                 td5.appendChild(depth5_delete);
@@ -1141,7 +1146,7 @@ while($row=sql_fetch_array($res)){
                     }
                 }else {
                     parentTr.before(tr);
-                }
+                }*/
             });
         }
     });

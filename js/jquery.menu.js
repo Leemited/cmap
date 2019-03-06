@@ -17,6 +17,7 @@ $(function(){
     // 주메뉴
     var $gnb = $(".gnb_1dli > a");
     $gnb.mouseover(function() {
+        $("#main").attr("style","filter: blur(6px);-webkit-filter: blur(6px);-moz-filter: blur(6px);-o-filter: blur(6px);z-index:-1");
         if(mouse_event) {
             $("#hd").addClass("hd_zindex");
             $(".gnb_1dli").removeClass("gnb_1dli_over gnb_1dli_over2 gnb_1dli_on");
@@ -28,13 +29,17 @@ $(function(){
 
     $gnb.mouseout(function() {
         hide_menu = true;
+        $("#main").attr("style","z-index:-1");
+
     });
 
     $(".gnb_2dli").mouseover(function() {
+        $("#main").attr("style","filter: blur(6px);-webkit-filter: blur(6px);-moz-filter: blur(6px);-o-filter: blur(6px);z-index:-1");
         hide_menu = false;
     });
 
     $(".gnb_2dli").mouseout(function() {
+        $("#main").attr("style","z-index:-1");
         hide_menu = true;
     });
 

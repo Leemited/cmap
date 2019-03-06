@@ -1,6 +1,7 @@
 <?php
 include_once('./_common.php');
-
+$bbody = "board";
+$sub = "sub";
 if (!$board['bo_table']) {
    alert('존재하지 않는 게시판입니다.', G5_URL);
 }

@@ -8,18 +8,20 @@ if($type=="hp"){
 }
 
 $sql = "select * from `g5_member` where mb_name = '{$name}' {$sel}";
+$result["sql"] = $sql;
 $find = sql_fetch($sql);
 
 if($find["mb_id"]){
     $sns =  explode("_",$find["mb_id"]);
-    if(stripos($find["mb_id"],"kakao,naver")===false){
+    if(strpos($find["mb_id"],"kakao,naver")!==false){
         $result["sns"] = true;
         $result["snsid"] = strtoupper($sns[0]);
     }else{
         $result["sns"] = false;
     }
     $result["msg"] = 1;
-    $result["mb_id"] = $find["mb_id"];
+    $id =  str_pad(substr($find["mb_id"], 0, 4), strlen($find["mb_id"]), "*");
+    $result["mb_id"] = $id;
 }else{
     $result["msg"] = 2;
 }

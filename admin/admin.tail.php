@@ -29,7 +29,7 @@
             <input type="text" name="filenames[]" id="filename3" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="링크명">
             <input type="file" name="file[]" id="file3" class="text ui-widget-content ui-corner-all grid_70" >
             <div class="add_file3"></div>
-            <label for="name">사례1</label>
+            <!--<label for="name">사례1</label>
             <input type="text" name="etc1name[]" id="etcname1_1" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="사례명">
             <input type="text" name="etc1[]" id="etc1_1" value="" class="text ui-widget-content ui-corner-all grid_70">
             <label for="name">사례2</label>
@@ -37,16 +37,16 @@
             <input type="text" name="etc1[]" id="etc1_2" value="" class="text ui-widget-content ui-corner-all grid_70">
             <label for="name">사례3</label>
             <input type="text" name="etc1name[]" id="etcname1_3" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="사례명">
-            <input type="text" name="etc1[]" id="etc1_3" value="" class="text ui-widget-content ui-corner-all grid_70">
-            <label for="files1">사례파일 1</label>
+            <input type="text" name="etc1[]" id="etc1_3" value="" class="text ui-widget-content ui-corner-all grid_70">-->
+            <label for="files1">다운로드 1</label>
             <input type="text" name="filenames2[]" id="filesname1" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="참고파일명">
             <input type="file" name="files[]" id="files1" class="text ui-widget-content ui-corner-all grid_70" >
             <div class="add_files1"></div>
-            <label for="files2">사례파일 2</label>
+            <label for="files2">다운로드 2</label>
             <input type="text" name="filenames2[]" id="filesnames2" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="참고파일명">
             <input type="file" name="files[]" id="files2" class="text ui-widget-content ui-corner-all grid_70" >
             <div class="add_files2"></div>
-            <label for="files3">사례파일 3</label>
+            <label for="files3">다운로드 3</label>
             <input type="text" name="filenames2[]" id="filesname3" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="참고파일명">
             <input type="file" name="files[]" id="files3" class="text ui-widget-content ui-corner-all grid_70" >
             <div class="add_files3"></div>
@@ -89,7 +89,7 @@
 <script>
     var dialog,img_dialog,menu_dialog,restore_modal;
     $(function(){
-        //$('table.resizable').resizableColumns();
+        $('table.resizable').resizableColumns();
 
         dialog = $( ".modal" ).dialog({
             autoOpen: false,
@@ -174,6 +174,9 @@
             type:"POST",
             data: formData,
             dataType:"json",
+            error:function(data){
+              console.log(data);
+            },
             success: function(data){
                 console.log(data);
                 alert(data.msg);
@@ -195,7 +198,7 @@
                         }
                     }
                 }
-                if(data.etc1s!=""){
+                /*if(data.etc1s!=""){
                     var addetc = data.etc1s.split("``");
                     var addetcname = data.etc1names.split("``");
                     for(var i = 0 ; i < addetc.length; i++){
@@ -208,11 +211,11 @@
                             $("#"+data.id+" #etc1").append(etcitem);
                         }
                     }
-                }
+                }*/
                 if(data.filename){
                     var addfile = data.filename.split("``");
                     var addfilename = data.file_names.split("``");
-                    var basicname = "파일";
+                    var basicname = "참고파일";
                     for(var i = 0 ; i < addfile.length; i++){
                         if(addfile[i] != "") {
                             if(addfilename[i] != "") {
@@ -228,7 +231,7 @@
                 if(data.filename2){
                     var addfile = data.filename2.split("``");
                     var addfilename = data.file_names2.split("``");
-                    var basicname = "사례파일";
+                    var basicname = "다운로드";
                     for(var i = 0 ; i < addfile.length; i++){
                         if(addfile[i] != "") {
                             if(addfilename[i] != "") {

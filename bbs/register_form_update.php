@@ -5,7 +5,6 @@ include_once(G5_LIB_PATH.'/register.lib.php');
 include_once(G5_LIB_PATH.'/mailer.lib.php');
 include_once(G5_LIB_PATH.'/thumbnail.lib.php');
 
-print_r2($_POST);
 // 리퍼러 체크
 referer_check();
 
@@ -40,7 +39,7 @@ $mb_email       = trim($_POST['mb_email'])."@".trim($_POST["mb_email2"]);
 $mb_sex         = isset($_POST['mb_sex'])           ? trim($_POST['mb_sex'])         : "";
 $mb_birth       = isset($_POST['mb_birth'])         ? trim($_POST['mb_birth'])       : "";
 $mb_homepage    = isset($_POST['mb_homepage'])      ? trim($_POST['mb_homepage'])    : "";
-$mb_tel         = isset($_POST['mb_tel'])           ? trim($_POST['mb_tel'])         : "";
+$mb_tel         = is_array($_POST['mb_tel'])           ? implode("-",$_POST['mb_tel'])         : "";
 //$mb_hp          = isset($_POST['mb_hp'])            ? trim($_POST['mb_hp'])          : "2";
 $mb_hp          = is_array($_POST["mb_hp"])         ? implode("-",$_POST["mb_hp"])       : "";
 $mb_zip1        = isset($_POST['mb_zip'])           ? substr(trim($_POST['mb_zip']), 0, 3) : "";
