@@ -19,6 +19,11 @@ include_once(G5_LIB_PATH.'/visit.lib.php');
 include_once(G5_LIB_PATH.'/connect.lib.php');
 include_once(G5_LIB_PATH.'/popular.lib.php');
 
+$sql = "select * from `cmap_menu` where LENGTH(menu_code)=2 and menu_status = 0 order by menu_order asc; ";
+$res = sql_query($sql);
+while($row = sql_fetch_array($res)){
+    $search_menu[] = $row;
+}
 ?>
 
 <!-- 로그인 -->
@@ -139,6 +144,24 @@ include_once(G5_LIB_PATH.'/popular.lib.php');
     </div>
 </div>
 <?php }?>
+<div class="search_area">
+    <div class="search_wrap">
+        <div class="searchs">
+            <select name="" id="">
+                <option value="">전체검색</option>
+                <?php for($i=0;$i<count($search_menu);$i++){?>
+                    <option value="<?php echo $search_menu[$i]["menu_code"];?>"><?php echo $search_menu[$i]["menu_name"];?></option>
+                <?php }?>
+            </select>
+            <input type="text" name="" class="search_input" placeholder="검색어를 입력해주세요.">
+            <input type="submit" value="" name="search_btn">
+        </div>
+        <div class="populars">
+            <h3>인기 검색어</h3>
+
+        </div>
+    </div>
+</div>
 <!-- 상단 시작 { -->
 <div id="hd">
     <h1 id="hd_h1"><?php echo $g5['title'] ?></h1>
@@ -326,10 +349,24 @@ include_once(G5_LIB_PATH.'/popular.lib.php');
                 <button type="button" class="gnb_close_btn"><i class="fa fa-times" aria-hidden="true"></i></button>
             </div>
         </div>
+        <div class="etc_btns">
+            <input type="button" onclick="fnSearch();" class="search_btns">
+            <div class="navigator_set">
+                <div class="icons"></div>
+            </div>
+        </div>
     </nav>
     <script>
     
     $(function(){
+        $(".navigator_set").click(function(){
+            if($(".icons").hasClass("active")) {
+                $(".icons").removeClass("active");
+            }else {
+                $(".icons").addClass("active");
+            }
+        });
+
         $(".gnb_menu_btn").click(function(){
             $("#gnb_all").show();
         });
@@ -373,6 +410,7 @@ include_once(G5_LIB_PATH.'/popular.lib.php');
     }
     </script>
 </div>
+<div class="container" <?php if($main){?>id="mainscreen"<?php }?>>
 <?php if(!$main && $sub != "login" && $mypage != true){?>
 <div class="user_guide">
     <div class="user">

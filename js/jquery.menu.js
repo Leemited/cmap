@@ -17,7 +17,7 @@ $(function(){
     // 주메뉴
     var $gnb = $(".gnb_1dli > a");
     $gnb.mouseover(function() {
-        $("#main").attr("style","filter: blur(6px);-webkit-filter: blur(6px);-moz-filter: blur(6px);-o-filter: blur(6px);z-index:-1");
+        /*$("#main").attr("style","filter: blur(6px);-webkit-filter: blur(6px);-moz-filter: blur(6px);-o-filter: blur(6px);z-index:-1;filter: url(\"data:image/svg+xml;utf9,<svg%20version='1.1'%20xmlns='http://www.w3.org/2000/svg'><filter%20id='blur'><feGaussianBlur%20stdDeviation='3'%20/></filter></svg>#blur\");filter:progid:DXImageTransform.Microsoft.Blur(PixelRadius='3');");*/
         if(mouse_event) {
             $("#hd").addClass("hd_zindex");
             $(".gnb_1dli").removeClass("gnb_1dli_over gnb_1dli_over2 gnb_1dli_on");
@@ -34,7 +34,7 @@ $(function(){
     });
 
     $(".gnb_2dli").mouseover(function() {
-        $("#main").attr("style","filter: blur(6px);-webkit-filter: blur(6px);-moz-filter: blur(6px);-o-filter: blur(6px);z-index:-1");
+        //$("#main").attr("style","filter: blur(6px);-webkit-filter: blur(6px);-moz-filter: blur(6px);-o-filter: blur(6px);z-index:-1");
         hide_menu = false;
     });
 

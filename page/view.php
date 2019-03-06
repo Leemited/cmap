@@ -4,14 +4,14 @@ $sub="sub";
 include_once (G5_PATH."/_head.php");
 
 if(strlen($me_id)==2){
-    $sql = "select * from `cmap_depth1` where SUBSTRING(me_code,1,2) like '%{$me_id}%' order by me_code asc limit 0,1 ";
+    $sql = "select * from `cmap_depth1` where SUBSTRING(me_code,1,2) like '%{$me_id}%' order by id asc limit 0,1 ";
     $codes = sql_fetch($sql);
     $incode = $codes["me_code"];
+    $depth1_id = $codes["id"];
     if(!$depth2_id){
         $sql = "select * from `cmap_dpeth2` where depth1_id = '{$code["id"]}' order by id asc limit 0, 1";
         $depth2 = sql_fetch($sql);
         $depth2_id = $depth2["id"];
-        echo $depth2_id;
     }
 }else{
     $incode = $me_id;
@@ -204,59 +204,66 @@ $myconstruction = false;
 </div>
 <div class="full-width">
     <div class="view">
-        <div class="title">
-            <?php echo $menu1_info["menu_name"];?> | <?php echo $menu2_info["menu_name"];?>
-        </div>
-        <table class="menu_table" >
-            <tr>
-                <th>작업선택</th>
-            </tr>
-            <tr></tr>
-            <?php
-            for($i=0;$i<count($depth_menu);$i++){
-            ?>
+        <div class="left">
+            <div class="title">
+                <?php echo $menu1_info["menu_name"];?> | <?php echo $menu2_info["menu_name"];?>
+            </div>
+            <table class="menu_table" >
                 <tr>
-                    <td class="menu_padding"><input type="button"  value="<?php echo $depth_menu[$i]['depth_name'];?>" class="depth_btn <?php if($depth_menu[$i]["id"]==$depth2_id){?>active<?php }?>" onclick="location.href=g5_url+'/page/view.php?me_id=<?php echo $me_id;?>&depth1_id=<?php echo $depth1_id;?>&depth2_id=<?php echo $depth_menu[$i]["id"];?>'"></td>
+                    <th>작업선택</th>
                 </tr>
-            <?php }?>
-            <tr class="memo">
-                <td>
-                    <h2>MEMO</h2>
-                    <div class="memo_area" style="width:100%;height:500px;padding:10px;">
-                        <textarea name="memo_content" id="memo_content" ></textarea>
-                    </div>
-                </td>
-            </tr>
-        </table>
+                <tr></tr>
+                <?php
+                for($i=0;$i<count($depth_menu);$i++){
+                ?>
+                    <tr>
+                        <td class="menu_padding"><input type="button"  value="<?php echo $depth_menu[$i]['depth_name'];?>" class="depth_btn <?php if($depth_menu[$i]["id"]==$depth2_id){?>active<?php }?>" onclick="location.href=g5_url+'/page/view.php?me_id=<?php echo $me_id;?>&depth1_id=<?php echo $depth1_id;?>&depth2_id=<?php echo $depth_menu[$i]["id"];?>'"></td>
+                    </tr>
+                <?php }?>
+                <tr class="memo">
+                    <td>
+                        <h2>MEMO</h2>
+                        <div class="memo_area" style="width:100%;height:300px;padding:10px;">
+                            <textarea name="memo_content" id="memo_content" ></textarea>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="right">
+            <table class="view_table_scroll" >
+                <tr>
+                    <!--th>직업선택</th-->
+                    <th style="width:12%;">구분</th>
+                    <th style="width:12%;">항목</th>
+                    <th style="width:auto;">주요확인내용</th>
+                    <th style="width:120px;">참고</th>
+                    <?php if($is_member && $myconstruction){?>
+                        <th style="width:5%;">확인</th>
+                        <th style="width:10%;">제출일</th>
+                    <?php }?>
+                    <th style="width:6%;">지연일</th>
+                </tr>
+            </table>
         <table class="view_table" >
             <?php
             if($depth5num > 0) {
             ?>
-            <colgroup>
-                <!--<col width="10%">-->
-                <!--col width="10%"-->
-                <col width="12%">
-                <col width="12%">
-                <col width="*">
-                <col width="10%">
-                <?php if($is_member && $myconstruction){?>
-                <col width="5%">
-                <col width="10%">
-                <?php }?>
-                <col width="6%">
-            </colgroup>
+            <thead>
             <tr>
                 <!--th>직업선택</th-->
-                <th>구분</th>
-                <th>항목</th>
-                <th>주요확인내용</th>
-                <th>참고</th>
+                <th style="width:12%;">구분</th>
+                <th style="width:12%;">항목</th>
+                <th style="width:auto;">주요확인내용</th>
+                <th style="width:120px;">참고</th>
                 <?php if($is_member && $myconstruction){?>
-                <th>확인</th>
-                <th>제출일</th>
+                <th style="width:5%;">확인</th>
+                <th style="width:10%;">제출일</th>
                 <?php }?>
-                <th>지연일</th>
+                <th style="width:6%;">지연일</th>
             </tr>
+            </thead>
+            <tbody>
             <tr></tr>
             <?php
             $depth_last = 1;
@@ -362,6 +369,7 @@ $myconstruction = false;
                 ?>
                 <?php if($num4 > 0 && $num3 > 0){
                     ?>
+            <thead>
             <colgroup>
                 <col width="10%">
                 <col width="12%">
@@ -369,7 +377,6 @@ $myconstruction = false;
                 <col width="10%">
                 <col width="6%">
             </colgroup>
-            <tbody>
                 <tr>
                     <th>구분</th>
                     <th>항목</th>
@@ -377,32 +384,34 @@ $myconstruction = false;
                     <th>참고</th>
                     <th>기준일</th>
                 </tr>
+            </thead>
+            <tbody>
             <tr></tr>
             <?php
             $depth_last = 1;
             for($i=0;$i<count($list);$i++){?>
             <tr >
-            <?php for($j=0;$j<count($list[$i]['depth2']);$j++) {?>
-            <td rowspan="<?php echo $list[$i]['depth2'][$j]['cnt'];?>" class="depth1">
-                <?php echo $list[$i]['depth2'][$j]['depth_name'];?>
-            </td>
-            <?php
-            for($k=0;$k<count($list[$i]['depth2'][$j]['depth3']);$k++) { ?>
-            <td rowspan="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['cnt'];?>"  class="depth2">
-                <?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth_name'];?>
-            </td>
-            <?php
-            for ($l = 0; $l < count($list[$i]['depth2'][$j]['depth3'][$k]['depth4']); $l++) {
-            $depth_last++;?>
-            <td class="depth3">
-                <?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['content'];?>
-            </td>
-            <td class="etc">
-                <input type="button" value="미리보기" onclick="fnViewEtc('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>')">
-            </td>
-            <td class="depth6">
-                <?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['submit_date'];?>
-            </td>
+                <?php for($j=0;$j<count($list[$i]['depth2']);$j++) {?>
+                <td rowspan="<?php echo $list[$i]['depth2'][$j]['cnt'];?>" class="depth1">
+                    <?php echo $list[$i]['depth2'][$j]['depth_name'];?>
+                </td>
+                <?php
+                for($k=0;$k<count($list[$i]['depth2'][$j]['depth3']);$k++) { ?>
+                <td rowspan="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['cnt'];?>"  class="depth2">
+                    <?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth_name'];?>
+                </td>
+                <?php
+                for ($l = 0; $l < count($list[$i]['depth2'][$j]['depth3'][$k]['depth4']); $l++) {
+                $depth_last++;?>
+                <td class="depth3">
+                    <?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['content'];?>
+                </td>
+                <td class="etc">
+                    <input type="button" value="미리보기" onclick="fnViewEtc('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>')">
+                </td>
+                <td class="depth6">
+                    <?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['submit_date'];?>
+                </td>
             </tr>
             <?php if($list[$i]['cnt'] >= $depth_last){?>
             <tr class="<?php if($list[$i]['cnt'] == $depth_last){echo "finish_".$list[$i]["id"];}?>">
@@ -494,6 +503,7 @@ $myconstruction = false;
                 <?php }?>
             <?php } ?>
         </table>
+        </div>
         <div class="clear"></div>
     </div>
 </div>
@@ -518,9 +528,26 @@ $myconstruction = false;
 <script src="<?php echo G5_JS_URL ?>/jquery-ui-1.9.2.custom.js"></script>
 <script>
 $(function(){
-    var tbl_width = $(".menu_table").width();
-    tbl_width = tbl_width + 24;
-    $(".view_table").attr("style","width:calc(100% - "+tbl_width+"px)");
+    $(document).scroll(function(){
+        var top = $(this).scrollTop();
+        if(top > 160){
+            console.log($(".menu_table").height());
+            if($(".view_table").height()>960 || $(".menu_table").height() > 960) {
+                $(".left").attr("style", "position:fixed;top:20px");
+                $(".right").attr("style", "margin-left:220px;");
+                $(".view_table_scroll").attr("style", "display:table;position: fixed;top: 0;");
+                $(".view_table thead").attr("style", "opacity:0");
+            }
+        }else{
+            $(".left").removeAttr("style");
+            $(".right").removeAttr("style");
+            $(".view_table_scroll").removeAttr("style");
+            $(".view_table thead").removeAttr("style");
+        }
+    });
+    //var tbl_width = $(".menu_table").width();
+    //tbl_width = tbl_width + 24;
+    //$(".view_table").attr("style","width:calc(100% - "+tbl_width+"px)");
 
     $("#menu_code").change(function(){
         //선택된 값으로 2dpeth의 옵션 갑 변경

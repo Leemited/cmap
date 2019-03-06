@@ -34,7 +34,7 @@ html,body{font-family: "nsr", Sans-serif;}
 .modalpopup .modal_in .modal_content .idinfo{margin: 10px 0 30px 0;text-align: center;font-size: 16px;}
 
 .email_mark{text-align: center;height:40px;}
-.email_mark:before{content:"@";font-size:16px;font-family: "nsr", Sans-serif;text-align: center;line-height:39px;}
+.email_mark:before{content:"@";font-size:16px;font-family:"nsr", Sans-serif;text-align: center;line-height:39px;}
 
 .modal_btns{text-align: center;padding-top:20px 0;}
 
@@ -139,18 +139,22 @@ html,body{font-family: "nsr", Sans-serif;}
 .sub_ft #ft_link a{color:#808080}
 .view {padding:20px 20px 160px 20px;height: 100%;display: inline-block;background-color:#FFF;width:100%}
 
-.view .menu_table{width:200px;float:left;margin-right:20px;height:100%;border-spacing: 2px;}
+.view .left{width:200px;float:left;margin-right:20px;}
+.view .menu_table{width:100%;border-spacing: 2px;}
 .view .menu_table .memo{background-color:#fdfad9;padding:10px;}
 .view .menu_table .memo textarea{width:100%;border:none;background-color:transparent;height:100%;resize:none;}
 .view .menu_table .memo h2{padding:10px;font-size:16px;}
 .view table tr:nth-child(2){border-bottom:4px;}
 .view .menu_table tr th{background-color:#002d62;color:#fff;font-size:18px;text-align: center ;padding:6px 0;}
 .view .menu_table tr td{background-color: transparent;border:none;}
-.view .menu_table tr td .depth_btn{background-color:#f1f1f1;color:#000;font-size:15px;text-align: center;width:100%;border:1px solid #c8c8c8;padding:4px 0;}
+.view .menu_table tr td .depth_btn{background-color:#f1f1f1;color:#000;font-size:15px;text-align: center;width:100%;border:1px solid #c8c8c8;padding:4px 0;cursor: pointer;}
 .view .menu_table tr td .depth_btn.active,
 .view .menu_table tr td .depth_btn:hover{background-color: #666;border:1px solid #666;color:#fff;}
-.view .view_table{float:left;width:calc(100% - 230px);border-spacing:4px;}
+.view .right{float:left;width:calc(100% - 230px);border-spacing:4px;margin-top: 11px;}
+.view .view_table{width:100%;border-spacing:4px;}
 .view .view_table tr th{background-color:#002d62;color:#fff;font-size:18px;text-align: center ;padding:6px 0;border-spacing:4px;}
+.view .view_table_scroll {display: none;width: calc(100% - 270px);;border-spacing:4px;}
+.view .view_table_scroll tr th{background-color:#002d62;color:#fff;font-size:18px;text-align: center ;padding:6px 0;border-spacing:4px;}
 .view .view_table tr td{background-color:#f6f6f6;padding:5px;font-size:15px;}
 .view .view_table tr td.depth1{text-align:center;vertical-align: middle;color:#fff;background-color:#9ca0ae;border-spacing:4px;}
 .view .view_table tr td.depth2{text-align:center;vertical-align: middle;color:#000;background-color:#e6e6e2;border-spacing:4px;}
@@ -467,6 +471,7 @@ header.sub h2:before{content:"";width:30px;height:3px;background-color:#0e2080;p
 .mylocation .search_box > div .basic_btn01{width:30%}
 .mylocation .search_loc{position:relative}
 
+.construct_write{position: relative}
 .construct_write .write_box{padding:40px;background-color:#fff;border:1px solid #ddd;border-top:2px solid #001738;margin-bottom:90px;}
 .construct_write h2{font-size:24px;}
 .construct_write h3{text-align: left;padding: 15px 0;font-size: 20px;font-family: "nsr", Sans-serif;font-weight: lighter;}
@@ -476,6 +481,7 @@ header.sub h2:before{content:"";width:30px;height:3px;background-color:#0e2080;p
 .construct_write table td input[type=text]{padding:10px;width:calc(100% - 6px);margin:3px;}
 .construct_write table td input[type=text]#reg_mb_zip{width:50%;}
 .construct_write table td input[type=text].price_input{width:90%;}
+.construct_write table td input[type=text].datepicker{font-size:16px;}
 .construct_write table td button{padding:10px;width:30%}
 .construct_write table:first-child{margin-bottom:20px;}
 .construct_write table:first-child th{background-color:#f5f5f5;font-size:17px;width:260px;padding:15px;border-top:2px solid #ddd;border-bottom:2px solid #ddd;border-left:none;}
@@ -511,4 +517,20 @@ header.sub h2:before{content:"";width:30px;height:3px;background-color:#0e2080;p
 .construct_write table.write_date2 td input,
 .construct_write table.write_date3 td input{width:86%;}
 .ui-datepicker-trigger{width:40px;}
+
+.construct_write table.sub_table th{border-top:2px solid #001738;border-right:1px dashed #ddd;text-align: center;font-size:16px;padding:13px 0;background-color:#FFF;border-bottom:none;}
+.construct_write table.sub_table tr.start_tr td{border-top:20px solid #fff;}
+.construct_write table.sub_table tr.start_tr.zero td{border-top:none;}
+.construct_write table.sub_table tr.last_tr td{border-bottom:2px solid #d1d1d1}
+.construct_write table.sub_table th:last-child{border-right:none;}
+.construct_write table.sub_table td {border:3px solid #fff;font-size:16px;padding:5px 10px;color:#666666}
+.construct_write table.sub_table td.depth1 {background-color: #9ca0ae;color:#fff;border-bottom:2px solid #d1d1d1}
+.construct_write table.sub_table td.depth2 {background-color: #e6e6e2}
+.construct_write table.sub_table td.depth3 {background-color: #f6f6f6}
+.construct_write table.sub_table td.depth3 div{border-bottom:1px solid #ddd;}
+.construct_write table.sub_table td.depth3 .basic_input01{padding:5px;margin:8px 0;background-color: transparent;border:none;width:60%;color:#666}
+.construct_write table.sub_table td input[type=checkbox]{display:none}
+.construct_write table.sub_table td input[type=checkbox] + label{width:20px;height:20px;border:2px solid #ddd;background-color:#fff;display:inline-block}
+.construct_write table.sub_table td input[type=checkbox]:checked + label{border:2px solid #002d62;background-image:url("../img/ic_checked.svg");background-size:18px 18px;background-position:center;background-repeat:no-repeat}
+.construct_write .save_btns{position:absolute;right:0;top:35px;}
 /* 현장관리 */

@@ -11,13 +11,15 @@ $res = sql_query($sql);
 $i=0;
 while($row = sql_fetch_array($res)){
     $list["depth1"][$i]=$row;
-    $sql = "select * from `cmap_depth1` where me_code = '{$row["menu_code"]}'";
+    $sql = "select * from `cmap_depth1` where me_code = '{$row["menu_code"]}' order by id asc";
     $ress = sql_query($sql);
     $l=0;
+    $cnt = 0;
     while($rows = sql_fetch_array($ress)){
         $list["depth1"][$i]["depth2"][$l]=$rows;
         $l++;
     }
+    $list["cnt"][$i] = $l;
     $i++;
 }
 ?>
@@ -32,14 +34,17 @@ while($row = sql_fetch_array($res)){
         <div class="construct_write">
             <h2>현장개설</h2>
             <h3><i></i> 공사 및 착·준공 관리</h3>
-            <form action="<?php echo G5_URL;?>/page/mylocation/mylocation_step2_update.php" method="post" name="write_step2">
+            <div class="save_btns">
+                <input type="button" value="저장" class="basic_btn03" onclick="fnSave();">
+            </div>
+            <form action="<?php echo G5_URL;?>/page/mylocation/mylocation_step3_update.php" method="post" name="write_step2">
                 <input type="hidden" value="<?php echo $id;?>" name="id">
             <div class="write_box">
                 <table class="write_date1">
                     <tr>
                         <th>계약상 착공일</th>
                         <td>
-                            <input type="text" id="datepicker1" class="datepicker" name="date1">
+                            <input type="text" id="datepicker1" class="datepicker" name="date1" value="<?php echo date("Y-m-d");?>">
                         </td>
                     </tr>
                 </table>
@@ -47,7 +52,7 @@ while($row = sql_fetch_array($res)){
                     <tr>
                         <th>실 착공일</th>
                         <td>
-                            <input type="text" id="datepicker2" class="datepicker" name="date2">
+                            <input type="text" id="datepicker2" class="datepicker" name="date2" value="<?php echo date("Y-m-d");?>">
                         </td>
                     </tr>
                 </table>
@@ -55,28 +60,60 @@ while($row = sql_fetch_array($res)){
                     <tr>
                         <th>준공일</th>
                         <td>
-                            <input type="text" id="datepicker3" class="datepicker" name="date3">
+                            <input type="text" id="datepicker3" class="datepicker" name="date3" value="<?php echo date("Y-m-d", strtotime(" +1 month"));?>" >
                         </td>
                     </tr>
                 </table>
                 <div class="clear"></div>
                 <div class="sub_cates">
-                    <table>
-                        <tr>
-                            <th>공사명</th>
-                            <th>분야<th>
-                            <th>요약</th>
-                            <th>적용</th>
-                            <th>착수일</th>
-                            <th>종료일</th>
-                        </tr>
+                    <form action="">
+                        <table class="sub_table">
+                            <tr>
+                                <th style="width:10%">공사명</th>
+                                <th style="width:20%">분야</th>
+                                <th style="width:auto;">요약</th>
+                                <th style="width:80px;">적용</th>
+                                <th style="width:220px">착수일</th>
+                                <th style="width:220px">종료일</th>
+                            </tr>
 
-                        <?php
-                        for($i=0;$i<count($depth1);$i++){
-
-                        }
-                        ?>
-                    </table>
+                            <?php
+                                for($i=0;$i<count($list["depth1"]);$i++){
+                                    $a=0;
+                                ?>
+                                <tr class="start_tr <?php if($i==0){?>zero<?php }?>">
+                                    <td class="depth1 td_center" rowspan="<?php echo $list["cnt"][$i];?>">
+                                        <?php echo $list["depth1"][$i]["menu_name"];?>
+                                    </td>
+                                    <?php for($j=0;$j<count($list["depth1"][$i]["depth2"]);$j++){
+                                        $a++;
+                                        if($j!=0){ if(($j+1)==$list["cnt"][$i]){echo "<tr class='last_tr'>";}else{echo "<tr>";}}
+                                        ?>
+                                        <td class="depth2 td_center">
+                                            <?php echo $list["depth1"][$i]["depth2"][$j]["depth_name"];?>
+                                        </td>
+                                        <td class="depth3">
+                                            <?php echo ($list["depth1"][$i]["depth2"][$j]["depth_desc"])?$list["depth1"][$i]["depth2"][$j]["depth_desc"]:"등록된 요약이 없습니다.";?>
+                                        </td>
+                                        <td class="td_center depth3">
+                                            <input type="hidden" name="pk_id[]" value="<?php echo $list["depth1"][$i]["depth2"][$j]["pk_id"];?>">
+                                            <input type="checkbox" name="pk_id_active[]" value="1" checked id="label_<?php echo $list["depth1"][$i]["depth2"][$j]["pk_id"];?>"><label for="label_<?php echo $list["depth1"][$i]["depth2"][$j]["pk_id"];?>"></label>
+                                        </td>
+                                        <td class="td_center depth3">
+                                            <div>
+                                                <input type="text" class="basic_input01 datepicker" name="start_date[]" value="<?php echo date("Y-m-d");?>">
+                                            </div>
+                                        </td>
+                                        <td class="td_center depth3">
+                                            <div>
+                                                <input type="text" class="basic_input01 datepicker" name="end_date[]" value="<?php echo date("Y-m-d", strtotime(" +1 month"));?>">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <?php }?>
+                            <?php }?>
+                        </table>
+                    </form>
                 </div>
                 <div class="btn_group2">
                     <input type="button" class="basic_btn02 width10" value="< 이전" onclick="location.href='<?php echo G5_URL;?>/page/mylocation/mylocation_step2.php?id=<?php echo $id;?>'">
@@ -119,6 +156,8 @@ while($row = sql_fetch_array($res)){
         });
 
     });
+    /*function fnDateUpdate(date){
+    }*/
 </script>
 <?php
 include_once (G5_PATH."/tail.php");

@@ -1019,7 +1019,15 @@ $(function() {
                 break;
         }
     });
-
+    $("#hd").mouseover(function(){
+        //$("#main").addClass("blur");
+        //$("#ft").addClass("blur");
+        $(".container").addClass("blur");
+    }).mouseout(function(){
+        //$("#main").removeClass("blur");
+        //$("#ft").removeClass("blur");
+        $(".container").removeClass("blur");
+    });
 });
 
 //현장등록 팝업
@@ -1032,6 +1040,14 @@ function fnConstConfirm(){
         fnShowModal(data);
 
     });
+}
+
+function fnSearch(){
+    if(!$(".search_area").hasClass("active")){
+        $(".search_area").addClass("active");
+    }else{
+        $(".search_area").removeClass("active");
+    }
 }
 
 function viewKorean(num) {

@@ -12,6 +12,7 @@ if (G5_IS_MOBILE) {
 }
 
 ?>
+</div>
 
     <!--</div>
     <div id="aside">
@@ -76,7 +77,6 @@ if (G5_IS_MOBILE) {
     </script>
     --><?php /*}*/?>
 </div>
-
 <?php
 if(G5_DEVICE_BUTTON_DISPLAY && !G5_IS_MOBILE) { ?>
 <?php
