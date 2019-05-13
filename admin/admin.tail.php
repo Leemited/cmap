@@ -5,7 +5,7 @@
 </footer>
 <!--footer-->
 <div class="modal">
-    <form action="<?php echo G5_URL?>/admin/content_update.php" method="post" name="etcform" id="etcform" enctype="multipart/form-data" onsubmit="return false">
+    <form name="etcform" id="etcform" enctype="multipart/form-data" onsubmit="return false">
         <input type="hidden" value="" name="content_id" id="content_id">
         <fieldset>
             <label for="name">참고링크</label>
@@ -62,7 +62,7 @@
 </div>
 
 <div class="submenu_modal">
-    <form action="<?php echo G5_URL?>/admin/menu_sub_insert.php" name="sub_menu_form" method="post" id="sub_menu_form" >
+    <form action="<?php echo G5_URL?>/admin/menu_sub_insert" name="sub_menu_form" method="post" id="sub_menu_form" >
         <input type="hidden" name="menu_code" value="" class="menu_code">
         <fieldset>
             <label for="name">서브메뉴명</label>
@@ -175,7 +175,7 @@
             data: formData,
             dataType:"json",
             error:function(data){
-              console.log(data);
+              console.log("error : " + data);
             },
             success: function(data){
                 console.log(data);
@@ -227,7 +227,10 @@
                             $("#"+data.id+" #files").append(fileitem);
                         }
                     }
+                }else{
+                    $("#"+data.id+" #files").html('');
                 }
+
                 if(data.filename2){
                     var addfile = data.filename2.split("``");
                     var addfilename = data.file_names2.split("``");
@@ -243,6 +246,8 @@
                             $("#"+data.id+" #files2").append(fileitem);
                         }
                     }
+                }else{
+                    $("#"+data.id+" #files2").html('');
                 }
                 //console.log(data.sql);
                 dialog.dialog( "close" );

@@ -59,7 +59,7 @@ $email_msg = $is_exists_email ? '등록할 이메일이 중복되었습니다.�
                 </section>
                 <section id="fregister_term">
                     <h2><i></i> 이용약관</h2>
-                    <textarea readonly><?php echo get_text($config['cf_stipulation']) ?></textarea>
+                    <div class="agree_box"><?php echo $config['cf_stipulation'] ?></div>
                     <fieldset class="fregister_agree">
                         <input type="checkbox" name="agree" value="1" id="agree11">
                         <label for="agree11"><span></span>회원가입약관의 내용에 동의합니다.</label>
@@ -68,7 +68,7 @@ $email_msg = $is_exists_email ? '등록할 이메일이 중복되었습니다.�
 
                 <section id="fregister_private">
                     <h2><i></i> 개인정보처리방침안내</h2>
-                    <textarea readonly><?php echo get_text($config['cf_stipulation']) ?></textarea>
+                    <div class="agree_box"><?php echo $config['cf_stipulation'] ?></div>
                     <!--<div>
                         <table>
                             <caption>개인정보처리방침안내</caption>
@@ -124,8 +124,10 @@ $email_msg = $is_exists_email ? '등록할 이메일이 중복되었습니다.�
                 <section id="fregister_private">
                     <h2><i></i> 개인정보 등록</h2>
                     <div id="login_fs">
-
-                        <input type="text" name="mb_email" value="<?php echo isset($user_email)?$user_email:''; ?>" id="reg_mb_email" required class="frm_input email required full_input" size="70" maxlength="100" placeholder="이메일을 입력해주세요." >
+                        <?php $user_emails = explode("@",$user_email);?>
+                        <input type="text" name="mb_email" id="reg_mb_email" value="<?php echo $user_emails[0];?>">
+                        <input type="text" name="mb_email2" id="reg_mb_email2" value="<?php echo $user_emails[1];?>">
+                        <input type="text" name="mb_email_t" value="<?php echo isset($user_email)?$user_email:''; ?>" id="reg_mb_email_t" required class="frm_input email required full_input" size="70" maxlength="100" placeholder="이메일을 입력해주세요." onchange="fnEmailChange(this.value)">
                         <?php if($email_msg){?>
                         <p class="email_msg"><?php echo $email_msg; ?></p>
                         <?php } ?>
@@ -186,11 +188,12 @@ $email_msg = $is_exists_email ? '등록할 이메일이 중복되었습니다.�
         }
 
         // E-mail 검사
-        if ((f.w.value == "") || (f.w.value == "u" && f.mb_email.defaultValue != f.mb_email.value)) {
+        if (f.w.value == "")  {
             var msg = reg_mb_email_check();
-            if (msg) {
-                alert(msg);
-                jQuery(".email_msg").html(msg);
+            msg  = msg.replace(/(\n|\r\n)/g, "");
+            if (msg && msg != "!") {
+                //alert(msg);
+                $(".email_msg").html(msg);
                 f.reg_mb_email.select();
                 return false;
             }
@@ -236,6 +239,12 @@ $email_msg = $is_exists_email ? '등록할 이메일이 중복되었습니다.�
             }
         });
     });
+
+    function fnEmailChange(email){
+        var emails = email.split("@");
+        $("#reg_mb_email").val(emails[0]);
+        $("#reg_mb_email2").val(emails[1]);
+    }
     </script>
 
 </div>

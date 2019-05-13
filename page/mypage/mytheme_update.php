@@ -1,8 +1,6 @@
 <?php
 include_once ("../../common.php");
-if(!$is_member){
-    alert("로그인이 필요합니다.",G5_BBS_URL."/login.php");
-}
+include_once (G5_PATH."/page/mypage/confirm.php");
 
 if($theme==""){
     alert("메뉴디자인을 선택해주세요");

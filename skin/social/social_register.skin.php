@@ -7,11 +7,11 @@ if( ! $config['cf_social_login_use']) {     //소셜 로그인을 사용하지 �
 
 $social_pop_once = false;
 
-$self_url = G5_BBS_URL."/login.php";
+$self_url = G5_BBS_URL."/login";
 
 //새창을 사용한다면
 if( G5_SOCIAL_USE_POPUP ) {
-    $self_url = G5_SOCIAL_LOGIN_URL.'/popup.php';
+    $self_url = G5_SOCIAL_LOGIN_URL.'/popup';
 }
 
 // add_stylesheet('css 구문', 출력순서); 숫자가 작을 수록 먼저 출력됨

@@ -8,7 +8,7 @@ if(!$pk_id){
 }
 
 $sql = "select * from `cmap_content` where pk_id = '{$pk_id}'";
-$result["sql"] = $sql;
+
 if($con = sql_fetch($sql)){
     $linkname = explode("``",$con["linkname"]);
     for($i=0;$i<count($linkname);$i++){

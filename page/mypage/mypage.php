@@ -2,14 +2,8 @@
 include_once ("../../common.php");
 $sub = "sub";
 $mypage = true;
+$menu_id = "depth_desc_home";
 include_once (G5_PATH."/_head.php");
-
-if(!$is_member){
-    alert("로그인이 필요합니다.",G5_BBS_URL."/login.php");
-}
-/*if($is_admin){
-    alert("관리자는 관리자페이지를 통해 이용 바랍니다.");
-}*/
 
 $myset = sql_fetch("select * from `cmap_mymenu_theme` where mb_id = '{$member["mb_id"]}'");
 
@@ -19,7 +13,7 @@ $myset = sql_fetch("select * from `cmap_mymenu_theme` where mb_id = '{$member["m
         <header class="top">
             <h2>MY C.MAP</h2>
             <div class="logout">
-                <a href="<?php echo G5_BBS_URL;?>/logout.php"><span></span>로그아웃</a>
+                <a href="<?php echo G5_BBS_URL;?>/logout"><span></span>로그아웃</a>
             </div>
         </header>
         <aside class="mypage_menu">
@@ -29,11 +23,11 @@ $myset = sql_fetch("select * from `cmap_mymenu_theme` where mb_id = '{$member["m
             <div class="mbottom">
                 <ul class="mmenu">
                     <li class="active"><i></i>홈페이지 설정</li>
-                    <li onclick="location.href=g5_url+'/page/mypage/quickmenu.php'"><i></i>퀵메뉴 설정</li>
-                    <li onclick="location.href=g5_url+'/page/mypage/navigator.php'"><i></i>네비게이터 설정</li>
-                    <li onclick="location.href=g5_url+'/page/mypage/guide.php'"><i></i>사용자 가이드 설정</li>
-                    <li onclick="location.href=g5_url+'/page/mypage/edit_profile_chkpwd.php'"><i></i>개인정보 수정</li>
-                    <li onclick="location.href=g5_url+'/page/mypage/member_leave.php'"><i></i>회원탈퇴</li>
+                    <li onclick="location.href=g5_url+'/page/mypage/quickmenu'"><i></i>퀵메뉴 설정</li>
+                    <li onclick="location.href=g5_url+'/page/mypage/navigator'"><i></i>네비게이터 설정</li>
+                    <!--<li onclick="location.href=g5_url+'/page/mypage/guide'"><i></i>사용자 가이드 설정</li>-->
+                    <li onclick="location.href=g5_url+'/page/mypage/edit_profile_chkpwd'"><i></i>개인정보 수정</li>
+                    <li onclick="location.href=g5_url+'/page/mypage/member_leave'"><i></i>회원탈퇴</li>
                 </ul>
             </div>
         </aside>
@@ -42,7 +36,7 @@ $myset = sql_fetch("select * from `cmap_mymenu_theme` where mb_id = '{$member["m
                 <h2>홈페이지 설정</h2>
             </header>
             <div class="homepage_con">
-                <form action="<?php echo G5_URL?>/page/mypage/mytheme_update.php" name="themeform" method="post">
+                <form action="<?php echo G5_URL?>/page/mypage/mytheme_update" name="themeform" method="post">
                     <h3>메뉴디자인 설정</h3>
                     <ul>
                         <li class="float">

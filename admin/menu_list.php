@@ -21,11 +21,11 @@ while($row = sql_fetch_array($result)){
         <div class="menu_tab">
             <ul>
                 <li class="active">사용메뉴</li>
-                <li onclick="location.href='<?php echo G5_URL?>/admin/menu_del_list.php'">삭제메뉴</li>
+                <li onclick="location.href='<?php echo G5_URL?>/admin/menu_del_list'">삭제메뉴</li>
             </ul>
         </div>
         <div class="clear"></div>
-        <form action="<?php echo G5_URL?>/admin/menu_list_update.php" method="post" >
+        <form action="<?php echo G5_URL?>/admin/menu_list_update" method="post" >
             <input type="hidden" name="type" value="in">
             <input type="hidden" name="menu_depth" value="1">
             <div class="admin_content">
@@ -103,8 +103,8 @@ while($row = sql_fetch_array($result)){
                                     <?php if(strlen($menus[$i]['menu_code']) == 2) { ?>
                                         <button type="button" class="btn_add_submenu btn_03 " onclick="fnAddMenu('<?php echo $menus[$i]['menu_name'];?>','<?php echo $menus[$i]['menu_code'];?>','')">추가</button>
                                     <?php } ?>
-                                    <button onclick="fnUpdateMenu('<?php echo G5_URL?>/admin/menu_list_update.php','<?php echo $menus[$i]["me_id"];?>','<?php echo $menus[$i]["menu_depth"];?>')" >수정</button>
-                                    <button type="button" class="btn_del_menu btn_02" onclick="fnDelMenu('<?php echo G5_URL?>/admin/menu_list_update.php?type=del&menu_depth=0&me_id=<?php echo $menus[$i]["me_id"]?>&menu_code=<?php echo $menus[$i]["menu_code"];?>');">삭제</button>
+                                    <button onclick="fnUpdateMenu('<?php echo G5_URL?>/admin/menu_list_update','<?php echo $menus[$i]["me_id"];?>','<?php echo $menus[$i]["menu_depth"];?>')" >수정</button>
+                                    <button type="button" class="btn_del_menu btn_02" onclick="fnDelMenu('<?php echo G5_URL?>/admin/menu_list_update?type=del&menu_depth=0&me_id=<?php echo $menus[$i]["me_id"]?>&menu_code=<?php echo $menus[$i]["menu_code"];?>');">삭제</button>
                                 </td>
                             </tr>
                             <?php
@@ -133,8 +133,8 @@ while($row = sql_fetch_array($result)){
                                         <?php if(strlen($row['menu_code']) == 2) { ?>
                                             <button type="button" class="btn_add_submenu btn_03 " onclick="fnAddMenu('<?php echo $row['menu_name'];?>','<?php echo $row['menu_code'];?>')">추가</button>
                                         <?php } ?>
-                                        <button onclick="fnUpdateMenu('<?php echo G5_URL?>/admin/menu_list_update.php','<?php echo $row["me_id"];?>','<?php echo $row["menu_depth"];?>')" >수정</button>
-                                        <button type="button" class="btn_del_menu btn_02" onclick="fnDelMenu('<?php echo G5_URL?>/admin/menu_list_update.php?type=del&menu_depth=1&me_id=<?php echo $row["me_id"]?>&menu_code=<?php echo $row["menu_code"];?>');">삭제</button>
+                                        <button onclick="fnUpdateMenu('<?php echo G5_URL?>/admin/menu_list_update','<?php echo $row["me_id"];?>','<?php echo $row["menu_depth"];?>')" >수정</button>
+                                        <button type="button" class="btn_del_menu btn_02" onclick="fnDelMenu('<?php echo G5_URL?>/admin/menu_list_update?type=del&menu_depth=1&me_id=<?php echo $row["me_id"]?>&menu_code=<?php echo $row["menu_code"];?>');">삭제</button>
                                     </td>
                                 </tr>
                             <?php

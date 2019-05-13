@@ -26,11 +26,11 @@ include_once(G5_PATH.'/head.php');
         </div>
     </div>
 </div>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=66b0c8ec7fbce830de7902a16ad06d12&libraries=services"></script>
 <script src="<?php echo G5_JS_URL ?>/owl.carousel.js"></script>
 <script>
     $(function() {
         var owl = $("#main");
-        console.log(owl);
         owl.owlCarousel({
             animateOut: 'fadeOut',
             autoplay: true,
@@ -38,10 +38,54 @@ include_once(G5_PATH.'/head.php');
             autoplaySpeed: 2000,
             smartSpeed: 2000,
             loop: true,
-            dots: true,
+            dots: false,
             items: 1
         });
+        getLocation();
     });
+
+    // 주소-좌표 변환 객체를 생성합니다
+    var geocoder = new daum.maps.services.Geocoder();
+
+    function getLocation()
+    {
+        window.navigator.geolocation.getCurrentPosition(current_position);
+    }
+
+    function current_position(position)
+    {
+        var coords = new daum.maps.LatLng(position.coords.latitude,position.coords.longitude);
+        searchAddrFromCoords(coords,getWeatherInfo);
+    }
+
+
+    function searchAddrFromCoords(coords, callback) {
+        // 좌표로 행정동 주소 정보를 요청합니다
+        geocoder.coord2RegionCode(coords.getLng(), coords.getLat(), callback);
+    }
+
+    function getWeatherInfo(result){
+        $.ajax({
+            url:g5_url+"/page/ajax/ajax.get_weather_location.php",
+            method:"post",
+            data:{addr1:result[0].region_1depth_name,addr2:result[0].region_2depth_name,addr3:result[0].region_3depth_name},
+            dataType:"json"
+        }).done(function(data){
+            console.log(data);
+            if(data.tmn[0] && data.tmx[0]){
+                var min = Math.floor(data.tmn[0]);
+                var max = Math.floor(data.tmx[0]);
+                if(data.temp[0]) {
+                    var current = data.temp[0];
+                    $(".now_temp").html(current+"℃");
+                }
+                $(".temp_min_max").html(min+"℃ / "+max+"℃");
+                $(".addr").html(data.addr);
+                $(".timedesc").html(data.time);
+            }
+        });
+    }
+
 </script>
 <?php
 include_once(G5_PATH.'/tail.php');

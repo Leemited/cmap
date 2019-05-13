@@ -64,18 +64,21 @@ if (defined('G5_IS_ADMIN')) {
     echo '<link rel="stylesheet" href="'.G5_CSS_URL.'/'.(G5_IS_MOBILE?'mobile':'default').'.css?ver='.G5_CSS_VER.'">'.PHP_EOL;
     echo '<link rel="stylesheet" href="'.G5_CSS_URL.'/style.css?ver='.G5_CSS_VER.'">'.PHP_EOL;
 }
+
+$userAgent = $_SERVER["HTTP_USER_AGENT"];
+
 ?>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <link rel="stylesheet" href="<?php echo G5_CSS_URL;?>/owl.carousel.css">
 
-
-<!--[if gte IE 8]>-->
-<link rel="stylesheet" href="<?php echo G5_CSS_URL;?>/ie.css">
-<!--<![endif]-->
-
 <!--[if lte IE 8]>
 <script src="<?php echo G5_JS_URL ?>/html5.js"></script>
 <![endif]-->
+
+<!--익스플로러 체크-->
+<?php if ( preg_match('~MSIE|Internet Explorer~i', $userAgent ) || (strpos($userAgent , 'Trident/7.0; rv:11.0') !== false) ) { ?>
+    <link rel="stylesheet" href="<?php echo G5_CSS_URL;?>/ie.css">
+<?php }?>
 
 <script>
 // 자바스크립트에서 사용하는 전역변수 선언
@@ -101,16 +104,11 @@ document.onselectstart = new Function('return false');   // 선택 방지
 </script>
 <script src="<?php echo G5_JS_URL ?>/jquery-1.8.3.min.js"></script>
 <script src="<?php echo G5_JS_URL ?>/jquery.menu.js?ver=<?php echo G5_JS_VER; ?>"></script>
-<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=66b0c8ec7fbce830de7902a16ad06d12&libraries=services"></script>
 <script src="<?php echo G5_JS_URL ?>/common.js?ver=<?php echo G5_JS_VER; ?>"></script>
 <script src="<?php echo G5_JS_URL ?>/wrest.js?ver=<?php echo G5_JS_VER; ?>"></script>
 <script src="<?php echo G5_JS_URL ?>/placeholders.min.js"></script>
-<script src="https://code.jquery.com/jquery-1.12.4.min.js"
-        integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ"
-        crossorigin="anonymous">
-</script>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
 <script src="<?php echo G5_JS_URL ?>/jQuery.resizableColumns.js"></script>
-
     <link rel="stylesheet" href="<?php echo G5_JS_URL ?>/font-awesome/css/font-awesome.min.css">
 <?php
 if(G5_IS_MOBILE) {

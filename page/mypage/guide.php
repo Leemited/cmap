@@ -2,6 +2,7 @@
 include_once ("../../common.php");
 $sub="sub";
 $mypage=true;
+include_once (G5_PATH."/page/mypage/confirm.php");
 include_once (G5_PATH."/_head.php");
 ?>
 <div class="width-fixed">
@@ -9,7 +10,7 @@ include_once (G5_PATH."/_head.php");
         <header class="top">
             <h2>MY C.MAP</h2>
             <div class="logout">
-                <a href="<?php echo G5_BBS_URL;?>/logout.php"><span></span>로그아웃</a>
+                <a href="<?php echo G5_BBS_URL;?>/logout"><span></span>로그아웃</a>
             </div>
         </header>
         <aside class="mypage_menu">
@@ -18,12 +19,12 @@ include_once (G5_PATH."/_head.php");
             </div>
             <div class="mbottom">
                 <ul class="mmenu">
-                    <li onclick="location.href=g5_url+'/page/mypage/mypage.php'"><i></i>홈페이지 설정</li>
-                    <li onclick="location.href=g5_url+'/page/mypage/quickmenu.php'"><i></i>퀵메뉴 설정</li>
-                    <li onclick="location.href=g5_url+'/page/mypage/navigator.php'"><i></i>네비게이터 설정</li>
+                    <li onclick="location.href=g5_url+'/page/mypage/mypage'"><i></i>홈페이지 설정</li>
+                    <li onclick="location.href=g5_url+'/page/mypage/quickmenu'"><i></i>퀵메뉴 설정</li>
+                    <li onclick="location.href=g5_url+'/page/mypage/navigator'"><i></i>네비게이터 설정</li>
                     <li class="active" ><i></i>사용자 가이드 설정</li>
-                    <li onclick="location.href=g5_url+'/page/mypage/edit_profile_chkpwd.php'"><i></i>개인정보 수정</li>
-                    <li onclick="location.href=g5_url+'/page/mypage/member_leave.php'"><i></i>회원탈퇴</li>
+                    <li onclick="location.href=g5_url+'/page/mypage/edit_profile_chkpwd'"><i></i>개인정보 수정</li>
+                    <li onclick="location.href=g5_url+'/page/mypage/member_leave'"><i></i>회원탈퇴</li>
                 </ul>
             </div>
         </aside>

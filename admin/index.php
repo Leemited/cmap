@@ -43,7 +43,7 @@ $colspan = 12;
     <section>
         <div class="admin_title">
             <h2>신규회원 목록</h2>
-            <span class="more" onclick="location.href='./member_list.php'"> + 더보기</span>
+            <span class="more" onclick="location.href='./member_list'"> + 더보기</span>
         </div>
         <div class="admin_content">
             <div class="tbl_head01 tbl_wrap">
@@ -72,7 +72,7 @@ $colspan = 12;
                         $row2 = sql_fetch($sql2);
                         $group = "";
                         if ($row2['cnt'])
-                            $group = '<a href="./boardgroupmember_form.php?mb_id='.$row['mb_id'].'">'.$row2['cnt'].'</a>';
+                            $group = '<a href="./boardgroupmember_form?mb_id='.$row['mb_id'].'">'.$row2['cnt'].'</a>';
 
                         if ($is_admin == 'group')
                         {
@@ -81,10 +81,10 @@ $colspan = 12;
                         }
                         else
                         {
-                            $s_mod = '<a href="./member_form.php?$qstr&amp;w=u&amp;mb_id='.$row['mb_id'].'">수정</a>';
-                            $s_del = '<a href="./member_delete.php?'.$qstr.'&amp;w=d&amp;mb_id='.$row['mb_id'].'&amp;url='.$_SERVER['SCRIPT_NAME'].'" onclick="return delete_confirm(this);">삭제</a>';
+                            $s_mod = '<a href="./member_form?$qstr&amp;w=u&amp;mb_id='.$row['mb_id'].'">수정</a>';
+                            $s_del = '<a href="./member_delete?'.$qstr.'&amp;w=d&amp;mb_id='.$row['mb_id'].'&amp;url='.$_SERVER['SCRIPT_NAME'].'" onclick="return delete_confirm(this);">삭제</a>';
                         }
-                        $s_grp = '<a href="./boardgroupmember_form.php?mb_id='.$row['mb_id'].'">그룹</a>';
+                        $s_grp = '<a href="./boardgroupmember_form?mb_id='.$row['mb_id'].'">그룹</a>';
 
                         $leave_date = $row['mb_leave_date'] ? $row['mb_leave_date'] : date("Ymd", G5_SERVER_TIME);
                         $intercept_date = $row['mb_intercept_date'] ? $row['mb_intercept_date'] : date("Ymd", G5_SERVER_TIME);
@@ -103,7 +103,7 @@ $colspan = 12;
                             <td class="td_mbname"><?php echo get_text($row['mb_name']); ?></td>
                             <td class="td_mbname sv_use"><div><?php echo $mb_nick ?></div></td>
                             <td class="td_num"><?php echo $row['mb_level'] ?></td>
-                            <td><a href="./point_list.php?sfl=mb_id&amp;stx=<?php echo $row['mb_id'] ?>"><?php echo number_format($row['mb_point']) ?></a></td>
+                            <td><a href="./point_list?sfl=mb_id&amp;stx=<?php echo $row['mb_id'] ?>"><?php echo number_format($row['mb_point']) ?></a></td>
                             <td class="td_boolean"><?php echo $row['mb_mailling']?'예':'아니오'; ?></td>
                             <td class="td_boolean"><?php echo $row['mb_open']?'예':'아니오'; ?></td>
                             <td class="td_boolean"><?php echo preg_match('/[1-9]/', $row['mb_email_certify'])?'예':'아니오'; ?></td>
@@ -120,7 +120,7 @@ $colspan = 12;
             </div>
 
             <div class="btn_list03 btn_list">
-                <a href="./member_list.php">회원 전체보기</a>
+                <a href="./member_list">회원 전체보기</a>
             </div>
         </div>
     </section>

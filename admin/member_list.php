@@ -105,7 +105,7 @@ $colspan = 16;
             </div>
 
 
-            <form name="fmemberlist" id="fmemberlist" action="./member_list_update.php" onsubmit="return fmemberlist_submit(this);" method="post">
+            <form name="fmemberlist" id="fmemberlist" action="./member_list_update" onsubmit="return fmemberlist_submit(this);" method="post">
             <input type="hidden" name="sst" value="<?php echo $sst ?>">
             <input type="hidden" name="sod" value="<?php echo $sod ?>">
             <input type="hidden" name="sfl" value="<?php echo $sfl ?>">
@@ -153,14 +153,14 @@ $colspan = 16;
                         $row2 = sql_fetch($sql2);
                         $group = '';
                         if ($row2['cnt'])
-                            $group = '<a href="./boardgroupmember_form.php?mb_id='.$row['mb_id'].'">'.$row2['cnt'].'</a>';
+                            $group = '<a href="./boardgroupmember_form?mb_id='.$row['mb_id'].'">'.$row2['cnt'].'</a>';
 
                         if ($is_admin == 'group') {
                             $s_mod = '';
                         } else {
-                            $s_mod = '<a href="./member_form.php?'.$qstr.'&amp;w=u&amp;mb_id='.$row['mb_id'].'" class="btn btn_03">수정</a>';
+                            $s_mod = '<a href="./member_form?'.$qstr.'&amp;w=u&amp;mb_id='.$row['mb_id'].'" class="btn btn_03">수정</a>';
                         }
-                        $s_grp = '<a href="./boardgroupmember_form.php?mb_id='.$row['mb_id'].'" class="btn btn_02">그룹</a>';
+                        $s_grp = '<a href="./boardgroupmember_form?mb_id='.$row['mb_id'].'" class="btn btn_02">그룹</a>';
 
                         $leave_date = $row['mb_leave_date'] ? $row['mb_leave_date'] : date('Ymd', G5_SERVER_TIME);
                         $intercept_date = $row['mb_intercept_date'] ? $row['mb_intercept_date'] : date('Ymd', G5_SERVER_TIME);
@@ -286,7 +286,7 @@ $colspan = 16;
                             </td>
                             <td headers="mb_list_tel" class="td_tel"><?php echo get_text($row['mb_tel']); ?></td>
                             <td headers="mb_list_join" class="td_date"><?php echo substr($row['mb_datetime'],2,8); ?></td>
-                            <td headers="mb_list_point" class="td_num"><a href="point_list.php?sfl=mb_id&amp;stx=<?php echo $row['mb_id'] ?>"><?php echo number_format($row['mb_point']) ?></a></td>
+                            <td headers="mb_list_point" class="td_num"><a href="point_list?sfl=mb_id&amp;stx=<?php echo $row['mb_id'] ?>"><?php echo number_format($row['mb_point']) ?></a></td>
 
                         </tr>
 
@@ -303,7 +303,7 @@ $colspan = 16;
                 <input type="submit" name="act_button" value="선택수정" onclick="document.pressed=this.value" class="btn btn_02">
                 <input type="submit" name="act_button" value="선택삭제" onclick="document.pressed=this.value" class="btn btn_02">
                 <?php if ($is_admin == 'super') { ?>
-                    <a href="./member_form.php" id="member_add" class="btn btn_01">회원추가</a>
+                    <a href="./member_form" id="member_add" class="btn btn_01">회원추가</a>
                 <?php } ?>
 
             </div>

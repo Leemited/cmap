@@ -101,7 +101,7 @@ while($row=sql_fetch_array($res)){
             <div class="more menu">
                 <input type="button" value="백업" class="edit_btn" onclick="fnBackup()">
                 <input type="button" value="복구" class="edit_btn" onclick="/*fnRestore()*/">
-                <input type="button" value="메뉴 수정" class="edit_btn" onclick="location.href='menu_list.php'">
+                <input type="button" value="메뉴 수정" class="edit_btn" onclick="location.href='menu_list'">
             </div>
         </div>
         <div class="admin_tab">
@@ -109,11 +109,11 @@ while($row=sql_fetch_array($res)){
                 <?php
                 for($i=0;$i<count($inmenu);$i++) {
                     if($inmenu[$i]["menu_name"]=="건설사업관리점검") {
-                        $link = "evaluation.php";
+                        $link = "evaluation";
                     }else if($inmenu[$i]["menu_name"]=="시공평가") {
-                        $link = "evaluation2.php";
+                        $link = "evaluation2";
                     }else{ //if($inmenu[$i]["menu_code"]=="") {
-                        $link = "evaluation3.php";
+                        $link = "evaluation3";
                     }
                         ?>
                         <li <?php if ($inmenu[$i]["menu_code"] == $menu_code || (strlen($menu_code)==2 && $i==0)){ ?>class="active"<?php } ?> onclick="location.href=g5_url+'/admin/<?php echo $link;?>?menu_code=<?php echo $inmenu[$i]["menu_code"]; ?>&menu_name=<?php echo urlencode($menu_name); ?>'">
@@ -133,7 +133,7 @@ while($row=sql_fetch_array($res)){
                     <li>* 항목의 추가되거나 전체 양식이 변경되어야 한다면 개발사에 연락 바랍니다.</li>
                 </ul>
                 <div class="inserts">
-                    <form action="<?php echo G5_URL?>/admin/construction_insert.php" method="post" name="insert_form" enctype="multipart/form-data">
+                    <form action="<?php echo G5_URL?>/admin/construction_insert" method="post" name="insert_form" enctype="multipart/form-data">
                         <input type="hidden" name="menu_id" id="menu_id" value="1">
                         <input type="hidden" name="me_name" id="me_name" value="<?php echo $menu_name;?>">
                         <input type="hidden" name="me_code" id="me_code" value="<?php echo $incode;?>">
@@ -1174,35 +1174,35 @@ while($row=sql_fetch_array($res)){
 
     function fnDepth1Del(pk_id,id){
         if(confirm("해당 항목을 삭제하시겠습니까? \n하위 항목이 있을경우 모두 삭제됩니다.")){
-            location.href=g5_url+'/admin/construction_delete.php?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=1";
+            location.href=g5_url+'/admin/construction_delete?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=1";
         }else{
             return false;
         }
     }
     function fnDepth2Del(pk_id,id){
         if(confirm("해당 항목을 삭제하시겠습니까? \n하위 항목이 있을경우 모두 삭제됩니다.")){
-            location.href=g5_url+'/admin/construction_delete.php?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=2";
+            location.href=g5_url+'/admin/construction_delete?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=2";
         }else{
             return false;
         }
     }
     function fnDepth3Del(pk_id,id){
         if(confirm("해당 항목을 삭제하시겠습니까? \n하위 항목이 있을경우 모두 삭제됩니다.")){
-            location.href=g5_url+'/admin/construction_delete.php?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=3";
+            location.href=g5_url+'/admin/construction_delete?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=3";
         }else{
             return false;
         }
     }
     function fnDepth4Del(pk_id,id){
         if(confirm("해당 항목을 삭제하시겠습니까? \n하위 항목이 있을경우 모두 삭제됩니다.")){
-            location.href=g5_url+'/admin/construction_delete.php?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=4";
+            location.href=g5_url+'/admin/construction_delete?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=4";
         }else{
             return false;
         }
     }
     function fnDepth5Del(pk_id,id){
         if(confirm("해당 항목을 삭제하시겠습니까? \n하위 항목이 있을경우 모두 삭제됩니다.")){
-            location.href=g5_url+'/admin/construction_delete.php?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=5";
+            location.href=g5_url+'/admin/construction_delete?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=5";
         }else{
             return false;
         }
@@ -1392,7 +1392,7 @@ while($row=sql_fetch_array($res)){
             $(".img_modal img").attr("src", path);
             img_dialog.dialog("open", "img_modal", true);
         }else{
-            location.href = './download.php?file='+file;
+            location.href = './download?file='+file;
         }
     }
 

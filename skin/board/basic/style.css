@@ -40,8 +40,8 @@
 #bo_list .tbl_head01 tfoot td {}
 #bo_list .tbl_head01 tbody th {}
 #bo_list .tbl_head01 td {border-bottom:1px solid #dddddd;font-size:16px;color:#666666;padding:15px;height:auto}
-#bo_list .tbl_head01 td img{width:38px;}
-#bo_list .tbl_head01 td img.icon_reply{width:12px;}
+#bo_list .tbl_head01 td img{width:38px;height:38px;}
+#bo_list .tbl_head01 td img.icon_reply{width:12px;height:12px;}
 #bo_list .tbl_head01 tr:last-child td{border-bottom:1px solid #b8c2cc}
 #bo_list .tbl_head01 a {}
 #bo_list td.empty_table {}
@@ -128,10 +128,10 @@ box-shadow:inset 0 2px 5px rgb(33, 135, 202);}
 #bo_btn_top:after {display:block;visibility:hidden;clear:both;content:""}
 .bo_fx {margin-bottom:5px;float:right;zoom:1}
 .bo_fx:after {display:block;visibility:hidden;clear:both;content:""}
-.bo_fx ul {margin:0;padding:0;list-style:none}
+.bo_fx ul {margin:20px 0;padding:0;list-style:none}
 #bo_list_total {float: left;line-height: 30px;font-size: 0.92em;color: #273548;background: #eef8fd;padding: 0 10px;/* border-radius: 5px; */width: 100%;height: 80px;}
 #bo_list_total .total_info{padding: 25px 10px;font-size: 18px;}
-.btn_bo_user {float:right;margin:0;padding:0;list-style:none}
+.btn_bo_user {float:right;margin:20px 0;padding:0;list-style:none}
 .btn_bo_user li {float:left;margin-left:5px}
 .btn_bo_adm {float:left}
 .btn_bo_adm li {float:left;margin-right:5px}
@@ -162,8 +162,8 @@ box-shadow: inset 0 2px 5px  rgba(255,255,255,0.3);}
 #bo_sch {position: absolute;right: 20px;top: 20px;}
 #bo_sch:after {display:block;visibility:hidden;clear:both;content:""}
 #bo_sch legend {position:absolute;margin:0;padding:0;font-size:0;line-height:0;text-indent:-9999em;overflow:hidden}
-#bo_sch select{border:0;padding:9px 5px ;height:38px;float:left;border:1px solid #ddd;border-right:none;}
-#bo_sch .sch_input{height:38px;border:0;padding:18px;background-color:#FFF;float:left;width:400px;border:1px solid #ddd;}
+#bo_sch select{padding:9px 5px ;height:38px;float:left;border:1px solid #ddd;border-right:none;font-size:16px;}
+#bo_sch .sch_input{height:38px;padding:7px;background-color:#FFF;float:left;width:400px;border:1px solid #ddd;font-size: 16px;color:#000}
 #bo_sch .sch_btn{height:38px;float:left;background:none;border:0;width:40px;font-size:15px}
 #bo_sch .basic_btn01{height:38px;margin-left:10px;line-height: normal;}
 
@@ -381,3 +381,6 @@ header h2:before{content:"";width:30px;height:3px;background-color:#0e2080;posit
 .board-width header h2{font-size:22px;}
 .board-width header h2:before{content:"";width:30px;height:3px;background-color:#0e2080;position:absolute;top:0;left:0;}
 */
+.board_tab{margin-bottom:20px;}
+.board_tab li{width:25%;padding:10px 0;font-size:20px;border:1px solid #ddd;background-color:#fff;text-align: center;float: left;cursor: pointer;-webkit-box-shadow:  0 3px 3px rgba(0,0,0,.3);-moz-box-shadow:  0 3px 3px rgba(0,0,0,.3);box-shadow:  0 3px 3px rgba(0,0,0,.3);}
+.board_tab li:hover,.board_tab li.active{background-color:#022c5e;color:#fff;border:1px solid #022c5e}

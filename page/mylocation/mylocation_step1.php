@@ -18,13 +18,13 @@ add_javascript(G5_POSTCODE_JS, 0);
         <header class="top">
             <h2>현장관리</h2>
             <div class="logout">
-                <a href="<?php echo G5_BBS_URL;?>/logout.php"><span></span>로그아웃</a>
+                <a href="<?php echo G5_BBS_URL;?>/logout"><span></span>로그아웃</a>
             </div>
         </header>
         <div class="construct_write">
             <h2>현장개설</h2>
             <h3><i></i> 공사개요</h3>
-            <form action="<?php echo G5_URL;?>/page/mylocation/mylocation_step1_update.php" method="post" name="write_step1">
+            <form action="<?php echo G5_URL;?>/page/mylocation/mylocation_step1_update" method="post" name="write_step1">
                 <input type="hidden" value="<?php echo $id;?>" name="id">
             <div class="write_box">
                 <table>

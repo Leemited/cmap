@@ -15,6 +15,7 @@ if( $is_member ){
 
 $provider_name = social_get_request_provider();
 $user_profile = social_session_exists_check();
+
 if( ! $user_profile ){
     alert( "소셜로그인을 하신 분만 접근할 수 있습니다.", G5_URL);
 }
@@ -31,7 +32,7 @@ $user_id = $user_profile->sid ? preg_replace("/[^0-9a-z_]+/i", "", $user_profile
 $user_id = exist_mb_id_recursive($user_id);
 $user_nick = exist_mb_nick_recursive($user_nick, '');
 $is_exists_email = $user_email ? exist_mb_email($user_email, '') : false;
-$user_name = isset($user_profile->username) ? $user_profile->username : ''; 
+$user_name = isset($user_profile->username) ? $user_profile->username : '';
 
 // 불법접근을 막도록 토큰생성
 $token = md5(uniqid(rand(), true));
@@ -46,7 +47,6 @@ $login_action_url = G5_HTTPS_BBS_URL."/login_check.php";
 $req_nick = !isset($member['mb_nick_date']) || (isset($member['mb_nick_date']) && $member['mb_nick_date'] <= date("Y-m-d", G5_SERVER_TIME - ($config['cf_nick_modify'] * 86400)));
 $required = ($w=='') ? 'required' : '';
 $readonly = ($w=='u') ? 'readonly' : '';
-
 include_once(get_social_skin_path().'/social_register_member.skin.php');
 
 include_once(G5_BBS_PATH.'/_tail.php');

@@ -2,7 +2,7 @@
 include_once ("../../common.php");
 
 if(!$is_member || $member["mb_id"] == ""){
-    alert("로그인이 필요합니다.", G5_BBS_URL."/login.php?url=".G5_URL."/page/mypage/edit_profile_chkpwd.php");
+    alert("로그인이 필요합니다.", G5_BBS_URL."/login.php?url=".G5_URL."/page/mypage/edit_profile_chkpwd");
     return false;
 }else{
     $mb = get_member($member["mb_id"]);
@@ -36,7 +36,7 @@ if (!$is_social_password_check && (!$mb['mb_id'] || !check_password($mb_password
 }
 
 
-goto_url(G5_URL."/page/mypage/edit_profile.php?chk=true&w=u&mb_id=".$mb["mb_id"]);
+goto_url(G5_URL."/page/mypage/edit_profile?chk=true&w=u&mb_id=".$mb["mb_id"]);
 
 
 

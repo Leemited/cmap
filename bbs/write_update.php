@@ -304,10 +304,10 @@ if ($w == '' || $w == 'r') {
     }
 }  else if ($w == 'u') {
     if (get_session('ss_bo_table') != $_POST['bo_table'] || get_session('ss_wr_id') != $_POST['wr_id']) {
-        alert('올바른 방법으로 수정하여 주십시오.', G5_BBS_URL.'/board.php?bo_table='.$bo_table);
+        alert('올바른 방법으로 수정하여 주십시오.', G5_BBS_URL.'/board?bo_table='.$bo_table);
     }
 
-    $return_url = './board.php?bo_table='.$bo_table.'&amp;wr_id='.$wr_id;
+    $return_url = './board?bo_table='.$bo_table.'&amp;wr_id='.$wr_id;
 
     if ($is_admin == 'super') // 최고관리자 통과
         ;
@@ -328,7 +328,7 @@ if ($w == '' || $w == 'r') {
             alert('자신의 글이 아니므로 수정할 수 없습니다.', $return_url);
     } else {
         if ($write['mb_id'])
-            alert('로그인 후 수정하세요.', './login.php?url='.urlencode($return_url));
+            alert('로그인 후 수정하세요.', './login?url='.urlencode($return_url));
     }
 
     if ($member['mb_id']) {
@@ -655,7 +655,7 @@ if (!($w == 'u' || $w == 'cu') && $config['cf_email_use'] && $board['bo_use_emai
 
     $subject = '['.$config['cf_title'].'] '.$board['bo_subject'].' 게시판에 '.$str.'글이 올라왔습니다.';
 
-    $link_url = G5_BBS_URL.'/board.php?bo_table='.$bo_table.'&amp;wr_id='.$wr_id.'&amp;'.$qstr;
+    $link_url = G5_BBS_URL.'/board?bo_table='.$bo_table.'&amp;wr_id='.$wr_id.'&amp;'.$qstr;
 
     include_once(G5_LIB_PATH.'/mailer.lib.php');
 
@@ -699,7 +699,7 @@ if (!($w == 'u' || $w == 'cu') && $config['cf_email_use'] && $board['bo_use_emai
 delete_cache_latest($bo_table);
 
 if ($file_upload_msg)
-    alert($file_upload_msg, G5_HTTP_BBS_URL.'/board.php?bo_table='.$bo_table.'&amp;wr_id='.$wr_id.$qstr);
+    alert($file_upload_msg, G5_HTTP_BBS_URL.'/board?bo_table='.$bo_table.'&amp;wr_id='.$wr_id.$qstr);
 else
-    goto_url(G5_HTTP_BBS_URL.'/board.php?bo_table='.$bo_table.'&amp;wr_id='.$wr_id.$qstr);
+    goto_url(G5_HTTP_BBS_URL.'/board?bo_table='.$bo_table.'&amp;wr_id='.$wr_id.$qstr);
 ?>

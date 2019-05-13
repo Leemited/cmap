@@ -5,13 +5,6 @@ if (!defined('_GNUBOARD_')) exit; // 개별 페이지 접근 불가
 add_stylesheet('<link rel="stylesheet" href="'.$member_skin_url.'/style.css">', 0);
 ?>
 
-<style>
-
-</style>
-
-
-
-
 <div class="login_hd">
     <div class="head">
         <div class="line"></div>
@@ -64,7 +57,7 @@ add_stylesheet('<link rel="stylesheet" href="'.$member_skin_url.'/style.css">', 
                     <span class="lost_line"></span>
                     <a href="javascript:fnFindPw()" id="login_password_lost">비밀번호 찾기</a>
                 </div>
-				<a href="./register.php" class="registers">회원 가입</a>
+				<a href="./register" class="registers">회원 가입</a>
 			</div>
 		</aside>
 

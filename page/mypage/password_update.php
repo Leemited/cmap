@@ -2,7 +2,7 @@
 include_once ("../../common.php");
 
 if(!$is_member){
-    alert("로그인이 필요합니다.",G5_BBS_URL."/login.php");
+    alert("로그인이 필요합니다.",G5_BBS_URL."/login");
 }
 
 if($mb_password=="" || !$mb_password){
@@ -40,7 +40,7 @@ $sql = "update `g5_member` set mb_password = password('{$new_mb_password}') wher
 if(sql_query($sql)){
     session_unset(); // 모든 세션변수를 언레지스터 시켜줌
     session_destroy(); // 세션해제함
-    alert("수정되었습니다. 보안을 위해 재로그인 바랍니다.",G5_BBS_URL."/login.php");
+    alert("수정되었습니다. 보안을 위해 재로그인 바랍니다.",G5_BBS_URL."/login");
 }else{
     alert("다시 시도해 주세요.");
 }

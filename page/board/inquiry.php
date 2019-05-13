@@ -2,6 +2,8 @@
 include_once ("../../common.php");
 $bbody = "board";
 $sub = "sub";
+$mypage = true;
+$menu_id = 'depth_desc_inquiry';
 include_once (G5_PATH."/_head.php");
 // FAQ MASTER
 $faq_master_list = array();
@@ -26,7 +28,7 @@ $admin_href = '';
 $himg_src = '';
 $timg_src = '';
 if($is_admin)
-    $admin_href = G5_ADMIN_URL.'/faqmasterform.php?w=u&amp;fm_id='.$fm_id;
+    $admin_href = G5_ADMIN_URL.'/faqmasterform?w=u&amp;fm_id='.$fm_id;
 
 if(!G5_IS_MOBILE) {
     $himg = G5_DATA_PATH.'/faq/'.$fm_id.'_h';
@@ -118,7 +120,7 @@ for ($i=0;$row=sql_fetch_array($result);$i++){
             } else {
                 echo '<div class="empty_list">등록된 FAQ가 없습니다.';
                 if($is_admin)
-                    echo '<br><a href="'.G5_ADMIN_URL.'/faqmasterlist.php">FAQ를 새로 등록하시려면 FAQ관리</a> 메뉴를 이용하십시오.';
+                    echo '<br><a href="'.G5_ADMIN_URL.'/faqmasterlist">FAQ를 새로 등록하시려면 FAQ관리</a> 메뉴를 이용하십시오.';
                 echo '</div>';
             }
         }
@@ -126,7 +128,7 @@ for ($i=0;$row=sql_fetch_array($result);$i++){
     </div>
     <div class="inquiry_wrap">
         <h3 class="sub_title">문의/제안하기</h3>
-        <form action="<?php echo G5_URL?>/page/board/inquiry_update.php" method="post" enctype="multipart/form-data">
+        <form action="<?php echo G5_URL?>/page/board/inquiry_update" method="post" enctype="multipart/form-data">
         <table>
             <tr>
                 <th>성명 <span>*</span></th>

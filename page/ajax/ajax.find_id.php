@@ -8,7 +8,7 @@ if($type=="hp"){
 }
 
 $sql = "select * from `g5_member` where mb_name = '{$name}' {$sel}";
-$result["sql"] = $sql;
+
 $find = sql_fetch($sql);
 
 if($find["mb_id"]){

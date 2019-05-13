@@ -39,6 +39,6 @@ if($cate_theme=="white"){
 </div>
 <script>
     function fnApply(theme,cate_theme) {
-        location.href='<?php echo G5_URL?>/page/mypage/mytheme_update.php?theme='+theme+"&cate="+cate_theme;
+        location.href='<?php echo G5_URL?>/page/mypage/mytheme_update?theme='+theme+"&cate="+cate_theme;
     }
 </script>

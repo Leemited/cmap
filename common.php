@@ -639,22 +639,121 @@ header('Pragma: no-cache'); // HTTP/1.0
 
 $html_process = new html_process();
 
-//내 현장
-$mycont = sql_fetch("select * from `cmap_mymenu_theme` where mb_id ='{$member["mb_id"]}'");
+if($is_member) {
+    $sql = "select * from `cmap_my_current_construct` where mb_id = '{$member["mb_id"]}'";
+    $current_const = sql_fetch($sql);
 
-//내 설정 가져오기
-$myset = sql_fetch("select * from `cmap_mymenu_theme` where mb_id ='{$member["mb_id"]}'");
-//퀵메뉴 로드
-$setquick = sql_fetch("select * from `cmap_myquick` where mb_id ='{$member["mb_id"]}'");
-$quickcnt =  count($setquick);
-if($quickcnt>0){
-    $menuorder = explode("``",$setquick["quick_menu"]);
-    $menuordername = explode("``",$setquick["quick_menu_name"]);
-    $menuorderstatus = explode("``",$setquick["quick_menu_status"]);
-    for($i=0;$i<count($menuorder);$i++){
-        if($menuorderstatus[$i]==1){
-            $quickmenu[] = "<li class='quickmenus ".$menuorder[$i]."'><label>".$menuordername[$i]."</label><div class='img'><img src='".G5_IMG_URL."/ic_".$menuorder[$i].".svg' alt='".$menuorder[$i]."'></div><div class='clear'></div></li>";
+    if($current_const["const_id"]!="" && $current_const["const_id"] != 0){
+        $com_where = " and const_id = '{$current_const["const_id"]}'";
+        $com_where2 = " and construct_id = '{$current_const["const_id"]}'";
+    }
+
+    //내 현장 목록
+    $res = sql_query("select * from `cmap_my_construct` where (mb_id ='{$member["mb_id"]}' or instr(members,'{$member["mb_id"]}') != 0) and status = 0");
+    while ($row = sql_fetch_array($res)) {
+        $mycont[] = $row;
+        $mycontid[] = $row["id"];
+    }
+
+    //스케쥴 가져오기
+    $sch_today = date("Y-m-d");
+    $res = sql_query("select * from `cmap_myschedule` where (mb_id = '{$member["mb_id"]}' or members in ('{$member["mb_id"]}')) and schedule_date = '{$sch_today}' {$com_where2} order by id limit 0, 6");
+    while ($row = sql_fetch_array($res)) {
+        $myschedule[] = $row;
+    }
+
+    //내 설정 가져오기
+    $myset = sql_fetch("select * from `cmap_mymenu_theme` where mb_id ='{$member["mb_id"]}'");
+
+    //퀵메뉴 로드
+    $setquick = sql_fetch("select * from `cmap_myquick` where mb_id ='{$member["mb_id"]}'");
+    $quickcnt = count($setquick);
+    if ($quickcnt > 0) {
+        $menuorder = explode("``", $setquick["quick_menu"]);
+        $menuordername = explode("``", $setquick["quick_menu_name"]);
+        $menuorderstatus = explode("``", $setquick["quick_menu_status"]);
+        for ($i = 0; $i < count($menuorder); $i++) {
+            if ($menuorderstatus[$i] == 1) {
+                $quickmenu[] = "<li class='quickmenus " . $menuorder[$i] . "'><label>" . $menuordername[$i] . "</label><div class='img'><img src='" . G5_IMG_URL . "/ic_" . $menuorder[$i] . ".svg' alt='" . $menuorder[$i] . "'></div><div class='clear'></div></li>";
+            }
+        }
+    }
+
+    //my현장 평가
+    $evals = "select * from `cmap_my_construct_eval` where mb_id = '{$member["mb_id"]}' {$com_where}";
+    $evalsres = sql_query($sql);
+    while($evalrows = sql_fetch_array($evalsres)){
+        $evalsall[] = $evalrows;
+    }
+
+    //my현장 신청 관리
+    if($com_where){
+        $invitewhere = " ((read_mb_id = '{$member["mb_id"]}' or send_mb_id = '{$member["mb_id"]}') and msg_status = 0 $com_where ) or (read_mb_id = '{$member["mb_id"]}' and msg_status = 0)";
+    }else{
+        $invitewhere = "(read_mb_id = '{$member["mb_id"]}' or send_mb_id = '{$member["mb_id"]}') and msg_status = 0";
+    }
+    $reqsql = "select * from `cmap_construct_invite` where {$invitewhere} ";
+    $reqres = sql_query($reqsql);
+    while($reqrow = sql_fetch_array($reqres)){
+        $reqlist[] = $reqrow;
+    }
+
+    //my현장 작업요청서
+    $msgsql = "select * from `cmap_construct_working` where (read_mb_id = '{$member["mb_id"]}' or send_mb_id = '{$member["mb_id"]}') and msg_status = 0 {$com_where} ";
+    $msgres = sql_query($msgsql);
+    while($msgrow = sql_fetch_array($msgres)){
+        $msglist[] = $msgrow;
+    }
+
+    //제출 지연 현황
+    $delay_now = date("Y-m-d");
+    if(!$com_where2){
+        $const_ids = implode(",",$mycontid);
+        $com_where2 = " and construct_id in ('{$const_ids}')";
+    }
+    $delaysql = "select * from `cmap_myschedule` where schedule_date < '{$delay_now}' {$com_where2} order by id desc";
+    $delayres = sql_query($delaysql);
+    while($delayrow = sql_fetch_array($delayres)){
+        $delay_id = explode("``",$delayrow["pk_id"]);
+        if($delayrow["schedule_type"]==0){continue;}
+        if($delayrow["schedule_type"] == 1){
+            for($i=0;$i<count($delay_id);$i++) {
+                $sql = "select * from `cmap_my_construct_map` where mb_id = '{$member["mb_id"]}' {$com_where}";
+                $chk = sql_fetch($sql);
+                $delay_pk_ids = explode("``",$chk["pk_ids"]);
+                $delay_pk_actives = explode("``",$chk["pk_actives"]);
+                for($j=0;$j<count($delay_pk_ids);$j++){
+                    if($delay_pk_ids[$j] == $delay_id[$i] && $delay_pk_actives[$j]==1){continue;}
+                    $sql = "select * from `cmap_content` where pk_id = '{$delay_id[$i]}'";
+                    //echo $sql."<br>";
+                    $chkitem = sql_fetch($sql);
+                    $delaylist[$delay_id[$i]] = $chkitem;
+                }
+            }
+        }else{
+            for($i=0;$i<count($delay_id);$i++) {
+                $sql = "select * from `cmap_my_construct_map` where mb_id = '{$member["mb_id"]}' {$com_where}";
+                $chk = sql_fetch($sql);
+                $delay_pk_ids = explode("``",$chk["pk_ids"]);
+                $delay_pk_actives = explode("``",$chk["pk_actives"]);
+                for($j=0;$j<count($delay_pk_ids);$j++){
+                    if($delay_pk_ids[$j] == $delay_id[$i] && $delay_pk_actives[$j]==1){continue;}
+                    $sql = "select * from `cmap_content` where pk_id = '{$delay_id[$i]}'";
+                    //echo $sql."<br>";
+                    $item = sql_fetch($sql);
+                    $delaylist[$delay_id[$i]] = $item;
+                }
+            }
         }
     }
 }
+//navigator
+$navisql = "select * from `cmap_menu` where menu_status = 0 and menu_depth = 0 order by menu_order ";
+$navires = sql_query($navisql);
+while($navirow=sql_fetch_array($navires)){
+    $menulist[] = $navirow;
+}
+
 ?>
+
+

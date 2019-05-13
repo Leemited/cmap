@@ -1,6 +1,7 @@
 <?php
 $sub_menu = "100100";
 include_once('./_common.php');
+include_once(G5_EDITOR_LIB);
 
 auth_check($auth[$sub_menu], 'r');
 
@@ -769,11 +770,17 @@ if ($config['cf_sms_use'] && $config['cf_icode_id'] && $config['cf_icode_pw']) {
         </tr>
         <tr>
             <th scope="row"><label for="cf_stipulation">회원가입약관</label></th>
-            <td colspan="3"><textarea name="cf_stipulation" id="cf_stipulation" rows="10"><?php echo $config['cf_stipulation'] ?></textarea></td>
+            <td colspan="3">
+                <?php echo editor_html('cf_stipulation', get_text($config['cf_stipulation'], 0)); ?>
+                <!--<textarea name="cf_stipulation" id="cf_stipulation" rows="10"><?php /*echo $config['cf_stipulation'] */?></textarea>-->
+            </td>
         </tr>
         <tr>
             <th scope="row"><label for="cf_privacy">개인정보처리방침</label></th>
-            <td colspan="3"><textarea id="cf_privacy" name="cf_privacy" rows="10"><?php echo $config['cf_privacy'] ?></textarea></td>
+            <td colspan="3">
+                <?php echo editor_html('cf_privacy', get_text($config['cf_privacy'], 0)); ?>
+                <!--<textarea id="cf_privacy" name="cf_privacy" rows="10"><?php /*echo $config['cf_privacy'] */?></textarea>-->
+            </td>
         </tr>
         </tbody>
         </table>
@@ -1395,6 +1402,8 @@ $(function(){
 
 function fconfigform_submit(f)
 {
+    <?php echo get_editor_js('cf_stipulation'); ?>
+    <?php echo get_editor_js('cf_privacy'); ?>
     f.action = "./config_form_update.php";
     return true;
 }

@@ -206,3 +206,5 @@ li.accordion ul li.accordion .list-item div a{
 #files a{background-color: #fe8478;color:#000;font-weight:bold}
 #etc1 a{background-color: #cc97fe;color:#000;font-weight:bold}
 #files2 a{background-color: #f4fe74;color:#000;font-weight:bold}
+
+.holiday_li li{float:left;display: inline-block}

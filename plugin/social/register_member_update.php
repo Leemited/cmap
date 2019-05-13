@@ -25,7 +25,7 @@ $mb_id = trim($_POST['mb_id']);
 $mb_password    = trim($_POST['mb_password']);
 $mb_password_re = trim($_POST['mb_password_re']);
 $mb_nick        = trim(strip_tags($_POST['mb_nick']));
-$mb_email       = trim($_POST['mb_email']);
+$mb_email       = trim($_POST['mb_email']."@".$_POST["mb_email2"]);
 $mb_name        = clean_xss_tags(trim(strip_tags($_POST['mb_name'])));
 $mb_email       = get_email_address($mb_email);
 

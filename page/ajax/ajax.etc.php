@@ -7,24 +7,11 @@ $etc = sql_fetch($sql);
 if($etc["link"]!=""){
     $links = explode("``",$etc["link"]);
     $linknames = explode("``",$etc["linkname"]);
-    //echo "<h1>참고링크</h1>";
-    /*for($i=0;$i<count($links);$i++){
-        //$links[] = $links[$i];
-        if($links[$i]!=""){
-            //echo "링크".$i." : " . "<a href='{$links[$i]}' target='_blank' >".$linknames[$i]."</a><br>";
-        }
-    }*/
 }
 
 if($etc["etc1"]!=""){
     $etcs = explode("``",$etc["etc1"]);
     $etcnames = explode("``",$etc["etcname1"]);
-    //echo "<h1>참고사례</h1>";
-    /*for($i=0;$i<count($etcs);$i++){
-        if($etcs[$i]!=""){
-            //echo "참고" .$i. " : <a href='".$etcs[$i]."' target='_blank' >".$etcnames[$i]."</a><br>";
-        }
-    }*/
 }
 
 if($etc["attachment"]!=""){
@@ -33,23 +20,37 @@ if($etc["attachment"]!=""){
     for($i=0;$i<count($attachment);$i++){
         if($attachment[$i]!=""){
             $ext = array_pop(explode(".",$attachment[$i]));
+            $fi = explode(".",$attachment[$i]);
             if(strpos($ext,"jpge,jpg,gif,png")===false){
+                $dir = G5_DATA_PATH."/cmap_content";
+                $handle = @opendir($dir);
+
+                if(is_dir($dir)){
+                    while(false!==($file=readdir($handle))){
+                        if(strpos($file,$fi[0])!==false && ($file != '.' || $file != '..') && strpos($file,"pdf")===false){
+                            if(strpos($file,"-")!==false){
+                                $n = explode("-",$file);
+                                $new = explode(".",$n[1]);
+                                $pdfimgs[$fi[0]][$new[0]] = $file;
+                            }else {
+                                $pdfimgs[$fi[0]][] = $file;
+                            }
+                        }
+                    }
+                }
+
+                @closedir($handle);
+
                 $attachment[$i] = iconv("UTF-8","EUC-KR",$attachment[$i]);
+
                 $pdf1[] = G5_DATA_URL."/cmap_content/".$attachment[$i];
+
                 if($attachmentname[$i]!="") {
                     $pdf1name[] = $attachmentname[$i].".".$ext;
                 }else{
                     $pdf1name[] = "첨부파일".$i;
                 }
-            }/*if($ext=="pdf" || $ext == "PDF"){
-                $pdf1[] = G5_DATA_URL."/cmap_content/".$attachment[$i];
-                if($attachmentname[$i]!="") {
-                    $pdf1name[] = $attachmentname[$i].".".$ext;
-                }else{
-                    $pdf1name[] = "첨부파일".$i;
-                }
-            }*/
-            //echo "참고파일 : " . $attachment[$i]."// 파일명 : ".$attachmentname[$i]."<br>";
+            }
         }
     }
 }
@@ -67,47 +68,33 @@ if($etc["attachment2"]!=""){
                 }else{
                     $pdf2name[] = "사례파일".$i;
                 }
-            }/*if($ext=="pdf" || $ext == "PDF"){
-                $pdf2[] = G5_DATA_URL."/cmap_content/".$attachment2[$i];
-                if($attachmentname2[$i]!="") {
-                    $pdf2name[] = $attachmentname2[$i].".".$ext;
-                }else{
-                    $pdf2name[] = "첨부파일".$i;
-                }
-            }*/
-            //echo "사례파일 : " . $attachment2[$i]."// 파일명 : ".$attachmentname2[$i]."<br>";
+            }
         }
     }
 }
 ?>
 <div class="previews">
-    <?php /*if(count($item1) > 0 || count($item2) > 0){*/?><!--
-        <div class="owl-carousel" id="images">
-            <?php /*if(count($item1)>0) {
-                for ($i = 0; $i < count($item1); $i++) {
-                    */?>
-                    <div class="item">
-                        <h2><?php /*echo $item1name[$i];*/?></h2>
-                        <img src="<?php /*echo $item1[$i];*/?>" alt="">
-                    </div>
-                <?php /*}
-            }*/?>
-            <?php /*if(count($item2)>0) {
-                for ($i = 0; $i < count($item2); $i++) {
-                    */?>
-                    <div class="item">
-                        <h2><?php /*echo $item2name[$i];*/?></h2>
-                        <img src="<?php /*echo $item2[$i];*/?>" alt="">
-                    </div>
-                <?php /*}
-            }*/?>
-        </div>
-    --><?php /*}*/?>
     <?php if(count($pdf1) > 0 || count($pdf2) > 0){
-
+        $file0 = str_replace("https://xn--z69akkg7o1wgdnk53m.com:443/data/cmap_content/","",$pdf1[0]);
+        $fi = explode(".",$file0);
+        if($pdf1[0] != ""){
+            //sort($pdfimgs[$fi[0]]);
         ?>
         <h2 id="preview_title"><?php echo $pdf1name[0];?></h2>
-        <iframe src="<?php echo $pdf1[0];?>" frameborder="0" width="100%" height="95%" id="previewer"></iframe>
+            <?php /*if(count($pdfimgs[$fi[0]]) > 10){*/?><!--<div class="page">페이지 바로 가기 <input type="text" onchange="location.href='#'+this.value"> / <?php /*echo count($pdfimgs[$fi[0]])-1; */?></div>--><?php /*}*/?>
+            <iframe src="<?php echo $pdf1[0];?>" frameborder="0" width="100%" height="95%" id="previewer"></iframe>
+            <!--<div style="width:100%;height:95%;overflow-y:scroll">
+                <?php /*for($i=0;$i<count($pdfimgs[$fi[0]]);$i++){*/?>
+                    <img src="<?php /*echo G5_DATA_URL."/cmap_content/".$pdfimgs[$fi[0]][$i];*/?>" alt="" style="width: 100%;margin:4px 0;border:1px solid #ddd;padding:50px;" id="<?php /*echo $i;*/?>">
+                <?php /*}*/?>
+            </div>-->
+        <?php }else{?>
+            <div class="no_images">
+                <div class="trs">
+                    <div class="tds">미리보기 없음</div>
+                </div>
+            </div>
+        <?php }?>
     <?php }else{?>
         <div class="no_images">
             <div class="trs">
@@ -120,7 +107,6 @@ if($etc["attachment2"]!=""){
     <tr>
         <th><img src="<?php echo G5_IMG_URL;?>/ic_links.svg" alt="">관련법령</th>
         <th><img src="<?php echo G5_IMG_URL;?>/ic_attach.svg" alt="">미리보기</th>
-        <!--<th><img src="<?php /*echo G5_IMG_URL;*/?>/ic_etc.svg" alt="">사례</th>-->
         <th><img src="<?php echo G5_IMG_URL;?>/ic_attach.svg" alt="">다운로드</th>
     </tr>
     <?php for($i=0;$i<3;$i++){?>
@@ -144,20 +130,14 @@ if($etc["attachment2"]!=""){
                 -
             <?php }?>
         </td>
-        <!--<td>
-            <?php /*if($etcs[$i] !=""){
-                if($etcnames[$i]==""){
-                    $etcnames[$i] == "사례".($i+1);
-                }
-                echo "<a href='".$etcs[$i]."' target='_blank'>".$etcnames[$i]."</a>"; 
-            }else{
-                echo "-";
-            }*/?>
-        </td>-->
         <td>
             <?php if($item2[$i]!="" || $pdf2[$i] != ""){
-                if($pdf2[$i]!=""){?>
-                    <a href=""><?php echo $pdf2name[$i];?></a> <!--<input type="button" onclick="fnFileView('<?php /*echo $pdf2[$i];*/?>','<?php /*echo $pdf2name[$i];*/?>')" value="보기">-->
+                if($pdf2[$i]!=""){
+                    $downfile = explode(".",$pdf2name[$i]);
+                    $dwfilename = $downfile[0];
+                    $dwfile = str_replace("https://xn--z69akkg7o1wgdnk53m.com:443/data/cmap_content/","",$pdf2[$i]);
+                    ?>
+                    <a href="<?php echo G5_URL;?>/page/view_download.php?file=<?php echo $dwfile;?>&filename=<?php echo $dwfilename;?>"><?php echo $pdf2name[$i];?></a> <!--<input type="button" onclick="fnFileView('<?php /*echo $pdf2[$i];*/?>','<?php /*echo $pdf2name[$i];*/?>')" value="보기">-->
                 <?php }
             }else{ ?>
                 -
@@ -169,8 +149,17 @@ if($etc["attachment2"]!=""){
 <script>
     var owl = $("#images");
     function fnFileView(file,filename){
-        $("#previewer").attr("src",file);
-        $("#preview_title").html(filename);
+        $.ajax({
+            url:g5_url+'/page/ajax/ajax.get_previews.php',
+            method:"post",
+            data:{filess:file,filenames:filename}
+        }).done(function(data){
+            console.log(data);
+            $(".previews").html(data);
+        });
+        //$("#previewer").attr("src",file);
+        //$("#preview_title").html(filename);
+
     }
 
     var getAcrobatInfo = function () {

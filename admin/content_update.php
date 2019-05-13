@@ -7,6 +7,8 @@ if(!$content_id){
     return false;
 }
 
+$result["files"] = $_FILES;
+
 // 디렉토리가 없다면 생성합니다. (퍼미션도 변경하구요.)
 @mkdir(G5_DATA_PATH.'/cmap_content', G5_DIR_PERMISSION);
 @chmod(G5_DATA_PATH.'/cmap_content', G5_DIR_PERMISSION);
@@ -69,12 +71,12 @@ $uplink_title = implode("``",array_filter($linkname));
 $uplink = implode("``",array_filter($link));
 $upetcname = implode("``",array_filter($etc1name));
 $upetc = implode("``",array_filter($etc1));
-//$result["filename"] = $filenames;
-//$result["filename2"] = $filenames2;
+
 $chars_array = array_merge(range(0,9), range('a','z'), range('A','Z'));
 
 for ($i=0; $i<3; $i++) {
-    if($_FILES["file"]["tmp_name"][$i]!=""){
+    $result["filesssss"] = $_FILES["file"]["tmp_name"][$i];
+    if($_FILES["file"]["tmp_name"][$i] != ""){
         $tmp_name = $_FILES["file"]["tmp_name"][$i];
         $filename = $_FILES["file"]["name"][$i];
         $filename  = get_safe_filename($filename);
@@ -100,7 +102,13 @@ for ($i=0; $i<3; $i++) {
             // 올라간 파일의 퍼미션을 변경합니다.
             chmod($dest_file, G5_FILE_PERMISSION);
 
+            $file_ext = explode(".",$dest_file);
+
+            //shell_exec("convert  xc:white -verbose -density 400 -trim ".$dest_file." -resize 100%x100% -quality 100 -sharpen 0x1.0 * ".$file_ext[0].".png");
+
             $upload["filename"][$i] = $filename;
+
+            $result['filenamaaa'] = $filename;
         }
     }
 }
@@ -131,6 +139,8 @@ for ($i=0; $i<3; $i++) {
 
             // 올라간 파일의 퍼미션을 변경합니다.
             chmod($dest_file, G5_FILE_PERMISSION);
+
+            //shell_exec("convert  xc:white -verbose -density 300 -trim ".$dest_file." -resize 100%x100% -quality 100 -sharpen 0x1.0 * ".$file_ext[0].".png");
 
             $upload["filenames"][$i] = $filename;
         }
@@ -168,9 +178,19 @@ if(count($upload["filenames"]) !=0 ){
     $files2 = " , attachment2 = '{$filename2}'";
 }
 
+if($filenames == "````" || $filenames == "``"){
+    $filenames = "";
+    $filename = "";
+}
+if($filenames2 == "````" || $filenames2 == "``"){
+    $filenames2 = "";
+    $filename2 = "";
+}
+
+//$result["filename"] = $filenames;
+$result["filename2"] = $filenames2;
 
 $sql = "update `cmap_content` set link = '{$uplink}', linkname = '{$uplink_title}', etc1 = '{$upetc}', etcname1 = '{$upetcname}', attachmentname1	= '{$filenames}', attachmentname2 = '{$filenames2}' {$files} {$files2} where pk_id = '{$content_id}'";
-$result["sql"]=$sql;
 if(sql_query($sql)){
     $result["id"] = $content_id;
     $result["msg"] = "정상 처리되었습니다.";

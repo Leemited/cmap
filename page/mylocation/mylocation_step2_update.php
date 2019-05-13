@@ -1,8 +1,6 @@
 <?php
 include_once ("../../common.php");
 
-print_r2($_REQUEST);
-
 if(!$id){
     alert("입력정보에 이상이 있습니다.\\r처음부터 다시 입력해 주세요.",G5_URL."/page/mylocation/mylocation_step1.php");
     return false;
@@ -29,9 +27,9 @@ $sql = "update `cmap_my_construct_temp` set
 
 
 if(sql_query($sql)){
-    goto_url(G5_URL."/page/mylocation/mylocation_step3.php?id=".$id);
+    goto_url(G5_URL."/page/mylocation/mylocation_step3?id=".$id);
 }else{
-    alert("문제가 발생되어 처음으로 돌아갑니다.", G5_URL."/page/mylocation/mylocation_step1.php");
+    alert("문제가 발생되어 처음으로 돌아갑니다.", G5_URL."/page/mylocation/mylocation_step1?id=".$id);
     return false;
 }
 ?>

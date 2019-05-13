@@ -125,4 +125,4 @@ include_once ("../../common.php");
         }
     }
 </script>
-<span></span>
+<span class="bg"></span>

@@ -20,7 +20,7 @@ while($row = sql_fetch_array($result)){
         
         <div class="menu_tab">
             <ul>
-                <li onclick="location.href='<?php echo G5_URL?>/admin/menu_list.php'">사용메뉴</li>
+                <li onclick="location.href='<?php echo G5_URL?>/admin/menu_list'">사용메뉴</li>
                 <li class="active" >삭제메뉴</li>
             </ul>
         </div>
@@ -118,7 +118,7 @@ while($row = sql_fetch_array($result)){
 </div>
 <script>
     function fnReset(me_id, depth){
-        location.href='menu_list_update.php?type=reset&me_id='+me_id+'&menu_depth='+depth;
+        location.href='menu_list_update?type=reset&me_id='+me_id+'&menu_depth='+depth;
     }
 </script>
 <?php

@@ -5,7 +5,9 @@ ob_end_clean();
 $filepath = G5_DATA_PATH."/cmap_content/".$_REQUEST["file"];
 $ext = array_pop(explode(".",$_REQUEST["file"]));
 $filename = $_REQUEST["filename"].".".$ext;
+
 //$filepath = addslashes($filepath);
+
 if (!is_file($filepath) || !file_exists($filepath))
     alert('파일이 존재하지 않습니다.');
 

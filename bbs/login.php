@@ -25,7 +25,7 @@ if ($is_member) {
 }
 
 $login_url        = login_url($url);
-$login_action_url = G5_HTTPS_BBS_URL."/login_check.php";
+$login_action_url = G5_HTTPS_BBS_URL."/login_check";
 
 // 로그인 스킨이 없는 경우 관리자 페이지 접속이 안되는 것을 막기 위하여 기본 스킨으로 대체
 $login_file = $member_skin_path.'/login.skin.php';

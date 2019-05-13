@@ -21,7 +21,6 @@ if($addr2) {
 }
 if($addr3){
     $sql = "select * from `weather_location` where addr3 = '{$addr3}' " ;
-    $result["sql"]=$sql;
     $location = sql_fetch($sql);
     $result["lat"] = $location["lat"];
     $result["lng"] = $location["lng"];

@@ -1,11 +1,13 @@
 <?php
-include_once('./_common.php');
+include_once('../../common.php');
 include_once(G5_LIB_PATH.'/register.lib.php');
 
-if ($msg = exist_mb_id($mb_id)){?>
-<div class="modal_in" id="id_chk">
+$msg = exist_mb_id($mb_id);
 
-</div>
-<?php }else{?>
-
-<?php } ?>
+if($msg) {
+    $result["msg"] = $msg;
+    $result["chk"] = "N";
+}else{
+    $result["chk"] = "Y";
+}
+echo json_encode($result);

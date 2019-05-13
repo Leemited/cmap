@@ -15,6 +15,13 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
     <header class="sub">
         <h2><?php echo $board['bo_subject'];?></h2>
     </header>
+    <ul class="board_tab">
+        <li <?php if($bo_table=="databoard"){?>class="active"<?php }?> onclick="location.href='<?php echo G5_BBS_URL;?>/board.php?bo_table=databoard'">CMAP 소식</li>
+        <li <?php if($bo_table=="boards"){?>class="active"<?php }?> onclick="location.href='<?php echo G5_BBS_URL;?>/board.php?bo_table=boards'">유권해석</li>
+        <li <?php if($bo_table=="review"){?>class="active"<?php }?> onclick="location.href='<?php echo G5_BBS_URL;?>/board.php?bo_table=review'">사용후기</li>
+        <li <?php if($bo_table=="free"){?>class="active"<?php }?> onclick="location.href='<?php echo G5_BBS_URL;?>/board.php?bo_table=free'">커뮤니티</li>
+    </ul>
+    <div class="clear"></div>
 <!-- 게시판 목록 시작 { -->
 <div id="bo_list" style="width:<?php echo $width; ?>">
 
@@ -45,19 +52,19 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
                         <option value="wr_name,0"<?php echo get_selected($sfl, 'wr_name,0'); ?>>글쓴이(코)</option>
                     </select>
                     <label for="stx" class="sound_only">검색어<strong class="sound_only"> 필수</strong></label>
-                    <input type="text" name="stx" value="<?php echo stripslashes($stx) ?>" id="stx" class="sch_input" size="25" maxlength="20" placeholder="검색어를 입력해주세요">
+                    <input type="text" name="stx" value="<?php echo stripslashes($stx) ?>" id="stx" class="sch_input" placeholder="검색어를 입력해주세요">
                     <button type="submit" value="검색" class="basic_btn01"><!--<i class="fa fa-search" aria-hidden="true"></i><span class="sound_only">검색</span>-->검색</button>
                 </form>
             </fieldset>
             <!-- } 게시판 검색 끝 -->
         </div>
-
         <?php if ($rss_href || $write_href) { ?>
         <ul class="btn_bo_user">
             <?php if ($rss_href) { ?><li><a href="<?php echo $rss_href ?>" class="btn_b01 btn"><i class="fa fa-rss" aria-hidden="true"></i> RSS</a></li><?php } ?>
             <?php if ($admin_href) { ?><li><a href="<?php echo $admin_href ?>" class="btn_admin btn"><i class="fa fa-user-circle" aria-hidden="true"></i> 관리자</a></li><?php } ?>
-            <?php if ($write_href) { ?><li><a href="<?php echo $write_href ?>" class="btn_b02 btn"><i class="fa fa-pencil" aria-hidden="true"></i> 글쓰기</a></li><?php } ?>
+            <?php if ($write_href) { ?><li><a href="<?php echo $write_href ?>" class="basic_btn02"><i class="fa fa-pencil" aria-hidden="true"></i> 글쓰기</a></li><?php } ?>
         </ul>
+        <div class="clear"></div>
         <?php } ?>
     </div>
     <!-- } 게시판 페이지 정보 및 버튼 끝 -->
@@ -73,7 +80,7 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
     <?php } ?>
     <!-- } 게시판 카테고리 끝 -->
 
-    <form name="fboardlist" id="fboardlist" action="./board_list_update.php" onsubmit="return fboardlist_submit(this);" method="post">
+    <form name="fboardlist" id="fboardlist" action="./board_list_update" onsubmit="return fboardlist_submit(this);" method="post">
     <input type="hidden" name="bo_table" value="<?php echo $bo_table ?>">
     <input type="hidden" name="sfl" value="<?php echo $sfl ?>">
     <input type="hidden" name="stx" value="<?php echo $stx ?>">
@@ -203,8 +210,8 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
             <li><button type="submit" name="btn_submit" value="선택복사" onclick="document.pressed=this.value" class="btn btn_admin"><i class="fa fa-files-o" aria-hidden="true"></i> 선택복사</button></li>
             <li><button type="submit" name="btn_submit" value="선택이동" onclick="document.pressed=this.value" class="btn btn_admin"><i class="fa fa-arrows" aria-hidden="true"></i> 선택이동</button></li>
             <?php } ?>
-            <?php if ($list_href) { ?><li><a href="<?php echo $list_href ?>" class="btn_b01 btn"><i class="fa fa-list" aria-hidden="true"></i> 목록</a></li><?php } ?>
-            <?php if ($write_href) { ?><li><a href="<?php echo $write_href ?>" class="btn_b02 btn"><i class="fa fa-pencil" aria-hidden="true"></i> 글쓰기</a></li><?php } ?>
+            <?php if ($list_href) { ?><li><a href="<?php echo $list_href ?>" class="basic_btn02"><i class="fa fa-list" aria-hidden="true"></i> 목록</a></li><?php } ?>
+            <?php if ($write_href) { ?><li><a href="<?php echo $write_href ?>" class="basic_btn02"><i class="fa fa-pencil" aria-hidden="true"></i> 글쓰기</a></li><?php } ?>
         </ul>
         <?php } ?>
     </div>
@@ -264,7 +271,7 @@ function fboardlist_submit(f) {
             return false;
 
         f.removeAttribute("target");
-        f.action = "./board_list_update.php";
+        f.action = "./board_list_update";
     }
 
     return true;
@@ -283,7 +290,7 @@ function select_copy(sw) {
 
     f.sw.value = sw;
     f.target = "move";
-    f.action = "./move.php";
+    f.action = "./move";
     f.submit();
 }
 </script>

@@ -102,7 +102,7 @@ while($row=sql_fetch_array($res)){
             <div class="more menu">
                 <input type="button" value="백업" class="edit_btn" onclick="fnBackup()">
                 <input type="button" value="복구" class="edit_btn" onclick="/*fnRestore()*/">
-                <input type="button" value="메뉴 수정" class="edit_btn" onclick="location.href='menu_list.php'">
+                <input type="button" value="메뉴 수정" class="edit_btn" onclick="location.href='menu_list'">
             </div>
         </div>
         <div class="admin_tab">
@@ -114,7 +114,7 @@ while($row=sql_fetch_array($res)){
                         if($inmenu[$i]["menu_name"]==""){continue;}
                         ?>
                         <li <?php if ($inmenu[$i]["menu_code"] == $menu_code || (strlen($menu_code)==2 && $i==0)){ ?>class="active"<?php } ?>
-                            onclick="location.href=g5_url+'/admin/construction.php?menu_code=<?php echo $inmenu[$i]["menu_code"]; ?>&menu_name=<?php echo urlencode($menu_name);?>'"><?php echo $inmenu[$i]["menu_name"]; ?></li>
+                            onclick="location.href=g5_url+'/admin/construction?menu_code=<?php echo $inmenu[$i]["menu_code"]; ?>&menu_name=<?php echo urlencode($menu_name);?>'"><?php echo $inmenu[$i]["menu_name"]; ?></li>
                     <?php
                 } ?>
             </ul>
@@ -130,7 +130,7 @@ while($row=sql_fetch_array($res)){
                     <li>* 항목의 추가되거나 전체 양식이 변경되어야 한다면 개발사에 연락 바랍니다.</li>
                 </ul>
                 <div class="inserts">
-                    <form action="<?php echo G5_URL?>/admin/construction_insert.php" method="post" name="insert_form" enctype="multipart/form-data">
+                    <form action="<?php echo G5_URL?>/admin/construction_insert" method="post" name="insert_form" enctype="multipart/form-data">
                         <input type="hidden" name="menu_id" id="menu_id" value="1">
                         <input type="hidden" name="me_name" id="me_name" value="<?php echo $menu_name;?>">
                         <input type="hidden" name="me_code" id="me_code" value="<?php echo $incode;?>">
@@ -309,12 +309,21 @@ while($row=sql_fetch_array($res)){
                                             <td>
                                                 <select name="submit_date_type[]" style="width:50%;float:left;padding:3px 10px;height:auto" id="submit_date_type<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" onchange="fnTypeUpdate(this.value,'<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>');">
                                                     <option value="0" <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type']==0 ){?>selected<?php }?>>착수일</option>
-                                                    <option value="1" <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type']==1){?>selected<?php }?>>시험일1</option>
-                                                    <option value="2" <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type']==2){?>selected<?php }?>>시험일2</option>
+                                                    <option value="1" <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type']==1){?>selected<?php }?>>입주예정일</option>
+                                                    <option value="2" <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type']==2){?>selected<?php }?>>시험시공일</option>
+                                                    <option value="4" <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type']==4){?>selected<?php }?>>실착공일</option>
                                                     <option value="3" <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type']==3){?>selected<?php }?>>완료일</option>
                                                     <option value="-1" <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type']==-1 || $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type']==''){?>selected<?php }?>>미적용</option>
                                                 </select>
                                                 <input type="text" style="width:50%;float:left" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date'];?>" name="depth5_report[]" class="center" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["id"];?>" onkeyup="fnUpdate2('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>',$(this).val())">
+
+                                                <!--<select name="submit_date_type2[]" style="width:50%;float:left;padding:3px 10px;height:auto" id="submit_date_type2<?php /*echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];*/?>" onchange="fnTypeUpdate(this.value,'<?php /*echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];*/?>');">
+                                                    <option value="0" <?php /*if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type2']==0 ){*/?>selected<?php /*}*/?>>매주</option>
+                                                    <option value="1" <?php /*if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type2']==1){*/?>selected<?php /*}*/?>>매월</option>
+                                                    <option value="2" <?php /*if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type2']==2){*/?>selected<?php /*}*/?>>분기별</option>
+                                                    <option value="3" <?php /*if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type2']==3){*/?>selected<?php /*}*/?>></option>
+                                                    <option value="-1" <?php /*if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type2']==-1 || $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type2']==''){*/?>selected<?php /*}*/?>>미적용</option>
+                                                </select>-->
                                             </td>
                                         </tr>
                                         <?php if($list[$i]['cnt'] >= $depth_last){?>
@@ -1202,35 +1211,35 @@ function getOption(id,depth,depthid){
 
 function fnDepth1Del(pk_id,id){
     if(confirm("해당 항목을 삭제하시겠습니까? \n하위 항목이 있을경우 모두 삭제됩니다.")){
-        location.href=g5_url+'/admin/construction_delete.php?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=1";
+        location.href=g5_url+'/admin/construction_delete?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=1";
     }else{
         return false;
     }
 }
 function fnDepth2Del(pk_id,id){
     if(confirm("해당 항목을 삭제하시겠습니까? \n하위 항목이 있을경우 모두 삭제됩니다.")){
-        location.href=g5_url+'/admin/construction_delete.php?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=2";
+        location.href=g5_url+'/admin/construction_delete?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=2";
     }else{
         return false;
     }
 }
 function fnDepth3Del(pk_id,id){
     if(confirm("해당 항목을 삭제하시겠습니까? \n하위 항목이 있을경우 모두 삭제됩니다.")){
-        location.href=g5_url+'/admin/construction_delete.php?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=3";
+        location.href=g5_url+'/admin/construction_delete?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=3";
     }else{
         return false;
     }
 }
 function fnDepth4Del(pk_id,id){
     if(confirm("해당 항목을 삭제하시겠습니까? \n하위 항목이 있을경우 모두 삭제됩니다.")){
-        location.href=g5_url+'/admin/construction_delete.php?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=4";
+        location.href=g5_url+'/admin/construction_delete?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=4";
     }else{
         return false;
     }
 }
 function fnDepth5Del(pk_id,id){
     if(confirm("해당 항목을 삭제하시겠습니까? \n하위 항목이 있을경우 모두 삭제됩니다.")){
-        location.href=g5_url+'/admin/construction_delete.php?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=5";
+        location.href=g5_url+'/admin/construction_delete?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=5";
     }else{
         return false;
     }
@@ -1425,7 +1434,7 @@ function fnImage(file){
         $(".img_modal img").attr("src", path);
         img_dialog.dialog("open", "img_modal", true);
     }else{
-        location.href = './download.php?file='+file;
+        location.href = './download?file='+file;
     }
 }
 

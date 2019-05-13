@@ -12,7 +12,6 @@ $num = sql_fetch($sql);
 
 if($num["cnt"]==0){
     $sql = "insert into `cmap_myquick` set quick = '{$quick}' , insert_date = now() , update_date = now(), mb_id ='{$mb_id}' ";
-    $result["sql"]=$sql;
     if(sql_query($sql)){
         $result["msg"]="설정완료";
     }else{

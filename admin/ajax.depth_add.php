@@ -576,7 +576,6 @@ if($depth == 5){
         }
     }else if($menu_chk==302){
         $sql = "select * from `cmap_content` where id = '{$thisid}'";
-        $result["sql"]=$sql;
         $dep = sql_fetch($sql);
         $depth1_id = $dep["depth1_id"];
         $depth2_id = $dep["depth2_id"];

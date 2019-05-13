@@ -140,7 +140,7 @@ if($menu_code!="3035" && $menu_code!="30") {
             <div class="more menu">
                 <input type="button" value="백업" class="edit_btn" onclick="fnBackup()">
                 <input type="button" value="복구" class="edit_btn" onclick="/*fnRestore()*/">
-                <input type="button" value="메뉴 수정" class="edit_btn" onclick="location.href='menu_list.php'">
+                <input type="button" value="메뉴 수정" class="edit_btn" onclick="location.href='menu_list'">
             </div>
         </div>
         <div class="admin_tab">
@@ -152,7 +152,7 @@ if($menu_code!="3035" && $menu_code!="30") {
 
                     ?>
                         <li <?php if ($inmenu[$i]["menu_code"] == $menu_code || (strlen($menu_code) == 2 && $i == 0)){ ?>class="active"<?php } ?>
-                            onclick="location.href=g5_url+'/admin/construction2.php?menu_code=<?php echo $inmenu[$i]["menu_code"]; ?>&menu_name=<?php echo urlencode($menu_name); ?>'"><?php echo $inmenu[$i]["menu_name"]; ?></li>
+                            onclick="location.href=g5_url+'/admin/construction2?menu_code=<?php echo $inmenu[$i]["menu_code"]; ?>&menu_name=<?php echo urlencode($menu_name); ?>'"><?php echo $inmenu[$i]["menu_name"]; ?></li>
                 <?php  } ?>
             </ul>
         </div>
@@ -168,9 +168,9 @@ if($menu_code!="3035" && $menu_code!="30") {
                 </ul>
                 <div class="inserts">
                     <?php if($menu_code!="3035" && $menu_code!="30"){?>
-                    <form action="<?php echo G5_URL?>/admin/construction_insert2.php" method="post" name="insert_form" enctype="multipart/form-data">
+                    <form action="<?php echo G5_URL?>/admin/construction_insert2" method="post" name="insert_form" enctype="multipart/form-data">
                     <?php }else{?>
-                    <form action="<?php echo G5_URL?>/admin/construction_insert3.php" method="post" name="insert_form" enctype="multipart/form-data">
+                    <form action="<?php echo G5_URL?>/admin/construction_insert3" method="post" name="insert_form" enctype="multipart/form-data">
                     <?php }?>
 
                         <input type="hidden" name="menu_id" id="menu_id" value="1">
@@ -1435,7 +1435,6 @@ $(document).on("dblclick", ".admin_content .edit_content table td.category",func
 });
 
 function getOption(id,depth,depthid){
-    console.log(id+"//"+depth);
     $.ajax({
         url:g5_url+"/admin/ajax.depth.php",
         method:"POST",
@@ -1457,28 +1456,28 @@ function getOption(id,depth,depthid){
 
 function fnDepth1Del(pk_id,id){
     if(confirm("해당 항목을 삭제하시겠습니까? \n하위 항목이 있을경우 모두 삭제됩니다.")){
-        location.href=g5_url+'/admin/construction_delete.php?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=1";
+        location.href=g5_url+'/admin/construction_delete?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=1";
     }else{
         return false;
     }
 }
 function fnDepth2Del(pk_id,id){
     if(confirm("해당 항목을 삭제하시겠습니까? \n하위 항목이 있을경우 모두 삭제됩니다.")){
-        location.href=g5_url+'/admin/construction_delete.php?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=2";
+        location.href=g5_url+'/admin/construction_delete?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=2";
     }else{
         return false;
     }
 }
 function fnDepth3Del(pk_id,id){
     if(confirm("해당 항목을 삭제하시겠습니까? \n하위 항목이 있을경우 모두 삭제됩니다.")){
-        location.href=g5_url+'/admin/construction_delete.php?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=3";
+        location.href=g5_url+'/admin/construction_delete?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=3";
     }else{
         return false;
     }
 }
 function fnDepth5Del(pk_id,id){
     if(confirm("해당 항목을 삭제하시겠습니까? \n하위 항목이 있을경우 모두 삭제됩니다.")){
-        location.href=g5_url+'/admin/construction_delete.php?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=5";
+        location.href=g5_url+'/admin/construction_delete?pk_id='+pk_id+'&id='+id+"&menu_id=1&depth=5";
     }else{
         return false;
     }
@@ -1672,7 +1671,7 @@ function fnImage(file){
         $(".img_modal img").attr("src", path);
         img_dialog.dialog("open", "img_modal", true);
     }else{
-        location.href = './download.php?file='+file;
+        location.href = './download?file='+file;
     }
 }
 

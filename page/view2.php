@@ -1,7 +1,11 @@
 <?php
 include_once ("../common.php");
 $sub="sub";
-include_once (G5_PATH."/_head.php");
+
+/*if(!$is_member){
+    alert("로그인후 이용 가능합니다.", G5_BBS_URL."/login");
+}*/
+
 
 if(strlen($me_id)==2){
     $sql = "select * from `cmap_depth1` where SUBSTRING(me_code,1,2) like '%{$me_id}%' order by me_code asc limit 0,1 ";
@@ -25,6 +29,16 @@ if(strlen($me_id)==2){
 if($depth1_id){
     $where = " and depth1_id = '{$depth1_id}'";
 }
+
+
+//메모 불러오기
+$sql = "select * from `cmap_mymemo` where me_id = '{$me_id}' and mb_id = '{$member["mb_id"]}' {$where} order by id desc";
+$res = sql_query($sql);
+$num = sql_num_rows($res);
+while($row = sql_fetch_array($res)){
+    $memo[] = $row;
+}
+
 
 //해당 대메뉴에 대한 서브 메뉴
 $menu_id = substr($me_id,0,2);
@@ -119,6 +133,9 @@ while ($row = sql_fetch_array($res)) {
     }
     $i++;
 }
+
+include_once (G5_PATH."/_head.php");
+
 /*}/*else if($menu_id==30){
     if($depth1_id) {
         $sql = "select *,a.id as id,COUNT(*) as cnt,a.pk_id from `cmap_depth1` as a left join `cmap_content` as b on a.id = b.depth1_id where a.me_code = '{$incode}' and menu_status = 0 group by a.id order by a.id asc ";
@@ -189,23 +206,24 @@ while ($row = sql_fetch_array($res)) {
 $myconstruction = false;
 
 ?>
-<div>
+<!--<div>
     <div class="menu_guide">
-        <div><?php echo $list[0]["depth_name"];?> : </div>
+        <div><?php /*echo $list[0]["depth_name"];*/?> : </div>
     </div>
-</div>
+</div>-->
 <div class="search">
     <?php if($is_member && $myconstruction){?>
         <select name="" id=""></select>
     <?php }?>
-    <select name="me_id" id="me_id">
-        <?php for($i=0;$i<count($depth_me);$i++) { ?>
-            <option value="60<?php echo $depth_me[$i]["me_id"];?>" <?php echo get_selected('60'.$depth_me[$i]["me_id"],$me_id);?>><?php echo $depth_me[$i]["menu_name"];?></option>
-        <?php }?>
-    </select>
+<!--    <select name="me_id" id="me_id">
+        <?php /*for($i=0;$i<count($depth_me);$i++) { */?>
+            <option value="60<?php /*echo $depth_me[$i]["me_id"];*/?>" <?php /*echo get_selected('60'.$depth_me[$i]["me_id"],$me_id);*/?>><?php /*echo $depth_me[$i]["menu_name"];*/?></option>
+        <?php /*}*/?>
+    </select>-->
 </div>
 <div class="full-width">
     <div class="view">
+        <div class="left">
         <div class="title">
             <?php echo $menu1_info["menu_name"];?> | <?php echo $menu2_info["menu_name"];?>
         </div>
@@ -218,18 +236,36 @@ $myconstruction = false;
             for($i=0;$i<count($depth_menu);$i++){
             ?>
                 <tr>
-                    <td class="menu_padding"><input type="button"  value="<?php echo $depth_menu[$i]['depth_name'];?>" class="depth_btn <?php if($depth_menu[$i]["id"]==$depth1_id){?>active<?php }?>" onclick="location.href=g5_url+'/page/view2.php?me_id=<?php echo $me_id;?>&depth1_id=<?php echo $depth_menu[$i]["id"];?>'"></td>
+                    <td class="menu_padding"><input type="button"  value="<?php echo $depth_menu[$i]['depth_name'];?>" class="depth_btn <?php if($depth_menu[$i]["id"]==$depth1_id){?>active<?php }?>" onclick="location.href=g5_url+'/page/view2?me_id=<?php echo $me_id;?>&depth1_id=<?php echo $depth_menu[$i]["id"];?>'"></td>
                 </tr>
             <?php }?>
             <tr class="memo">
-                <td>
-                    <h2>MEMO</h2>
-                    <div class="memo_area" style="width:100%;height:500px;padding:10px;">
-
+                <td style="position: relative">
+                    <form action="<?php echo G5_URL;?>/page/memo_update.php" method="post" >
+                        <input type="hidden" name="return_url" value="view">
+                        <input type="hidden" name="type" value="in">
+                        <input type="hidden" name="me_id" value="<?php echo $me_id;?>">
+                        <input type="hidden" name="depth1_id" value="<?php echo $depth1_id;?>">
+                        <input type="hidden" name="depth2_id" value="<?php echo $depth2_id;?>">
+                        <input type="hidden" name="mb_id" value="<?php echo $member["mb_id"];?>">
+                        <h2>MEMO</h2>
+                        <input type="submit" class="" value="등록" style="width:calc(25% - 10px);background-color:transparent;padding:5px;text-align: center;border:none;font-size:14px;position:absolute;top:6px;right:5px;border:1px solid #ddd;">
+                        <div class="" style="text-align: center;padding:5px 5px 10px 5px;margin-bottom: 5px;border-bottom: 5px solid #fff">
+                            <textarea name="memo_content" id="memo_content" style="font-size:14px;background-color:transparent;border:1px solid #ddd;color:#000;padding:5px;width:100%;text-align: left;height:50px;" placeholder="메모를 입력해주세요."></textarea>
+                        </div>
+                    </form>
+                    <div class="memo_area" style="width:100%;height:300px;padding:5px;">
+                        <ul>
+                            <?php for($a = 0; $a<count($memo);$a++){?>
+                                <li title="<?php echo $memo[$a]["memo_content"];?>"><?php echo nl2br($memo[$a]["memo_content"]);?> <i class="fa fa-close" onclick="location.href=g5_url+'/page/memo_update?type=del&return_url=view&me_id=<?php echo $me_id;?>&mb_id=<?php echo $member["mb_id"];?>&depth1_id=<?php echo $depth1_id;?>&depth2_id=<?php echo $depth2_id;?>&id=<?php echo $memo[$a]["id"];?>'"></i></li>
+                            <?php }?>
+                        </ul>
                     </div>
                 </td>
             </tr>
         </table>
+        </div>
+        <div class="right">
         <table class="view_table" >
             <tr>
                 <!--th>직업선택</th-->
@@ -246,7 +282,7 @@ $myconstruction = false;
                 <th>세부분류 (평가방법 미리보기)</th>
                 <th>우수 ( X 1.0)</th>
                 <th>보통 ( X 0.8)</th>
-                <th>미흠 ( X 0.6)</th>
+                <th>미흡 ( X 0.6)</th>
                 <th>불량 ( X 0.4)</th>
             </tr>
             <tr></tr>
@@ -268,7 +304,7 @@ $myconstruction = false;
                         <?php for ($l=0;$l<count($list[$i]['depth2'][$j]['depth3'][$k]['depth4']);$l++) {
                             $total += (float)$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth_name'];
                             ?>
-                        <td class="depth3" rowspan="<?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['cnt']>1){echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['cnt'];}?>" >
+                        <td class="depth3" style="text-align: center" rowspan="<?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['cnt']>1){echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['cnt'];}?>" >
                             <?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth_name'];?>
                         </td>
                             <?php
@@ -298,6 +334,9 @@ $myconstruction = false;
                             $fileid = "files".$list[$i]["depth2"][$j]["depth3"][$k]["depth4"][$l]["depth5"][$m]["id"];
                             $span = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["span"]);
                             $eval = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['content']);
+                            if(!$is_member){
+                                echo "<td colspan='4' class='td_center'>로그인후 이용 바랍니다.</td>";
+                            }else{
                             if(count($eval)>0){
                                 for($o=0;$o<count($eval);$o++){
                                     if(count($eval)==($o+1)) {
@@ -312,12 +351,16 @@ $myconstruction = false;
                             </td>
                             <?php }?>
                             <?php }?>
+                            <?php }?>
                             <?php if($is_member && $myconstruction){?>
                             <td class="score_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>">
                                 0
                             </td>
                             <?php }?>
                             <td class="etc" id="">
+                                <?php if(!$is_member){?>
+
+                                <?php }else {?>
                                 <?php if(count($files)>=1){?>
                                     <input type="button" value="미리보기" onclick="fnViewEtc('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>')">
                                 <?php }else {?>
@@ -332,10 +375,11 @@ $myconstruction = false;
                                         for($w=0;$w<count($files2);$w++){
                                             if($files2[$w]!=""){
                                             ?>
-                                            <input type="button" value="다운로드" style="background-image:url('<?php echo G5_IMG_URL;?>/ic_attach.svg');" onclick="location.href=g5_url+'/page/view_download.php?file=<?php echo $files2[$w];?>&filename=<?php echo $filenames2[$w];?>'" title="<?php echo $filenames2[$w];?>">
+                                            <input type="button" value="다운로드" style="background-image:url('<?php echo G5_IMG_URL;?>/ic_attach.svg');" onclick="location.href=g5_url+'/page/view_download?file=<?php echo $files2[$w];?>&filename=<?php echo $filenames2[$w];?>'" title="<?php echo $filenames2[$w];?>">
                                         <?php }
                                             }
                                     }?>
+                                <?php }?>
                                 <?php }?>
                                 <?php /*if(count($files)>0 && $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["link"]){*/?><!--
                                     <input type="button" value="미리보기" onclick="fnViewEtc('<?php /*echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];*/?>')">
@@ -375,6 +419,7 @@ $myconstruction = false;
              }?>
         </table>
         <div class="clear"></div>
+        </div>
     </div>
 </div>
 <div class="etc_view">
@@ -398,20 +443,20 @@ $myconstruction = false;
 <script src="<?php echo G5_JS_URL ?>/jquery-ui-1.9.2.custom.js"></script>
 <script>
 $(function(){
-    var tbl_width = $(".menu_table").width();
+    /*var tbl_width = $(".menu_table").width();
     tbl_width = tbl_width + 24;
-    $(".view_table").attr("style","width:calc(100% - "+tbl_width+"px)");
+    $(".view_table").attr("style","width:calc(100% - "+tbl_width+"px)");*/
 
     $("#menu_code").change(function(){
         //선택된 값으로 2dpeth의 옵션 갑 변경
-        location.href=g5_url+'/page/view.php?me_id='+$(this).val();
+        location.href=g5_url+'/page/view?me_id='+$(this).val();
     });
     $("#me_id").change(function(){
         var id = $(this).val();
         if(id == 60129){
-            location.href = g5_url + '/page/view3.php?me_id=' + id;
+            location.href = g5_url + '/page/view3?me_id=' + id;
         }else {
-            location.href = g5_url + '/page/view2.php?me_id=' + id;
+            location.href = g5_url + '/page/view2?me_id=' + id;
         }
     });
 

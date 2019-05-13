@@ -539,12 +539,11 @@ var win_zip2 = function(frm_name, frm_zip, frm_addr1, frm_addr2, frm_addr3, frm_
         var extraAddr = ''; // 조합형 주소 변수
 
         // 사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
-        if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+        //if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
             fullAddr = data.roadAddress;
-
-        } else { // 사용자가 지번 주소를 선택했을 경우(J)
-            fullAddr = data.jibunAddress;
-        }
+        //} else { // 사용자가 지번 주소를 선택했을 경우(J)
+        //    fullAddr = data.jibunAddress;
+        //}
 
         // 사용자가 선택한 주소가 도로명 타입일때 조합한다.
         if(data.userSelectedType === 'R'){
@@ -568,9 +567,9 @@ var win_zip2 = function(frm_name, frm_zip, frm_addr1, frm_addr2, frm_addr3, frm_
         of[frm_addr1].value = fullAddr;
         of[frm_addr3].value = extraAddr;
 
-        if(of[frm_jibeon] !== undefined){
-            of[frm_jibeon].value = data.userSelectedType;
-        }
+        //if(of[frm_jibeon] !== undefined){
+            of[frm_jibeon].value = data.jibunAddress;
+        //}
 
         setTimeout(function(){
             of[frm_addr2].focus();
@@ -882,7 +881,15 @@ function fnShowModal(data){
 function fnCloseModal(){
     $(".modalpopup").html('');
     $(".modalpopup").removeClass("active");
-    $("html").attr("style","height:auto;overflow:auto");
+    var type = $("body").hasClass("sub");
+    if(type) {
+        $("html").attr("style", "height:auto;overflow:auto");
+    }
+}
+
+function fnCloseModal2(){
+    $(".modalpopup").html('');
+    $(".modalpopup").removeClass("active");
 }
 
 function fnModalTop(){
@@ -901,6 +908,7 @@ function fnMyprofile(mb_id){
 
 function fnCloseProfile(){
     $(".my_profile").removeClass("active");
+    $(".mymenu_detail").removeClass("active");
 }
 
 function fnQuickView() {
@@ -921,28 +929,22 @@ function number_only(t){
 
 //천후표
 function fnWeather(mb_id,cmap_id) {
-    console.log(mb_id);
     if(mb_id==""){
         if(confirm("로그인이 필요합니다.")){
-            location.href=g5_bbs_url+'/login.php';
+            location.href=g5_bbs_url+'/login';
         }
         return false;
     }
-    //현장정보 확인
-    $.ajax({
-        url:g5_url+"/page/ajax/ajax.my_construct.php",
-        method:"post",
-        data:{mb_id:mb_id,cmap_id:cmap_id}
-    }).done(function(data){
-        if(data==1){
+    //현장정보 불러오기
 
-        }
-    });
 }
 
 //현장관리
 
 $(function() {
+    fnMenusHeader('');
+
+
     $(document).on("click", "form[name=fwrite] input:submit, form[name=fwrite] button:submit, form[name=fwrite] input:image", function() {
         var f = this.form;
 
@@ -968,7 +970,7 @@ $(function() {
         return true;
     });
 
-    $(document).on("click",".modalpopup.active span", function(){
+    $(document).on("click",".modalpopup.active span.bg", function(){
        //$(".modal").removeClass("active");
         fnCloseModal();
     });
@@ -991,25 +993,22 @@ $(function() {
                 
                 break;
             case "스케쥴":
-                location.href=g5_url+'/page/mypage/schedule.php';
+                location.href=g5_url+'/page/mypage/schedule';
                 break;
             case "현장관리":
-                location.href=g5_url+'/page/mylocation/mylocation.php';
+                location.href=g5_url+'/page/mylocation/mylocation';
                 break;
             case "작업 요청서 작성":
 
                 break;
             case "MY CMAP":
-                location.href=g5_url+'/page/mypage/mypage.php';
-                break;
-            case "천후표":
-                //fnWeather();
+                location.href=g5_url+'/page/mypage/mypage';
                 break;
             case "커뮤니티":
-                location.href=g5_bbs_url+'/board.php?bo_table=databoard';
+                location.href=g5_bbs_url+'/board?bo_table=databoard';
                 break;
             case "제안하기":
-                location.href=g5_url+"/page/board/inquiry.php"
+                location.href=g5_url+"/page/board/inquiry"
                 break;
             case "결제하기":
 
@@ -1067,47 +1066,315 @@ function viewKorean(num) {
     return result ;
 }
 
+var const_id = '';
+var chk_menu_on = false;
+//현장 변경시
+function fnChangeConst(mb_id,id){
+    const_id = id;
+    //저장된 마지막 현장 저장
+    $.ajax({
+        url:g5_url+"/page/ajax/ajax.current_construct_update.php",
+        method:"post",
+        data:{const_id:id}
+    });
 
-//function getLocation(){
+    //요청 및 초대된 현장 카운트
+    $.ajax({
+        url:g5_url+'/page/ajax/ajax.get_invite_count.php',
+        method:'post',
+        data:{const_id:const_id},
+        dataType:'json'
+    }).done(function(data){
+        console.log(data);
+        $(".cmenu1 .counts span").html(Number(data.cnt));
+    });
 
-//}
+    //작업 요청서 카운트
+    /*$.ajax({
+        url:g5_url+'/page/ajax/ajax.get_invite_count.php',
+        method:'post',
+        data:{const_id:id}
+    }).done(function(data){
+        console.log(data);
+    });*/
 
-function getLocation()
-{
-    window.navigator.geolocation.getCurrentPosition(current_position);
-}
+    //제출 지연 현황 카운트
+    $.ajax({
+        url:g5_url+'/page/ajax/ajax.get_delay_count.php',
+        method:'post',
+        data:{const_id:id}
+    }).done(function(data){
+        console.log(data);
+    });
+    
 
-function current_position(position)
-{
-    var msg;
+    //현제 현장의 평가 점수
+    /*$.ajax({
 
-    msg = "Latitude: " + position.coords.latitude + ", " + "Longitude: " + position.coords.longitude;
-    var coords = new daum.maps.LatLng(position.coords.latitude,position.coords.longitude);
-    searchAddrFromCoords(coords,testfunction);
-    searchDetailAddrFromCoords(coords,function(result, status){
-        if (status === daum.maps.services.Status.OK) {
-            //var detailAddr = !!result[0].road_address ? '<div>도로명주소 : ' + result[0].road_address.address_name + '</div>' : '';
-            //detailAddr += '<div>지번 주소 : ' + result[0].address.address_name + '</div>';
-            //console.log(result[0]);
+    }).done(function(){
+
+    });*/
+
+    if($(".mymenu_detail").hasClass("active") && chk_menu_on == true) {
+        fnViewRequest(mb_id, const_id);
+    }
+
+    $.ajax({
+        url:g5_url+"/page/ajax/ajax.get_weather_location.php",
+        method:"post",
+        data:{cmap_id:id},
+        dataType:"json"
+    }).done(function(data){
+        if(data.status != 1) {
+            if (data.tmn[0] && data.tmx[0]) {
+                var min = Math.floor(data.tmn[0]);
+                var max = Math.floor(data.tmx[0]);
+                if (data.temp[0]) {
+                    var current = data.temp[0];
+                    $(".now_temp").html(current + "℃");
+                }
+                $(".temp_min_max").html(min + "℃ / " + max + "℃");
+                $(".addr").html(data.addr);
+                $(".timedesc").html(data.time);
+            }
+        }else{
+            getLocation();
         }
     });
 
-    alert(msg);
+
 }
 
-// 주소-좌표 변환 객체를 생성합니다
-var geocoder = new daum.maps.services.Geocoder();
-
-function searchAddrFromCoords(coords, callback) {
-    // 좌표로 행정동 주소 정보를 요청합니다
-    geocoder.coord2RegionCode(coords.getLng(), coords.getLat(), callback);
+function fnSearchPapular(text){
+    $("#search_text").val(text);
+    document.searchFrom.submit();
 }
 
-function searchDetailAddrFromCoords(coords, callback) {
-    // 좌표로 법정동 상세 주소 정보를 요청합니다
-    geocoder.coord2Address(coords.getLng(), coords.getLat(), callback);
+function fnScheduleView() {
+    var id = $("#mylocmap").val();
+    if(id){
+        location.href=g5_url+"/page/mypage/schedule?id="+id
+    }else{
+        location.href=g5_url+"/page/mypage/schedule"
+    }
 }
 
-function testfunction(result, status){
-    console.log(status+"//"+result);
+function fnMenusHeader(me_code) {
+    $.ajax({
+        url:g5_url+"/page/ajax/ajax.get_menu_header.php",
+        method:"post",
+        data:{menu_id:me_code}
+    }).done(function(data){
+        if(me_code=="") {
+            console.log("A");
+            $("#allmenu_header10").addClass("active");
+            $("li[id^=allmenu_header]").not($("#allmenu_header10")).removeClass("active");
+        }else {
+            $("#allmenu_header" + me_code).addClass("active");
+            $("li[id^=allmenu_header]").not($("#allmenu_header" + me_code)).removeClass("active");
+        }
+        $(".depth_menu_heads").html('');
+        $(".depth_menu_heads").append(data);
+    });
+}
+
+//현장초대
+function fnConstInvite(id){
+    $.ajax({
+        url:g5_url+"/page/modal/ajax.member_invite.php",
+        method:"post",
+        data:{id:id}
+    }).done(function(data){
+        fnShowModal(data);
+    });
+}
+
+function fnConstShare(id){
+    $.ajax({
+        url:g5_url+"/page/modal/ajax.construct_share.php",
+        method:"post",
+        data:{id:id}
+    }).done(function(data){
+        fnShowModal(data);
+    });
+}
+
+function fnConstEdit(type,id){
+    if(type==1){
+        location.href=g5_url+'/page/mylocation/mylocation_edit.php?id='+id;
+    }else{
+        location.href=g5_url+'/page/mylocation/mylocation_edit2.php?id='+id;
+    }
+}
+
+//설정 복사
+function fnConstCopy(){
+
+}
+
+//내 설정 복구
+function fnConstRestore(){
+
+}
+
+//내 설정 저장
+function fnConstSave(){
+
+}
+
+//현장 탈퇴
+function fnConstLeave(){
+    //내가 현장 생성자일경우 우임자 선택 필요
+}
+
+//현장 조인
+function fnConstJoin(mb_id,id){
+    $.ajax({
+        url:g5_url+"/page/ajax/ajax.construct_invite.php",
+        method:"post",
+        data:{mb_id:mb_id,id:id},
+        dataType:'json'
+    }).done(function(data){
+        if(data.status == 1){
+            fnCloseModal();
+        }
+        alert(data.msg);
+    });
+}
+
+//사용자관리 오픈
+function fnViewRequest(mb_id,const_id){
+    if(const_id=="") {
+        const_id = $("#mylocmap").val();
+    }
+
+    if($(".mymenu_detail").hasClass("active") && chk_menu_on == true) {
+        $(".mymenu_detail").removeClass("active");
+        chk_menu_on = false;
+    }else {
+        $.ajax({
+            url: g5_url + '/page/ajax/ajax.get_request.php',
+            method: "post",
+            data: {mb_id: mb_id, const_id: const_id}
+        }).done(function (data) {
+            if (data == 1) {
+                alert("회원 정보가 없습니다.");
+            } else {
+                $(".mymenu_detail .title h2").html("사용자 승인")
+                $(".mymenu_detail .detail_list").html(data);
+                $(".mymenu_detail").addClass("active");
+                chk_menu_on = true;
+            }
+        });
+    }
+}
+
+
+//현장초대 요청 승인
+function fnConstJoinUp(invite_id,const_id){
+    $.ajax({
+        url:g5_url+"/page/ajax/ajax.construct_invite_update.php",
+        method:"post",
+        data:{invite_id:invite_id,const_id:const_id}
+    }).done(function(data){
+        console.log(data);
+        if(data==1){
+            alert("사용자 초대정보 오류입니다.");
+            return false;
+        }else if(data==2) {
+            alert("현장 정보 오류입니다.");
+            return false;
+        }else if(data==3){
+            alert("해당 현장이 없거나 삭제 상태입니다.");
+            return false;
+        }else if(data==4){
+            alert("초대 상태를 업데이트 할 수 없습니다.");
+            return false;
+        }else if(data==5) {
+            alert("현장에 참여 하지 못했습니다.\n다시 시도해 주세요.");
+            return false;
+        }else if(data==6){
+            alert("이미 참여한 현장입니다.\n요청 또는 초대는 목록에서 삭제됩니다.");
+            $("#invite_"+invite_id).remove();
+            var cnt = $("tr[id^='invite_']").length;
+            if(cnt==0){
+                $(".detail_list table tbody").append("<tr><td colspan='3' class='td_center'>승인요청 및 요청이력이 없습니다.</td></tr>");
+            }
+            $(".cmap_menu .cmenu1 .counts span").html(cnt);
+        }else if(data==0){
+            alert("현장에 참여 되었습니다.");
+            location.reload();
+            $("#invite_"+invite_id).remove();
+            var cnt = $("tr[id^='invite_']").length;
+            if(cnt==0){
+                $(".detail_list table tbody").append("<tr><td colspan='3' class='td_center'>승인요청 및 요청이력이 없습니다.</td></tr>");
+            }
+            $(".cmap_menu .cmenu1 .counts span").html(cnt);
+        }
+    });
+}
+
+//현장초대 취소/거절
+function fnConstCancel(invite_id){
+    console.log(invite_id);
+    $.ajax({
+        url:g5_url+'/page/ajax/ajax.construct_invite_cancel.php',
+        method:"post",
+        data:{invite_id:invite_id}
+    }).done(function(data){
+        if(data==1){
+            alert("잘못된 정보 입니다.");
+            return false;
+        }else if(data == 2){
+            $("#invite_"+invite_id).remove();
+            var cnt = $("tr[id^='invite_']").length;
+
+            if(cnt==0){
+                $(".detail_list table tbody").append("<tr><td colspan='3' class='td_center'>승인요청 및 요청이력이 없습니다.</td></tr>");
+            }
+            $(".cmap_menu .cmenu1 .counts span").html(cnt);
+        }
+    });
+}
+
+function footerModal(url,co_id){
+    $.ajax({
+        url:url,
+        method:"post",
+        data:{co_id:co_id}
+    }).done(function(data){
+        console.log(data);
+        $(".modalpopup").append(data);
+        $(".modalpopup").addClass("active");
+    });
+}
+
+//사용자관리 오픈
+function fnViewDelay(mb_id,const_id){
+    if(const_id=="") {
+        const_id = $("#mylocmap").val();
+    }
+
+    if($(".mymenu_detail").hasClass("active") && chk_menu_on == true) {
+        $(".mymenu_detail").removeClass("active");
+    }else {
+        $.ajax({
+            url: g5_url + '/page/ajax/ajax.get_delay.php',
+            method: "post",
+            data: {mb_id: mb_id, const_id: const_id}
+        }).done(function (data) {
+            if (data == 1) {
+                alert("회원 정보가 없습니다.");
+            } else {
+                $(".mymenu_detail .title h2").html("제출 지연 현황")
+                $(".mymenu_detail .detail_list").html(data);
+                $(".mymenu_detail").addClass("active");
+                chk_menu_on = true;
+            }
+        });
+    }
+}
+
+function fnViewMessage(mb_id,const_id){
+
 }

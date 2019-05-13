@@ -168,7 +168,7 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
 
 
         <div class="btn_confirm">
-            <input type="button" onclick="location.href='./board.php?bo_table=<?php echo $bo_table ?>'" class="basic_btn02 " value="취소">
+            <input type="button" onclick="location.href='./board?bo_table=<?php echo $bo_table ?>'" class="basic_btn02 " value="취소">
             <input type="submit" value="작성완료" id="btn_submit" accesskey="s" class="basic_btn01">
         </div>
         </form>

@@ -9,11 +9,11 @@ if (!$board['bo_table']) {
 check_device($board['bo_device']);
 
 if (isset($write['wr_is_comment']) && $write['wr_is_comment']) {
-    goto_url('./board.php?bo_table='.$bo_table.'&amp;wr_id='.$write['wr_parent'].'#c_'.$wr_id);
+    goto_url('./board?bo_table='.$bo_table.'&amp;wr_id='.$write['wr_parent'].'#c_'.$wr_id);
 }
 
 if (!$bo_table) {
-    $msg = "bo_table 값이 넘어오지 않았습니다.\\n\\nboard.php?bo_table=code 와 같은 방식으로 넘겨 주세요.";
+    $msg = "bo_table 값이 넘어오지 않았습니다.\\n\\nboard?bo_table=code 와 같은 방식으로 넘겨 주세요.";
     alert($msg);
 }
 
@@ -24,14 +24,14 @@ if (isset($wr_id) && $wr_id) {
     // 글이 없을 경우 해당 게시판 목록으로 이동
     if (!$write['wr_id']) {
         $msg = '글이 존재하지 않습니다.\\n\\n글이 삭제되었거나 이동된 경우입니다.';
-        alert($msg, './board.php?bo_table='.$bo_table);
+        alert($msg, './board?bo_table='.$bo_table);
     }
 
     // 그룹접근 사용
     if (isset($group['gr_use_access']) && $group['gr_use_access']) {
         if ($is_guest) {
             $msg = "비회원은 이 게시판에 접근할 권한이 없습니다.\\n\\n회원이시라면 로그인 후 이용해 보십시오.";
-            alert($msg, './login.php?wr_id='.$wr_id.$qstr.'&amp;url='.urlencode(G5_BBS_URL.'/board.php?bo_table='.$bo_table.'&amp;wr_id='.$wr_id.$qstr));
+            alert($msg, './login?wr_id='.$wr_id.$qstr.'&amp;url='.urlencode(G5_BBS_URL.'/board?bo_table='.$bo_table.'&amp;wr_id='.$wr_id.$qstr));
         }
 
         // 그룹관리자 이상이라면 통과
@@ -52,14 +52,14 @@ if (isset($wr_id) && $wr_id) {
         if ($is_member)
             alert('글을 읽을 권한이 없습니다.', G5_URL);
         else
-            alert('글을 읽을 권한이 없습니다.\\n\\n회원이시라면 로그인 후 이용해 보십시오.', './login.php?wr_id='.$wr_id.$qstr.'&amp;url='.urlencode(G5_BBS_URL.'/board.php?bo_table='.$bo_table.'&amp;wr_id='.$wr_id.$qstr));
+            alert('글을 읽을 권한이 없습니다.\\n\\n회원이시라면 로그인 후 이용해 보십시오.', './login?wr_id='.$wr_id.$qstr.'&amp;url='.urlencode(G5_BBS_URL.'/board?bo_table='.$bo_table.'&amp;wr_id='.$wr_id.$qstr));
     }
 
     // 본인확인을 사용한다면
     if ($config['cf_cert_use'] && !$is_admin) {
         // 인증된 회원만 가능
         if ($board['bo_use_cert'] != '' && $is_guest) {
-            alert('이 게시판은 본인확인 하신 회원님만 글읽기가 가능합니다.\\n\\n회원이시라면 로그인 후 이용해 보십시오.', './login.php?wr_id='.$wr_id.$qstr.'&amp;url='.urlencode(G5_BBS_URL.'/board.php?bo_table='.$bo_table.'&amp;wr_id='.$wr_id.$qstr));
+            alert('이 게시판은 본인확인 하신 회원님만 글읽기가 가능합니다.\\n\\n회원이시라면 로그인 후 이용해 보십시오.', './login?wr_id='.$wr_id.$qstr.'&amp;url='.urlencode(G5_BBS_URL.'/board?bo_table='.$bo_table.'&amp;wr_id='.$wr_id.$qstr));
         }
 
         if ($board['bo_use_cert'] == 'cert' && !$member['mb_certify']) {
@@ -109,7 +109,7 @@ if (isset($wr_id) && $wr_id) {
                 // 이 게시물이 저장된 게시물이 아니면서 관리자가 아니라면
                 //if ("$bo_table|$write['wr_num']" != get_session("ss_secret"))
                 if (!get_session($ss_name))
-                    goto_url('./password.php?w=s&amp;bo_table='.$bo_table.'&amp;wr_id='.$wr_id.$qstr);
+                    goto_url('./password?w=s&amp;bo_table='.$bo_table.'&amp;wr_id='.$wr_id.$qstr);
             }
 
             set_session($ss_name, TRUE);
@@ -145,14 +145,14 @@ if (isset($wr_id) && $wr_id) {
         if ($member['mb_id'])
             alert('목록을 볼 권한이 없습니다.', G5_URL);
         else
-            alert('목록을 볼 권한이 없습니다.\\n\\n회원이시라면 로그인 후 이용해 보십시오.', './login.php?'.$qstr.'&url='.urlencode(G5_BBS_URL.'/board.php?bo_table='.$bo_table.($qstr?'&amp;':'')));
+            alert('목록을 볼 권한이 없습니다.\\n\\n회원이시라면 로그인 후 이용해 보십시오.', './login?'.$qstr.'&url='.urlencode(G5_BBS_URL.'/board?bo_table='.$bo_table.($qstr?'&amp;':'')));
     }
 
     // 본인확인을 사용한다면
     if ($config['cf_cert_use'] && !$is_admin) {
         // 인증된 회원만 가능
         if ($board['bo_use_cert'] != '' && $is_guest) {
-            alert('이 게시판은 본인확인 하신 회원님만 글읽기가 가능합니다.\\n\\n회원이시라면 로그인 후 이용해 보십시오.', './login.php?wr_id='.$wr_id.$qstr.'&amp;url='.urlencode(G5_BBS_URL.'/board.php?bo_table='.$bo_table.'&amp;wr_id='.$wr_id.$qstr));
+            alert('이 게시판은 본인확인 하신 회원님만 글읽기가 가능합니다.\\n\\n회원이시라면 로그인 후 이용해 보십시오.', './login?wr_id='.$wr_id.$qstr.'&amp;url='.urlencode(G5_BBS_URL.'/board?bo_table='.$bo_table.'&amp;wr_id='.$wr_id.$qstr));
         }
 
         if ($board['bo_use_cert'] == 'cert' && !$member['mb_certify']) {
@@ -223,7 +223,7 @@ if ($board['bo_use_nogood'])
 $admin_href = "";
 // 최고관리자 또는 그룹관리자라면
 if ($member['mb_id'] && ($is_admin === 'super' || $group['gr_admin'] === $member['mb_id']))
-    $admin_href = G5_ADMIN_URL.'/board_form.php?w=u&amp;bo_table='.$bo_table;
+    $admin_href = G5_ADMIN_URL.'/board_form?w=u&amp;bo_table='.$bo_table;
 
 include_once(G5_BBS_PATH.'/board_head.php');
 

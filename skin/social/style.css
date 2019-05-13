@@ -1,7 +1,7 @@
 @charset "utf-8";
 
 /* 회원가입 약관 */
-#fregister p{text-align:center;color: #c7254e;background: #f9f2f4;padding:10px;border:1px solid #ecc7d2;margin:0 0 5px}
+/*#fregister p{text-align:center;color: #c7254e;background: #f9f2f4;padding:10px;border:1px solid #ecc7d2;margin:0 0 5px}*/
 #fregister section {;margin:10px auto 10px;position:relative;}
 #fregister_chkall{text-align:right}
  h2 {text-align:left;padding:15px 0;font-size:20px;font-family: "nsr", Sans-serif;font-weight:lighter}
@@ -271,3 +271,4 @@ input[id="login_auto_login"] {display: none;}
 #mb_login #login_info span{float:left;margin: 0 13px; height: 17px; background-color: #acacac; width: 1px; display: inline-table;}
 #login_password_lost{border-right:unset;}
 
+.agree_box{width:100%;border:1px solid #efefef;height:120px;overflow-y:scroll;padding:10px !important;}

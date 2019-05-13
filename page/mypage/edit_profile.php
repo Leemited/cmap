@@ -2,12 +2,11 @@
 include_once ("../../common.php");
 $sub = "sub";
 $mypage = true;
+$menu_id = "depth_desc_edit";
+include_once (G5_PATH."/page/mypage/confirm.php");
 include_once (G5_PATH."/_head.php");
-if(!$is_member){
-    alert("로그인이 필요합니다.", G5_BBS_URL."/login.php");
-}
 if(!$chk){
-    alert("비밀번호 인증이 필요합니다.",G5_URL."/page/mypage/edit_profile_chkpwd.php");
+    alert("비밀번호 인증이 필요합니다.",G5_URL."/page/mypage/edit_profile_chkpwd");
 }
 
 $mb_3 = explode("-",$member["mb_3"]);
@@ -20,9 +19,9 @@ add_javascript(G5_POSTCODE_JS, 0);
 <div class="width-fixed">
     <section class="sub_sec" id="mypages">
         <header class="top">
-            <h2 onclick="location.href=g5_url+'/page/mypage/mypage.php'">MY C.MAP</h2>
+            <h2 onclick="location.href=g5_url+'/page/mypage/mypage'">MY C.MAP</h2>
             <div class="logout">
-                <a href="<?php echo G5_BBS_URL;?>/logout.php"><span></span>로그아웃</a>
+                <a href="<?php echo G5_BBS_URL;?>/logout"><span></span>로그아웃</a>
             </div>
         </header>
         <aside class="mypage_menu">
@@ -31,12 +30,12 @@ add_javascript(G5_POSTCODE_JS, 0);
             </div>
             <div class="mbottom">
                 <ul class="mmenu">
-                    <li onclick="location.href=g5_url+'/page/mypage/mypage.php'"><i></i>홈페이지 설정</li>
-                    <li onclick="location.href=g5_url+'/page/mypage/quickmenu.php'"><i></i>퀵메뉴 설정</li>
-                    <li onclick="location.href=g5_url+'/page/mypage/navigator.php'"><i></i>네비게이터 설정</li>
-                    <li onclick="location.href=g5_url+'/page/mypage/guide.php'"><i></i>사용자 가이드 설정</li>
+                    <li onclick="location.href=g5_url+'/page/mypage/mypage'"><i></i>홈페이지 설정</li>
+                    <li onclick="location.href=g5_url+'/page/mypage/quickmenu'"><i></i>퀵메뉴 설정</li>
+                    <li onclick="location.href=g5_url+'/page/mypage/navigator'"><i></i>네비게이터 설정</li>
+                    <!--<li onclick="location.href=g5_url+'/page/mypage/guide'"><i></i>사용자 가이드 설정</li>-->
                     <li class="active"><i></i>개인정보 수정</li>
-                    <li onclick="location.href=g5_url+'/page/mypage/member_leave.php'"><i></i>회원탈퇴</li>
+                    <li onclick="location.href=g5_url+'/page/mypage/member_leave'"><i></i>회원탈퇴</li>
                 </ul>
             </div>
         </aside>
@@ -53,7 +52,7 @@ add_javascript(G5_POSTCODE_JS, 0);
                     <span></span> 나의 정보관리
                 </h2>
                 <div class="profile_form">
-                    <form action="<?php echo G5_URL;?>/page/mypage/update_profile.php" name="edit_form" method="post">
+                    <form action="<?php echo G5_URL;?>/page/mypage/update_profile" name="edit_form" method="post">
                         <input type="hidden" name="mb_id" value="<?php echo $member["mb_id"];?>">
                         <table>
                             <tr>
@@ -176,7 +175,7 @@ add_javascript(G5_POSTCODE_JS, 0);
                             <input type="submit" class="basic_btn01 width20" value="나의정보 수정">
                         </div>
                     </form>
-                    <form action="<?php echo G5_URL;?>/page/mypage/password_update.php" method="post" name="password_form" onsubmit="return fnPass();">
+                    <form action="<?php echo G5_URL;?>/page/mypage/password_update" method="post" name="password_form" onsubmit="return fnPass();">
                         <input type="hidden" name="pass_confirm" id="pass_confirm" value="N">
                         <table>
                             <tr>

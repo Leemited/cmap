@@ -56,10 +56,12 @@ if (G5_IS_MOBILE) {
         <div id="ft_catch"><img src="<?php echo G5_IMG_URL; ?>/ft_logo.png" alt="<?php echo G5_VERSION ?>"> Copyright © 2018 C_MAP. All rights reserved.</div>
         <div id="ft_link">
             <!--<a href="<?php /*echo G5_BBS_URL; */?>/content.php?co_id=company">회사소개</a>-->
-            <a href="<?php echo G5_BBS_URL; ?>/content.php?co_id=privacy">개인정보처리방침</a>
-            <a href="<?php echo G5_BBS_URL; ?>/content.php?co_id=provision">서비스이용약관</a>
-            <a href="#">TEL : 000-0000<?php echo $footer["ft_tel"];?></a>
-            <a href="#">Email : email@cmap.com<?php echo $footer["ft_email"];?></a>
+            <a href="#">건설기술혁신처</a>
+            <a href="#">사업자번호 : 398-18-00805</a>
+            <a href="javascript:footerModal('<?php echo G5_URL; ?>/page/ajax/ajax.content.php','privacy')">개인정보처리방침</a>
+            <a href="javascript:footerModal('<?php echo G5_URL; ?>/page/ajax/ajax.content.php','provision')">서비스이용약관</a>
+            <a href="#">TEL : 055-763-7222</a>
+            <a href="mailto:aplatoxin80@naver.com">Email : aplatoxin80@naver.com</a>
             <!--<a href="<?php /*echo get_device_change_url(); */?>">모바일버전</a>-->
         </div>
     </div>
@@ -76,6 +78,35 @@ if (G5_IS_MOBILE) {
         });
     </script>
     --><?php /*}*/?>
+</div>
+<div class="loadings">
+    <div class="loader loader--style7" title="6">
+        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+             width="50px" height="50px" viewBox="0 0 30 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+            <rect x="0" y="0" width="8" height="30" fill="#333">
+                <animate attributeName="opacity" attributeType="XML"
+                         values="1; .2; 1"
+                         begin="0s" dur="0.6s" repeatCount="indefinite" />
+            </rect>
+                    <rect x="10" y="0" width="8" height="30" fill="#333">
+                        <animate attributeName="opacity" attributeType="XML"
+                                 values="1; .2; 1"
+                                 begin="0.2s" dur="0.6s" repeatCount="indefinite" />
+                    </rect>
+                    <rect x="20" y="0" width="8" height="30" fill="#333">
+                        <animate attributeName="opacity" attributeType="XML"
+                                 values="1; .2; 1"
+                                 begin="0.4s" dur="0.6s" repeatCount="indefinite" />
+                    </rect>
+          </svg>
+    </div>
+    <div style="position:absolute;top:60%;left:50%;transform:translate(-50%,-50%);text-align: center">
+        <h2 style="font-size:20px;color:#fff;">현장 스케줄등록 중입니다.<br>최대 5분 정도 소요될 수 있습니다. </h2>
+    </div>
+</div>
+
+<div class="ft_content">
+    <div class="modal"></div>
 </div>
 <?php
 if(G5_DEVICE_BUTTON_DISPLAY && !G5_IS_MOBILE) { ?>
