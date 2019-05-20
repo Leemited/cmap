@@ -136,90 +136,14 @@ while ($row = sql_fetch_array($res)) {
 
 include_once (G5_PATH."/_head.php");
 
-/*}/*else if($menu_id==30){
-    if($depth1_id) {
-        $sql = "select *,a.id as id,COUNT(*) as cnt,a.pk_id from `cmap_depth1` as a left join `cmap_content` as b on a.id = b.depth1_id where a.me_code = '{$incode}' and menu_status = 0 group by a.id order by a.id asc ";
-        $res = sql_query($sql);
-        while ($row = sql_fetch_array($res)) {
-            $depth_menu[] = $row;
-        }
-    }else{
-        $sql = "select *,a.id as id,COUNT(*) as cnt,a.pk_id from `cmap_depth1` as a left join `cmap_content` as b on a.id = b.depth1_id where a.me_code = '{$incode}' and menu_status = 0 group by a.id order by a.id asc ";
-        $res = sql_query($sql);
-        while ($row = sql_fetch_array($res)) {
-            $depth_me[] = $row;
-        }
-    }
-
-    $sql = "select *,a.id as id,COUNT(*) as cnt,a.pk_id  from `cmap_depth1` as a left join `cmap_content` as b on a.id = b.depth1_id where a.me_code = '{$incode}' and menu_status = 0 {$where1} group by a.id order by a.id asc ";
-    $res = sql_query($sql);
-    $i=0;
-    if($me_id!="3035"){
-        while ($row = sql_fetch_array($res)) {
-            $j = 0;
-            $list[$i] = $row;
-            $sql = "select *,a.id as id,COUNT(*) as cnt,a.pk_id from `cmap_depth2` as a left join `cmap_content` as b on a.id = b.depth2_id where b.depth1_id = {$row['id']} {$where2} group by a.id order by a.id asc";
-            $res2 = sql_query($sql);
-            while ($row2 = sql_fetch_array($res2)) {
-                $k = 0;
-                $list[$i]['depth2'][$j] = $row2;
-                $sql = "select * from `cmap_content` where depth1_id = {$row['id']} and depth2_id = {$row2['id']} order by id asc";
-                $res3 = sql_query($sql);
-                while ($row3 = sql_fetch_array($res3)) {
-                    $l = 0;
-                    $list[$i]['depth2'][$j]['depth3'][$k] = $row3;
-                    $k++;
-                }
-                $j++;
-            }
-            $i++;
-        }
-    }else{
-        while($row=sql_fetch_array($res)){
-            $j=0;
-            $list[$i] = $row;
-            $sql = "select *,a.id as id,COUNT(*) as cnt,a.pk_id from `cmap_depth2` as a left join `cmap_content` as b on a.id = b.depth2_id where b.depth1_id = {$row['id']} {$where2} group by a.id order by a.id asc";
-            $res2 = sql_query($sql);
-            while($row2 = sql_fetch_array($res2)){
-                $k=0;
-                $list[$i]['depth2'][$j] = $row2;
-                $sql = "select *,a.id as id, COUNT(*) as cnt,a.pk_id from `cmap_depth3` as a left join `cmap_content` as b on a.id = b.depth3_id where b.depth1_id = {$row['id']} and b.depth2_id = {$row2['id']} {$where3} group by a.id order by a.id asc";
-                $res3 = sql_query($sql);
-                while($row3 = sql_fetch_array($res3)){
-                    $l=0;
-                    $list[$i]['depth2'][$j]['depth3'][$k] = $row3;
-                    $sql = "select * from `cmap_content` where depth1_id = {$row['id']} and depth2_id = {$row2['id']} and depth3_id = {$row3['id']} {$where5} order by id asc";
-                    $res4 = sql_query($sql);
-                    while($row4 = sql_fetch_array($res4)){
-                        //$m=0;
-                        $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l] = $row4;
-                        $l++;
-                    }
-                    $k++;
-                }
-                $j++;
-            }
-            $i++;
-        }
-    }
-}*/
 $myconstruction = false;
 
 ?>
-<!--<div>
-    <div class="menu_guide">
-        <div><?php /*echo $list[0]["depth_name"];*/?> : </div>
-    </div>
-</div>-->
+
 <div class="search">
     <?php if($is_member && $myconstruction){?>
         <select name="" id=""></select>
     <?php }?>
-<!--    <select name="me_id" id="me_id">
-        <?php /*for($i=0;$i<count($depth_me);$i++) { */?>
-            <option value="60<?php /*echo $depth_me[$i]["me_id"];*/?>" <?php /*echo get_selected('60'.$depth_me[$i]["me_id"],$me_id);*/?>><?php /*echo $depth_me[$i]["menu_name"];*/?></option>
-        <?php /*}*/?>
-    </select>-->
 </div>
 <div class="full-width">
     <div class="view">

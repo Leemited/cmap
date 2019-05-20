@@ -10,7 +10,7 @@ if($chkm["mb_id"]==$mb_id){
     return;
 }
 
-$sql = "select count(*) as cnt from `cmap_construct_invite` where const_id = '{$id}', read_mb_id = '{$mb_id}'";
+$sql = "select count(*) as cnt from `cmap_construct_invite` where const_id = '{$id}' and read_mb_id = '{$mb_id}'";
 $chkmem = sql_fetch($sql);
 
 if($chkmem["cnt"]>0){

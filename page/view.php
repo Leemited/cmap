@@ -6,6 +6,37 @@ $sub="sub";
     alert("로그인후 이용 가능합니다.", G5_BBS_URL."/login");
 }*/
 
+//내 현황 가져오기
+$sql = "select * from `cmap_my_construct_map` where const_id = '{$current_const["const_id"]}' and mb_id ='{$member["mb_id"]}'";
+$delayitem = sql_fetch($sql);
+
+$vpk_ids = explode("``",$delayitem["pk_ids"]);
+$vpk_active = explode("``",$delayitem["pk_actives"]);
+$vpk_active_date = explode("``",$delayitem["pk_actives_date"]);
+$vpk_ids_other = explode("``",$delayitem["pk_ids_other"]);
+$vpk_actives_other = explode("``",$delayitem["pk_actives_other"]);
+$vpk_actives_dates_other = explode("``",$delayitem["pk_actives_dates_other"]);
+
+for($i=0;$i<count($vpk_ids);$i++){
+    if($vpk_ids[$i]==""){continue;}
+    if($vpk_active[$i]==""){$vpk_active[$i]=0;}
+    if($vpk_active_date[$i]==""){$vpk_active_date[$i]="0000-00-00";}
+
+    $delayview[$vpk_ids[$i]]["pk_id"] = $vpk_ids[$i];
+    $delayview[$vpk_ids[$i]]["pk_active"] = $vpk_active[$i];
+    $delayview[$vpk_ids[$i]]["pk_active_date"] = $vpk_active_date[$i];
+}
+
+for($i=0;$i<count($vpk_ids_other);$i++){
+    if($vpk_ids_other[$i]==""){continue;}
+    if($vpk_actives_other[$i]==""){$vpk_actives_other[$i]=0;}
+    if($vpk_actives_dates_other[$i]==""){$vpk_actives_dates_other[$i]="0000-00-00";}
+
+    $allview[$vpk_ids_other[$i]]["pk_id"] = $vpk_ids_other[$i];
+    $allview[$vpk_ids_other[$i]]["pk_active"] = $vpk_actives_other[$i];
+    $allview[$vpk_ids_other[$i]]["pk_active_date"] = $vpk_actives_dates_other[$i];
+}
+
 if(strlen($me_id)==2){
     $sql = "select * from `cmap_depth1` where SUBSTRING(me_code,1,2) like '%{$me_id}%' order by id asc limit 0,1 ";
     $codes = sql_fetch($sql);
@@ -145,74 +176,8 @@ if($current_const["const_id"]!="" && $current_const["const_id"]!=0) {
     $sql = "select * from `my_cmap_contruct_map` where const_id = '{$current_const["const_id"]}' and mb_id = '{$member["mb_id"]}'";
 }
 
-/*}/*else if($menu_id==30){
-    if($depth1_id) {
-        $sql = "select *,a.id as id,COUNT(*) as cnt,a.pk_id from `cmap_depth1` as a left join `cmap_content` as b on a.id = b.depth1_id where a.me_code = '{$incode}' and menu_status = 0 group by a.id order by a.id asc ";
-        $res = sql_query($sql);
-        while ($row = sql_fetch_array($res)) {
-            $depth_menu[] = $row;
-        }
-    }else{
-        $sql = "select *,a.id as id,COUNT(*) as cnt,a.pk_id from `cmap_depth1` as a left join `cmap_content` as b on a.id = b.depth1_id where a.me_code = '{$incode}' and menu_status = 0 group by a.id order by a.id asc ";
-        $res = sql_query($sql);
-        while ($row = sql_fetch_array($res)) {
-            $depth_me[] = $row;
-        }
-    }
-
-    $sql = "select *,a.id as id,COUNT(*) as cnt,a.pk_id  from `cmap_depth1` as a left join `cmap_content` as b on a.id = b.depth1_id where a.me_code = '{$incode}' and menu_status = 0 {$where1} group by a.id order by a.id asc ";
-    $res = sql_query($sql);
-    $i=0;
-    if($me_id!="3035"){
-        while ($row = sql_fetch_array($res)) {
-            $j = 0;
-            $list[$i] = $row;
-            $sql = "select *,a.id as id,COUNT(*) as cnt,a.pk_id from `cmap_depth2` as a left join `cmap_content` as b on a.id = b.depth2_id where b.depth1_id = {$row['id']} {$where2} group by a.id order by a.id asc";
-            $res2 = sql_query($sql);
-            while ($row2 = sql_fetch_array($res2)) {
-                $k = 0;
-                $list[$i]['depth2'][$j] = $row2;
-                $sql = "select * from `cmap_content` where depth1_id = {$row['id']} and depth2_id = {$row2['id']} order by id asc";
-                $res3 = sql_query($sql);
-                while ($row3 = sql_fetch_array($res3)) {
-                    $l = 0;
-                    $list[$i]['depth2'][$j]['depth3'][$k] = $row3;
-                    $k++;
-                }
-                $j++;
-            }
-            $i++;
-        }
-    }else{
-        while($row=sql_fetch_array($res)){
-            $j=0;
-            $list[$i] = $row;
-            $sql = "select *,a.id as id,COUNT(*) as cnt,a.pk_id from `cmap_depth2` as a left join `cmap_content` as b on a.id = b.depth2_id where b.depth1_id = {$row['id']} {$where2} group by a.id order by a.id asc";
-            $res2 = sql_query($sql);
-            while($row2 = sql_fetch_array($res2)){
-                $k=0;
-                $list[$i]['depth2'][$j] = $row2;
-                $sql = "select *,a.id as id, COUNT(*) as cnt,a.pk_id from `cmap_depth3` as a left join `cmap_content` as b on a.id = b.depth3_id where b.depth1_id = {$row['id']} and b.depth2_id = {$row2['id']} {$where3} group by a.id order by a.id asc";
-                $res3 = sql_query($sql);
-                while($row3 = sql_fetch_array($res3)){
-                    $l=0;
-                    $list[$i]['depth2'][$j]['depth3'][$k] = $row3;
-                    $sql = "select * from `cmap_content` where depth1_id = {$row['id']} and depth2_id = {$row2['id']} and depth3_id = {$row3['id']} {$where5} order by id asc";
-                    $res4 = sql_query($sql);
-                    while($row4 = sql_fetch_array($res4)){
-                        //$m=0;
-                        $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l] = $row4;
-                        $l++;
-                    }
-                    $k++;
-                }
-                $j++;
-            }
-            $i++;
-        }
-    }
-}*/
 $myconstruction = false;
+//$delaylist = array_values($delaylist);
 ?>
 <!--<div>
     <div class="menu_guide">
@@ -220,14 +185,9 @@ $myconstruction = false;
     </div>
 </div>-->
 <?php if($is_member){?>
-<div class="search">
-    <select name="mylocmap" id="mylocmap" class="cmap_sel" style="width:260px;" onchange="fnChangeConst('<?php echo $member["mb_id"];?>',this.value)">
-        <option value="" <?php if($current_const["const_id"]==0){?>selected<?php }?>>현장 선택</option>
-        <?php for($i=0;$i<count($mycont);$i++){?>
-            <option value="<?php echo $mycont[$i]["id"];?>" <?php if($current_const["const_id"]==$mycont[$i]["id"]){?>selected<?php }?>><?php echo $mycont[$i]["cmap_name"];?></option>
-        <?php }?>
-    </select>
-</div>
+<!--<div class="search">
+
+</div>-->
 <?php }?>
 <div class="full-width">
     <div class="view">
@@ -284,7 +244,7 @@ $myconstruction = false;
                     <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
                         <th style="width:5%;">확인</th>
                         <th style="width:10%;">제출일</th>
-                    <th style="width:6%;">지연일</th>
+                        <th style="width:6%;">지연일</th>
                     <?php }?>
                 </tr>
             </table>
@@ -300,9 +260,9 @@ $myconstruction = false;
                 <th style="width:auto;">주요확인내용</th>
                 <th style="width:120px;">참고</th>
                 <?php if($is_member && $mycont  && $current_const["const_id"]!=0){?>
-                <th style="width:5%;">확인</th>
-                <th style="width:10%;">제출일</th>
-                <th style="width:6%;">지연일</th>
+                    <th style="width:5%;">확인</th>
+                    <th style="width:10%;">제출일</th>
+                    <th style="width:6%;">지연일</th>
                 <?php }?>
             </tr>
             </thead>
@@ -373,7 +333,7 @@ $myconstruction = false;
                             $depth_last++;
                             $fileid = "files".$list[$i]["depth2"][$j]["depth3"][$k]["depth4"][$l]["depth5"][$m]["id"];
                             ?>
-                            <td class="depth3 <?php if($pk_id==$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"]){echo "active";}?>">
+                            <td class="depth3 <?php if($pk_id==$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"]){echo "active";}?>" <?php if($delaylist[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["delay_date"]){?>style="border-left:2px solid red"<?php }?>>
                                 <?php if(!$is_member){?>
                                     <span class="gray">로그인 후 이용 가능합니다.</span>
                                 <?php }else {?>
@@ -405,15 +365,33 @@ $myconstruction = false;
                                 <?php }?>
                             </td>
                             <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
-                            <td class="confirm" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>">
-                                <input type="checkbox" id="chk_pk_id_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>">
+                            <td class="confirm" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" >
+                                <?php if($member["mb_6"]==1){?>
+                                <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type']!="-1"){?>
+                                <input type="checkbox" id="chk_pk_id_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" <?php if($delayview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active"]==1){ ?>checked onclick="alert('이미 처리된 항목입니다.');return false;"<?php }else{?>onclick="fnCheckDelay('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>','<?php echo $current_const["const_id"];?>');" <?php }?>>
                                 <label for="chk_pk_id_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>"></label>
+                                <?php }?>
+                                <?php }else{?>
+                                    <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type']!="-1"){?>
+                                        <input type="checkbox" id="chk_pk_id_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" <?php if($delayview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active"]==1){ ?>checked onclick="alert('이미 처리된 항목입니다.');return false;"<?php }else{?>onclick="fnCheckDelay('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>','<?php echo $current_const["const_id"];?>');" <?php }?>>
+                                        <label for="chk_pk_id_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>"></label>
+                                    <?php }else{?>
+                                        <input type="checkbox" id="chk_pk_id_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" <?php if($allview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active"]==1){ ?>checked onclick="alert('이미 처리된 항목입니다.');return false;"<?php }else{?>onclick="fnCheckDelay2('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>','<?php echo $current_const["const_id"];?>');" <?php }?>>
+                                        <label for="chk_pk_id_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" class="other"></label>
+                                    <?php }?>
+                                <?php }?>
                             </td>
-                            <td class="date" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>">
-
+                            <td class="date td_center" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>">
+                                <?php if($member["mb_6"]==1){?>
+                                <?php if($delayview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active_date"] != "0000-00-00"){ echo $delayview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active_date"]; }?>
+                                <?php }else{?>
+                                    <?php if($allview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active_date"] != "0000-00-00"){ echo $allview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active_date"]; }?>
+                                <?php }?>
                             </td>
                             <td class="depth6">
-                                    
+                                <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type']!="-1"){
+                                    echo ($delaylist[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["delay_date"])?$delaylist[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["delay_date"]:"-";
+                                }?>
                             </td>
                             <?php }?>
                         </tr>
@@ -690,20 +668,10 @@ $(function(){
         location.href=g5_url+'/page/view?me_id=<?php echo $me_id;?>&depth1_id='+$(this).val();
     });
 
-    $(".etc_view_bg").click(function(){
-        fnEtcClose();
-    });
-
-    window.onkeydown = function(){
-        if(event.keyCode==27 && $(".etc_view").hasClass("active")){
-            fnEtcClose();
-        }
-    }
-
     $(function(){
         $(document).tooltip();
     });
-})
+});
 
 function fnViewEtc(pk_id){
     $.ajax({
@@ -722,11 +690,51 @@ function fnViewEtc(pk_id){
         }
     });
 }
-function fnEtcClose(){
-    $(".etc_view").removeClass("active");
-    $(".etc_view_bg").removeClass("active");
+function fnCheckDelay(pk_id,const_id){
+    $.ajax({
+        url:g5_url+'/page/ajax/ajax.my_delay_check.php',
+        method:"post",
+        data:{pk_id:pk_id,const_id:const_id},
+        dataType:"json"
+    }).done(function(data){
+        if(data.msg=="1"){
+            alert("현장을 선택해주세요.");
+        }else if(data.msg=="2"){
+            alert("선택된 항목이 없습니다.");
+        }else if(data.msg=="3"){
+            alert("개인설정 오류로 저장할 수 없습니다.")
+        }else if(data.msg=="4"){
+            alert("이미 제출/확인 된 항목입니다.");
+        }else if(data.msg=="5"){
+            alert("알 수 없는 오류입니다.\n관리자에게 문의 바랍니다.");
+        }else {
+            location.reload();
+        }
+    });
 }
 
+function fnCheckDelay2(pk_id,const_id){
+    $.ajax({
+        url:g5_url+'/page/ajax/ajax.my_delay_check2.php',
+        method:"post",
+        data:{pk_id:pk_id,const_id:const_id},
+        dataType:"json"
+    }).done(function(data){
+        if(data.msg=="1"){
+            alert("현장을 선택해주세요.");
+        }else if(data.msg=="2"){
+            alert("선택된 항목이 없습니다.");
+        }else if(data.msg=="3"){
+            alert("개인설정 오류로 저장할 수 없습니다.")
+        }else if(data.msg=="4"){
+            alert("이미 제출/확인 된 항목입니다.");
+        }else if(data.msg=="5"){
+            alert("알 수 없는 오류입니다.\n관리자에게 문의 바랍니다.");
+        }else {
+            location.reload();
+        }
+    });
+}
 </script>
 <?php
 include_once (G5_PATH."/_tail.php");

@@ -4,7 +4,7 @@ $sub = "sub";
 $bbody = "board";
 include_once (G5_PATH."/head.php");
 
-$sql = "select * from `cmap_my_construct` where id = '{$id}'";
+$sql = "select * from `cmap_my_construct` where id = '{$constid}'";
 $view = sql_fetch($sql);
 $inmb = get_member($view["mb_id"]);
 
@@ -30,7 +30,7 @@ if($view["mb_id"]!=$member["mb_id"]) {
             <div class="myloc_tab">
                 <ul>
                     <li class="active">현장정보</li>
-                    <li onclick="location.href=g5_url+'/page/mylocation/mylocation_view2?id=<?php echo $id;?>';">공사정보</li>
+                    <li onclick="location.href=g5_url+'/page/mylocation/mylocation_view2?constid=<?php echo $constid;?>';">공사정보</li>
                 </ul>
                 <div class="clear"></div>
             </div>
@@ -39,10 +39,10 @@ if($view["mb_id"]!=$member["mb_id"]) {
                 <div class="myloc_btns">
                     <input type="button" value="목록" onclick="location.href=g5_url+'/page/mylocation/mylocation'" class="basic_btn02">
                     <?php if($chk!=false){?>
-                    <input type="button" value="초대하기" onclick="fnConstInvite('<?php echo $id;?>');" class="basic_btn02">
+                    <input type="button" value="초대하기" onclick="fnConstInvite('<?php echo $constid;?>');" class="basic_btn02">
                     <!--<input type="button" value="공유하기" onclick="fnConstShare('<?php /*echo $id;*/?>');" class="basic_btn02">-->
                     <?php if($member["mb_id"]==$view["mb_id"]){?>
-                    <input type="button" value="수정" onclick="fnConstEdit('1','<?php echo $id;?>');" class="basic_btn03">
+                    <input type="button" value="수정" onclick="fnConstEdit('1','<?php echo $constid;?>');" class="basic_btn03">
                     <?php }?>
                     <input type="button" value="복사" onclick="fnConstCopy();" class="basic_btn02">
                     <input type="button" value="복구" onclick="fnConstRestore();" class="basic_btn02">

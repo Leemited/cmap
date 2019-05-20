@@ -30,10 +30,10 @@ include_once ("../../common.php");
           cmap_construct_addr2_service = '{$cmap_construct_addr2_service}',
           cmap_construct_addr3_service = '{$cmap_construct_addr3_service}',
           cmap_construct_jibeon_service = '{$cmap_construct_jibeon_service}'
-          where id = '{$id}'";
+          where id = '{$constid}'";
 
 if(sql_query($sql)){
-    goto_url(G5_URL."/page/mylocation/mylocation_view?id=".$id);
+    goto_url(G5_URL."/page/mylocation/mylocation_view?constid=".$constid);
 }else{
     alert("정보오류로 인해 수정되지 못했습니다.", G5_URL."/page/mylocation/mylocation_view");
     return false;

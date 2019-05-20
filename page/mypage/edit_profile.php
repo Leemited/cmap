@@ -68,6 +68,12 @@ add_javascript(G5_POSTCODE_JS, 0);
                                 </td>
                             </tr>
                             <tr>
+                                <th>직책</th>
+                                <td>
+                                    <input type="text" name="mb_4" id="reg_mb_4" value="<?php echo $member["mb_4"];?>" class="basic_input01 width70">
+                                </td>
+                            </tr>
+                            <tr>
                                 <th>대표자</th>
                                 <td>
                                     <input type="text" name="mb_2" id="reg_mb_2" value="<?php echo $member["mb_2"];?>" class="basic_input01 width70">

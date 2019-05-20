@@ -57,6 +57,7 @@ if (G5_IS_MOBILE) {
         <div id="ft_link">
             <!--<a href="<?php /*echo G5_BBS_URL; */?>/content.php?co_id=company">회사소개</a>-->
             <a href="#">건설기술혁신처</a>
+            <a href="#">대표자 : 이지연</a>
             <a href="#">사업자번호 : 398-18-00805</a>
             <a href="javascript:footerModal('<?php echo G5_URL; ?>/page/ajax/ajax.content.php','privacy')">개인정보처리방침</a>
             <a href="javascript:footerModal('<?php echo G5_URL; ?>/page/ajax/ajax.content.php','provision')">서비스이용약관</a>

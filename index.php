@@ -41,6 +41,7 @@ include_once(G5_PATH.'/head.php');
             dots: false,
             items: 1
         });
+
         getLocation();
     });
 

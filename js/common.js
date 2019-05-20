@@ -945,6 +945,16 @@ $(function() {
     fnMenusHeader('');
 
 
+    $(".etc_view_bg").click(function(){
+        fnEtcClose();
+    });
+
+    window.onkeydown = function(){
+        if(event.keyCode==27 && $(".etc_view").hasClass("active")){
+            fnEtcClose();
+        }
+    }
+
     $(document).on("click", "form[name=fwrite] input:submit, form[name=fwrite] button:submit, form[name=fwrite] input:image", function() {
         var f = this.form;
 
@@ -1037,7 +1047,28 @@ function fnConstConfirm(){
         data:{}
     }).done(function(data){
         fnShowModal(data);
+    });
+}
 
+//현장등록 팝업
+function fnConstRe(constid,link){
+    $.ajax({
+        url:g5_url+"/page/modal/ajax.alert.php",
+        method:"post",
+        data:{title:"현장등록",msg:"등록하던 현장이 있습니다. <br>계속 등록하시겠습니까?",link:link,btns:"개설하기",cancel:"fnConstReCancel("+constid+")"}
+    }).done(function(data){
+        fnShowModal(data);
+    });
+}
+
+function fnConstReCancel(constid) {
+    $.ajax({
+        url:g5_url+"/page/ajax/ajax.mylocation_cancel.php",
+        method:"post",
+        data:{constid:constid}
+    }).done(function(data){
+        console.log(data);
+        fnCloseModal();
     });
 }
 
@@ -1085,7 +1116,7 @@ function fnChangeConst(mb_id,id){
         data:{const_id:const_id},
         dataType:'json'
     }).done(function(data){
-        console.log(data);
+        //console.log(data);
         $(".cmenu1 .counts span").html(Number(data.cnt));
     });
 
@@ -1102,9 +1133,11 @@ function fnChangeConst(mb_id,id){
     $.ajax({
         url:g5_url+'/page/ajax/ajax.get_delay_count.php',
         method:'post',
-        data:{const_id:id}
+        data:{const_id:id},
+        dataType:'json'
     }).done(function(data){
         console.log(data);
+        $(".cmenu4 .counts span").html(Number(data.cnt));
     });
     
 
@@ -1141,7 +1174,6 @@ function fnChangeConst(mb_id,id){
             getLocation();
         }
     });
-
 
 }
 
@@ -1201,9 +1233,9 @@ function fnConstShare(id){
 
 function fnConstEdit(type,id){
     if(type==1){
-        location.href=g5_url+'/page/mylocation/mylocation_edit.php?id='+id;
+        location.href=g5_url+'/page/mylocation/mylocation_edit.php?constid='+id;
     }else{
-        location.href=g5_url+'/page/mylocation/mylocation_edit2.php?id='+id;
+        location.href=g5_url+'/page/mylocation/mylocation_edit2.php?constid='+id;
     }
 }
 
@@ -1268,7 +1300,6 @@ function fnViewRequest(mb_id,const_id){
         });
     }
 }
-
 
 //현장초대 요청 승인
 function fnConstJoinUp(invite_id,const_id){
@@ -1363,6 +1394,7 @@ function fnViewDelay(mb_id,const_id){
             method: "post",
             data: {mb_id: mb_id, const_id: const_id}
         }).done(function (data) {
+            console.log(data);
             if (data == 1) {
                 alert("회원 정보가 없습니다.");
             } else {
@@ -1376,5 +1408,69 @@ function fnViewDelay(mb_id,const_id){
 }
 
 function fnViewMessage(mb_id,const_id){
+    if(const_id=="") {
+        const_id = $("#mylocmap").val();
+    }
 
+    if($(".mymenu_detail").hasClass("active") && chk_menu_on == true) {
+        $(".mymenu_detail").removeClass("active");
+    }else {
+        $.ajax({
+            url: g5_url + '/page/ajax/ajax.get_workmessage.php',
+            method: "post",
+            data: {mb_id: mb_id, const_id: const_id}
+        }).done(function (data) {
+            if (data == 1) {
+                alert("회원 정보가 없습니다.");
+            } else {
+                $(".mymenu_detail .title h2").html("업무연락서")
+                $(".mymenu_detail .detail_list").html(data);
+                $(".mymenu_detail").addClass("active");
+                chk_menu_on = true;
+            }
+        });
+    }
+}
+
+function fnWriteMessage(msg_id){
+    var const_id = $("#cons_id").val();
+    if(const_id==""){
+        alert("현장을 선택해 주세요.");
+        return false;
+    }
+    $.ajax({
+        url:g5_url+"/page/ajax/ajax.get_message.php",
+        method:"post",
+        data:{const_id:const_id,msg_id:msg_id}
+    }).done(function(data) {
+        if(data==1){
+            alert("현장정보가 없습니다.");
+        }else if(data==2){
+            alert("등록된 현장에 요청서를 보낼 수신자가 없습니다.")
+        }else{
+            $(".etc_view").html(data)
+            $(".etc_view_bg").addClass("active");
+            $(".etc_view").addClass("active");
+            $("html,body").attr("style", "height:100vh;overflow:hidden;");
+        }
+    });
+}
+
+function fnEtcClose(){
+    $(".etc_view").removeClass("active");
+    $(".etc_view_bg").removeClass("active");
+    $("html,body").removeAttr("style");
+}
+
+
+function fn_join(id,mb_id){
+    $.ajax({
+        url:g5_url+"/page/ajax/ajax.construct_invite2.php",
+        method:"post",
+        data:{mb_id:mb_id,id:id},
+        dataType:"json"
+    }).done(function(data){
+        console.log(data);
+        alert(data.msg);
+    });
 }

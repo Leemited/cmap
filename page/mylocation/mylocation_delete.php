@@ -1,14 +1,14 @@
 <?php
 include_once ("../../common.php");
 
-if(!$id){
+if(!$constid){
     alert("삭제할 현장을 선택해 주세요.");
     return false;
 }
 
-$sql = "update `cmap_my_construct` set status = -1 where id = '{$id}'";
+$sql = "update `cmap_my_construct` set status = -1 where id = '{$constid}'";
 if(sql_query($sql)){
-    $sql = "delete from `cmap_myschedule` where construct_id = '{$id}'";
+    $sql = "delete from `cmap_myschedule` where construct_id = '{$constid}'";
     sql_query($sql);
 
     alert("삭제되었습니다.");

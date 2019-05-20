@@ -50,23 +50,21 @@ if(sql_query($sql)) {
 
     $sql = "update `cmap_my_construct` set members = '{$inmember}' where id = '{$const_id}'";
     if(sql_query($sql)){
-        $sql = "select * from `cmap_my_construct` where id = '{$const_id}'";
-        $const = sql_fetch($sql);
 
-        //현장 스케쥴 제출 상태 등록
-        //제출 현황 개수 맞추기
-        $pk_ids = explode("``",$const["pk_ids"]);
-        for($i=0;$i<count($pk_ids);$i++){
-            if($pk_active==""){
-                $pk_active = "0";
-                $pk_active_date = "0000-00-00";
-            }else{
-                $pk_active .= "``0";
-                $pk_active_date .= "``0000-00-00";
-            }
+        $sql = "select * from `cmap_my_construct_map` where mb_id = '{$member["mb_id"]}' and const_id = '{$const_id}'";
+        $map = sql_fetch($sql);
+        $map_pk_ids = explode("``",$map["pk_ids"]);
+        for($i=0;$i<count($map_pk_ids);$i++){
+            $vpk_ids[] = $map_pk_ids[$i];
+            $vpk_actives[] = 0;
+            $vpk_actives_date[] = "0000-00-00";
         }
 
-        $sql = "insert into `cmap_my_construct_map` set const_id = '{$const_id}', mb_id='{$member["mb_id"]}' , pk_ids = '{$const["pk_ids"]}}', pk_actives = '{$pk_active}', pk_actives_date = '{$pk_active_date}'";
+        $spk_ids = implode("``",$vpk_ids);
+        $spk_actives = implode("``",$vpk_actives);
+        $spk_actives_date = implode("``",$vpk_actives_date);
+
+        $sql = "insert into `cmap_my_construct_map` set pk_ids = '{$spk_ids}',pk_actives = '{$spk_actives}', pk_actives_date = '{$spk_actives_date}', mb_id= '{$mb}', const_id = '{$const_id}'";
         sql_query($sql);
 
         //현장 평가 상태 등록

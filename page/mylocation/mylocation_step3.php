@@ -6,8 +6,8 @@ include_once (G5_PATH."/head.php");
 
 include_once(G5_PLUGIN_PATH.'/jquery-ui/datepicker.php');
 
-if($id){
-    $sql = "select * from `cmap_my_construct_temp` where id = '{$id}'";
+if($constid){
+    $sql = "select * from `cmap_my_construct_temp` where id = '{$constid}'";
     $view = sql_fetch($sql);
     if($view["pk_ids"]!="") {
         $pk_ids = explode("``", $view["pk_ids"]);
@@ -57,7 +57,7 @@ while($row = sql_fetch_array($res)){
                 <input type="button" value="저장" class="basic_btn03" onclick="fnSave();">
             </div>
             <form action="<?php echo G5_URL;?>/page/mylocation/mylocation_step3_update" method="post" name="write_step3" id="write_step3" onsubmit="fnMylocations();">
-                <input type="hidden" value="<?php echo $id;?>" name="id">
+                <input type="hidden" value="<?php echo $constid;?>" name="constid">
                 <input type="hidden" value="" name="type" id="type">
             <div class="write_box">
                 <table class="write_date1">
@@ -171,7 +171,7 @@ while($row = sql_fetch_array($res)){
                         </table>
                 </div>
                 <div class="btn_group2">
-                    <input type="button" class="basic_btn02 width10" value="< 이전" onclick="location.href='<?php echo G5_URL;?>/page/mylocation/mylocation_step2?id=<?php echo $id;?>'">
+                    <input type="button" class="basic_btn02 width10" value="< 이전" onclick="location.href='<?php echo G5_URL;?>/page/mylocation/mylocation_step2?constid=<?php echo $constid;?>'">
                     <input type="submit" class="basic_btn01 width10" value="다음 >" >
                 </div>
             </div>

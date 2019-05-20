@@ -8,77 +8,70 @@ if(!$mb_id){
 
 //제출 지연 현황
 $delay_now = date("Y-m-d");
-if($const_id){
-    $where = " and construct_id = '{$const_id}'";
-    $where2 = " and const_id = '{$const_id}'";
-}else{
-    $where = " and construct_id in ('{$const_ids}')";
-    $where2 = " and const_id in ('{$const_ids}')";
-}
-$delaysql = "select * from `cmap_myschedule` where schedule_date < '{$delay_now}' {$where} order by id desc";
-$delayres = sql_query($delaysql);
-while($row = sql_fetch_array($delayres)){
-    $delay_id = explode("``",$row["pk_id"]);
+if(!$const_id){
+    //$delaylist=null;
+}else {
+    $activesql = "select * from `cmap_my_construct_map` where mb_id ='{$member["mb_id"]}' and const_id = '{$const_id}'";
+    $activechk = sql_fetch($activesql);
+    $map_pk_id = explode("``",$activechk["pk_ids"]);
+    $map_pk_actives = explode("``",$activechk["pk_actives"]);
+    $map_pk_actives_date = explode("``",$activechk["pk_actives_date"]);
 
-    $diff = strtotime($delay_now) - strtotime($row["schedule_date"]);
+    $delaysql = "select * from `cmap_myschedule` where construct_id = '{$const_id}' and schedule_date < '{$delay_now}' and pk_id <> '' order by schedule_date desc";
+    $delayres = sql_query($delaysql);
+    $a=0;
+    while($delayrow = sql_fetch_array($delayres)){
+        $pk_ids = explode("``",$delayrow["pk_id"]);
 
-    $days = ceil($diff / (60*60*24));
+        $diff = strtotime($delay_now) - strtotime($delayrow["schedule_date"]);
 
-    if($row["schedule_type"]==0){continue;}
-    if($row["schedule_type"] == 1){
-        for($i=0;$i<count($delay_id);$i++) {
-            $sql = "select * from `cmap_my_construct_map` where mb_id = '{$member["mb_id"]}' {$where2}";
-            $chk = sql_fetch($sql);
-            $delay_pk_ids = explode("``",$chk["pk_ids"]);
-            $delay_pk_actives = explode("``",$chk["pk_actives"]);
-            for($j=0;$j<count($delay_pk_ids);$j++){
-                if($delay_pk_ids[$j] == $delay_id[$i] && $delay_pk_actives[$j]==1){continue;}
-                $sql = "select *,c.pk_id as pk_id from `cmap_content` as c left join `cmap_depth1` as d on c.depth1_id = d.id where c.pk_id = '{$delay_id[$i]}'";
-                //echo $sql."<br>";
-                $item = sql_fetch($sql);
-                $delaylist[$delay_id[$i]] = $item;
-                $delaylist[$delay_id[$i]]["delay_date"] = "-".$days;
-            }
-        }
-    }else{
-        for($i=0;$i<count($delay_id);$i++) {
-            $sql = "select * from `cmap_my_construct_map` where mb_id = '{$member["mb_id"]}' {$where2}";
-            $chk = sql_fetch($sql);
-            $delay_pk_ids = explode("``",$chk["pk_ids"]);
-            $delay_pk_actives = explode("``",$chk["pk_actives"]);
-            for($j=0;$j<count($delay_pk_ids);$j++){
-                if($delay_pk_ids[$j] == $delay_id[$i] && $delay_pk_actives[$j]==1){continue;}
-                $sql = "select *,c.pk_id as pk_id from `cmap_content` as c left join `cmap_depth1` as d on c.depth1_id = d.id where c.pk_id = '{$delay_id[$i]}'";
-                //echo $sql."<br>";
-                $item = sql_fetch($sql);
-                $delaylist[$delay_id[$i]] = $item;
-                $delaylist[$delay_id[$i]]["delay_date"] = "-".$days;
+        $days = $diff / (60*60*24);
+        for($i=0;$i<count($pk_ids);$i++){
+            for($j=0;$j<count($map_pk_id);$j++){
+                if($pk_ids[$i]==$map_pk_id[$j]){
+                    if($map_pk_actives[$j]==0){
+                        $sql = "select *,d.pk_id as pk_id,c.depth1_id as depth1_id,a.pk_id as depth1_pk_id,c.depth2_id as depth2_id ,d.depth_name as depth_name,a.depth_name as depth1_name from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$pk_ids[$i]}'";
+                        $ddd = sql_fetch($sql);
+                        if(strpos($chcccid,$ddd["pk_id"])!==false) {
+                            continue;
+                        }
+                        $chcccid .= ','.$ddd["pk_id"];
+                        $delaylists[$pk_ids[$i]] = $ddd;
+                        $delaylists[$pk_ids[$i]]["delay_date"] = "-".$days;
+                    }
+                }
             }
         }
     }
 }
+$delaylists = array_values($delaylists);
+$delaylists = arr_sort($delaylists,"delay_date","asc");
 
-$delaylist = array_values($delaylist);
-
-$delaylist = arr_sort($delaylist,"delay_date", "asc");
 ?>
+<style>
+    .detail_list{width: calc(100% + 5px);}
+</style>
 <table>
+    <colgroup>
+        <col width="70%">
+        <col width="30%">
+    </colgroup>
     <tr>
         <th>지연서류</th>
         <th>지연일</th>
     </tr>
 <?php
-if(count($delaylist)!=0){
-    for($i=0;$i<count($delaylist);$i++) {
+if(count($delaylists)!=0){
+    for($i=0;$i<count($delaylists);$i++) {
 ?>
-    <tr id="delay_<?php echo $delaylist[$i]["pk_id"]; ?>" style="cursor:pointer" onclick="location.href=g5_url+'/page/view?me_id=<?php echo $delaylist[$i]["me_code"];?>&depth1_id=<?php echo $delaylist[$i]["depth1_id"]; ?>&depth2_id=<?php echo $delaylist[$i]["depth2_id"]; ?>&pk_id=<?php echo $delaylist[$i]["pk_id"]; ?>'">
-        <td style="text-align: left;padding:10px;"><span title="<?php echo $delaylist[$i]["content"]; ?>"><?php echo $delaylist[$i]["content"]; ?></span></td>
-        <td><?php echo $delaylist[$i]["delay_date"]; ?></td>
+    <tr id="delay_<?php echo $delaylists[$i]["pk_id"]; ?>" style="cursor:pointer" onclick="location.href=g5_url+'/page/view?me_id=<?php echo $delaylists[$i]["me_code"];?>&depth1_id=<?php echo $delaylists[$i]["depth1_id"]; ?>&depth2_id=<?php echo $delaylists[$i]["depth2_id"]; ?>'">
+        <td style="text-align: left;padding:10px;height:auto"><span title="<?php echo $delaylist[$i]["depth_name"]; ?>"><?php echo "[".$delaylists[$i]["depth1_name"]."]"; ?><?php echo $delaylists[$i]["depth_name"]; ?></span></td>
+        <td style="padding:10px;height:auto"><?php echo $delaylists[$i]["delay_date"]; ?></td>
     </tr>
 <?php
     }
 ?>
-<?php }else{?>
-    <tr><td colspan="3" class="td_center">승인요청 및 요청이력이 없습니다.</td></tr>
+<?php }else if(count($delaylists)==0){?>
+    <tr><td colspan="2" class="td_center">승인요청 및 요청이력이 없습니다. 현장선택을 확인해 주세요.</td></tr>
 <?php }?>
 </table>

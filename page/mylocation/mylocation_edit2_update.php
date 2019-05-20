@@ -2,7 +2,7 @@
 include_once ("../../common.php");
 
 //기존 스케쥴 삭제
-$sql = "delete from `cmap_myschedule` where construct_id = '{$id}' and mb_id = '{$member["mb_id"]}'";
+$sql = "delete from `cmap_myschedule` where construct_id = '{$constid}' and mb_id = '{$member["mb_id"]}'";
 sql_query($sql);
 
 
@@ -23,7 +23,6 @@ for($i=0;$i<count($activeid);$i++){
     $tests[$activeid[$i]] = $test_date[$i];
 }
 
-
 //계약상 착공일 등록
 $sql = "insert into `cmap_myschedule` set
           `mb_id` = '{$member["mb_id"]}',
@@ -31,7 +30,7 @@ $sql = "insert into `cmap_myschedule` set
           `schedule_date` = '{$date1}',
           `insert_date` = now(),
           `update_date` = now(),
-          `construct_id` = '{$id}',
+          `construct_id` = '{$constid}',
           `pk_id` = '',
           status = 0,
           schedule_type = 0
@@ -45,7 +44,7 @@ $sql = "insert into `cmap_myschedule` set
           `schedule_date` = '{$date2}',
           `insert_date` = now(),
           `update_date` = now(),
-          `construct_id` = '{$id}',
+          `construct_id` = '{$constid}',
           `pk_id` = '',
           status = 0,
           schedule_type = 0
@@ -59,7 +58,7 @@ $sql = "insert into `cmap_myschedule` set
           `schedule_date` = '{$date3}',
           `insert_date` = now(),
           `update_date` = now(),
-          `construct_id` = '{$id}',
+          `construct_id` = '{$constid}',
           `pk_id` = '',
           status = 0,
           schedule_type = 0
@@ -73,7 +72,7 @@ $sql = "insert into `cmap_myschedule` set
           `schedule_date` = '{$date4}',
           `insert_date` = now(),
           `update_date` = now(),
-          `construct_id` = '{$id}',
+          `construct_id` = '{$constid}',
           `pk_id` = '',
           status = 0,
           schedule_type = 0
@@ -85,10 +84,9 @@ sql_query($sql);
 $sql = "select *,m.id as id from `cmap_menu` as c left join `cmap_depth1` as m on c.menu_code = m.me_code where SUBSTR(c.menu_code,1,2) = 10 and c.menu_code != 10 and c.menu_status = 0 order by c.menu_order";
 $ress = sql_query($sql);
 while($me_code = sql_fetch_array($ress)) {
-    $sql = "select * from `cmap_content` where submit_date_type != -1 and depth1_id = '{$me_code["id"]}' order by depth1_id desc, depth2_id desc, depth3_id desc, depth4_id desc, submit_date_type asc";
+    $sql = "select *,c.pk_id as pk_id,c.depth1_id as depth1_id,c.depth2_id as depth2_id,c.depth3_id as depth3_id,c.depth4_id as depth4_id,b.pk_id as depth4_pk_id from `cmap_content` as c left join `cmap_depth4` as b on c.depth4_id = b.id where c.submit_date_type != -1 and c.depth1_id = '{$me_code["id"]}' order by c.depth1_id desc, c.depth2_id desc, c.depth3_id desc, c.depth4_id desc, c.submit_date_type asc";
     $res = sql_query($sql);
     while ($row = sql_fetch_array($res)) {
-
         if($row["submit_date_type"]== 1 || $row["submit_date_type"] == 2) continue;
 
         if (strpos($row["submit_date"], "-") !== false) {
@@ -97,19 +95,19 @@ while($me_code = sql_fetch_array($ress)) {
             $date = "+ " . $row["submit_date"]." day ";
         }
 
-        if ($row["submit_date_type"] == 0) { //준공일
-            $nowdate = date("Y-m-d", strtotime($date, strtotime($starts[$row["pk_id"]])));
+        if ($row["submit_date_type"] == 0) { //계약상착공일
+            $nowdate = date("Y-m-d", strtotime($date, strtotime($date1)));
         }
         if ($row["submit_date_type"] == 1) { //입주예정일
             $nowdate = date("Y-m-d", strtotime($date, strtotime($date4)));
         }
-        if ($row["submit_date_type"] == 2) { //시험예정일
-            $nowdate = date("Y-m-d", strtotime($date, strtotime($tests[$row["pk_id"]])));
+        /*if ($row["submit_date_type"] == 2) { //시험예정일
+            $nowdate = date("Y-m-d", strtotime($date, strtotime($date2));
+        }*/
+        if ($row["submit_date_type"] == 3) { // 준공일
+            $nowdate = date("Y-m-d", strtotime($date, strtotime($date3)));
         }
-        if ($row["submit_date_type"] == 3) { //완공일
-            $nowdate = date("Y-m-d", strtotime($date, strtotime($ends[$row["pk_id"]])));
-        }
-        if ($row["submit_date_type"] == 4) { // 착공일
+        if ($row["submit_date_type"] == 4) { // 실착곡일
             $nowdate = date("Y-m-d", strtotime($date , strtotime($date2)));
         }
 
@@ -165,12 +163,17 @@ while($me_code = sql_fetch_array($ress)) {
                                   `schedule_date` = '{$schedule_date}',
                                   `insert_date` = now(),
                                   `update_date` = now(),
-                                  `construct_id` = '{$id}',
+                                  `construct_id` = '{$constid}',
                                   `pk_id` = '{$row["pk_id"]}',
+                                  `depth4_pk_id` = '{$row["depth4_pk_id"]}',
                                   status = 0,
                                   schedule_type = 1
                                 ";
         sql_query($sql);
+
+        $map_pk_ids[] = $row["pk_id"];
+        $map_pk_actives[] = "0";
+        $map_pk_actives_date[] = "0000-00-00";
     }
 }
 
@@ -211,7 +214,6 @@ while ($row = sql_fetch_array($res)) {
             if ($row2["submit_date_type"] == 2) {
                 $nowdate = date("Y-m-d", strtotime($date, strtotime($tests[$row["pk_id"]])));
             }
-
             $nowYear = substr($nowdate,0,4);
             //공휴일 체크
             $holiday = sql_fetch("select * from `cmap_holidays` where year = '{$nowYear}' ");
@@ -257,6 +259,10 @@ while ($row = sql_fetch_array($res)) {
             //echo $rowss["submit_date"]."//".$rowss["submit_date_type"]."//".$date."//".$schedule_date."//".$nowdate."<br>";
             $pk_id_sql[$i][] = $row2["pk_id"];
 
+            $map_pk_ids[] = $row2["pk_id"];
+            $map_pk_actives[] = "0";
+            $map_pk_actives_date[] = "0000-00-00";
+
         }
         $pk = implode("``",$pk_id_sql[$i]);
         if($pk != "") {
@@ -266,8 +272,9 @@ while ($row = sql_fetch_array($res)) {
               `schedule_date` = '{$s_date[$i]["sch_date"]}',
               `insert_date` = now(),
               `update_date` = now(),
-              `construct_id` = '{$id}',
+              `construct_id` = '{$constid}',
               `pk_id` = '{$pk}',
+              `depth4_pk_id` = '{$rowss["pk_id"]}',
               status = 0,
               schedule_type = 2
             ";
@@ -294,13 +301,36 @@ $sql = "update `cmap_my_construct` SET
     start_date = '{$start_dates}',
     end_date = '{$end_dates}',
     test_date = '{$test_dates}'
-    where id = '{$id}'
+    where id = '{$constid}'
     ";
 
 if(sql_query($sql)){
     //완료후 개인설정에도 저장
-    //평가 항목 별로 저장
-    //$sql = "insert into `cmap_my_construct_eval` set mb_id = '{$member["mb_id"]}' ";
+    //완료후 개인설정에도 저장
+    $map_pks = implode("``",$map_pk_ids);
+    $map_pkact = implode("``",$map_pk_actives);
+    $map_pktime = implode("``",$map_pk_actives_date);
+
+    $sql = "update `cmap_my_construct_map` set pk_ids = '{$map_pks}',pk_actives = '{$map_pkact}', pk_actives_date = '{$map_pktime}' where  mb_id= '{$member["mb_id"]}' and const_id = '{$constid}'";
+    sql_query($sql);
+
+    $sql = "select * from `cmap_content` where pk_id not in ('{$map_pks2}')";
+    $finres = sql_query($sql);
+    while($row = sql_fetch_array($finres)){
+        $sql = "select *,b.menu_status as menu_status from `cmap_depth1` as a left `cmap_menu` as b on a.me_code = b.menu_code where a.id = '{$row["depth1_id"]}'";
+        $chk_menu = sql_fetch($sql);
+        if($chk_menu["menu_status"]!=0){continue;}
+        $map_other_pk[] = $row["pk_id"];
+        $map_other_pk_active[] = "0";
+        $map_other_pk_dates_active[] = "0000-00-00";
+    }
+
+    $map_pk_other = implode("``",$map_other_pk);
+    $map_pk_active_other = implode("``",$map_other_pk_active);
+    $map_pk_active_dates_other = implode("``",$map_other_pk_dates_active);
+
+    $sql = "update `cmap_my_construct_map` set pk_ids_other = '{$map_pk_other}', pk_actives_other = '{$map_pk_active_other}', pk_actives_dates_other = '{$map_pk_active_dates_other}' where mb_id= '{$member["mb_id"]}' and const_id = '{$constid}'";
+    sql_query($sql);
 
     alert("현장 수정이 완료 되었습니다.",G5_URL."/page/mylocation/mylocation");
 }else{

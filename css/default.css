@@ -332,6 +332,7 @@ transition: background-color 0.3s ease-out;}
 .gnb_1dli .bg{display:inline-block;width:10px;height:10px;overflow:hidden;/*background:url(../img/gnb_bg2.gif) no-repeat 50% 50%;*/text-indent:-999px}
 .gnb_1da {display:inline-block;font-weight:bold;color:#fff;text-decoration:none;font-family: "NanumBarunGothic",Dotum,Sans-serif;}
 .gnb_2dli{border-top:1px solid #dcdfe0;position:relative;text-align:center;}
+.gnb_2dli.chk{border-left: 5px solid red !important;}
 .gnb_2dli.arrows .gnb_2da:hover{background-image:url('../img/ic_arrow_right.svg');background-position:right center;background-repeat:no-repeat;background-size:28px 28px;}
 .gnb_2dli:first-child{border:0}
 .gnb_2dul {display:none;position:absolute;top:60px;min-width:140px;background-color:#FFF;padding: 0;width:100%;
@@ -393,6 +394,7 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
 #gnb_all .gnb_al_li li a{color:#555}
 .gnb_3dul .gnb_3dli a{color:#000 !important;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;}
 .gnb_3dul .gnb_3dli {border-bottom:1px solid #d8e3e7;}
+.gnb_3dul .gnb_3dli.chk {border-left: 5px solid red;}
 .gnb_3dul .gnb_3dli:hover {background-color:#fff !important;}
 .gnb_3dul .gnb_3dli:hover a{color:#FFF !important;}
 .gnb_3dul .gnb_3dli:last-child{border:none;}

@@ -71,6 +71,7 @@ $res = sql_query($sql);
 while($row=sql_fetch_array($res)){
     $papular[] = $row;
 }
+
 ?>
 
 <!-- 로그인 -->
@@ -109,7 +110,7 @@ while($row=sql_fetch_array($res)){
                 </div>
             </div>
             <div class="cmap_menu_td cmenu2" onclick="fnViewMessage('<?php echo $member["mb_id"];?>','')">
-                <h2>작업요청서</h2>
+                <h2>업무연락서</h2>
                 <div class="counts">
                     <span><?php echo number_format(count($msglist));?></span> 건
                 </div>
@@ -402,7 +403,7 @@ while($row=sql_fetch_array($res)){
                 $gnb_zindex = 999; // gnb_1dli z-index 값 설정용
                 $menu_datas = array();
 
-                for ($i=0; $row=sql_fetch_array($result); $i++) {
+                for ($i=0; $row=sql_fetch_array($result); $i++) {//대메뉴
 
                     $menu_datas[$i] = $row;
 
@@ -413,16 +414,21 @@ while($row=sql_fetch_array($res)){
                                   and substring(menu_code, 1, 2) = '{$row['menu_code']}'
                                 order by menu_order ";
                     $result2 = sql_query($sql2);
-                    for ($k=0; $row2=sql_fetch_array($result2); $k++) {
+                    for ($k=0; $row2=sql_fetch_array($result2); $k++) {//1차
                         $menu_datas[$i]['sub'][$k] = $row2;
-                        $sql3 = "select * from `cmap_depth1` where me_code = '{$row2["menu_code"]}' order by `id` asc ";
+                        $sql3 = "select * from `cmap_depth1` where me_code = '{$row2["menu_code"]}' order by id asc ";
                         $result3 = sql_query($sql3);
-                        for($l = 0; $row3 = sql_fetch_array($result3);$l++){
-                            $menus3[] = $row3;
+                        for($l = 0; $row3 = sql_fetch_array($result3);$l++){//2차
+                            //$menus3[] = $row3;
+                            if($delayhead[$row3["pk_id"]]){
+                                $menu_datas[$i]['sub'][$k]["delay"] = true;
+                                continue;
+                            }else{
+                                $menu_datas[$i]['sub'][$k]["delay"] = false;
+                            }
                         }
                     }
                 }
-
                 $i = 0;
                 foreach( $menu_datas as $row ){
                     if( empty($row) ) continue;
@@ -436,7 +442,7 @@ while($row=sql_fetch_array($res)){
                     }
 
                 ?>
-                <li class="gnb_1dli" style="z-index:<?php echo $gnb_zindex--; ?>">
+                <li class="gnb_1dli" style="z-index:<?php echo $gnb_zindex--; ?>"> <!-- 메인 메뉴 5개 -->
                     <?php if($me_id==60 || $row["menu_name"] == "평가"){?>
                     <a href="<?php echo G5_URL?>/page/view2?me_id=<?php echo $row["menu_code"]; ?>" class="gnb_1da"><?php echo $row['menu_name'] ?></a>
                     <?php }else{?>
@@ -480,9 +486,8 @@ while($row=sql_fetch_array($res)){
                         $res = sql_query($sql);
                         $num = sql_num_rows($res);
 
-
                     ?>
-                        <li class="gnb_2dli <?php if($num>1){?>arrows<?php }?>" >
+                        <li class="gnb_2dli <?php if($num>1){?>arrows<?php }?> <?php if($row2["delay"] || $delayhead2[$row2["menu_code"]]){?>chk<?php }?> " > <!-- 1depth -->
                             <a href="<?php if($num == 1){?><?php echo G5_URL?>/page/view?me_id=<?php echo $row2["menu_code"]; ?><?php }else{ ?>#<?php }?>" class="gnb_2da"><?php echo $row2['menu_name'] ?></a>
                             <?php
                             if($num >= 10){
@@ -496,7 +501,7 @@ while($row=sql_fetch_array($res)){
                             }
 
                             if($num > 1){
-                                echo '<ul class="gnb_3dul '.$over_top.'">';
+                                echo '<ul class="gnb_3dul '.$over_top.'">'; //2depth??
 
                             if($row2["menu_name"]=="용역평가"){?>
                                 <li class="gnb_3dli "><a class="gnb_3da" href="<?php echo G5_URL?>/page/view3?me_id=<?php echo $row2["menu_code"]; ?>&depth1_id=339">업체평가 (80)</a></li>
@@ -510,6 +515,12 @@ while($row=sql_fetch_array($res)){
                                         continue;
                                     }
                                 }*/
+                                if($delayhead[$row3["pk_id"]]){
+                                    $chk = "chk";
+                                }else{
+                                    $chk = "";
+                                }
+
                                 if($row3["depth_name"]){
                                     if($row2["menu_code"]=='6064'){
                                     ?>
@@ -518,7 +529,8 @@ while($row=sql_fetch_array($res)){
                                         ?>
                                         <!--<li class="gnb_3dli "><a class="gnb_3da" href="<?php /*echo G5_URL*/?>/page/view3.php?me_id=<?php /*echo $row2["menu_code"]; */?>&depth1_id=<?php /*echo $row3["id"];*/?>"><?php /*echo $row3["depth_name"];*/?></a></li>-->
                                     <?php }else{?>
-                                    <li class="gnb_3dli "><a class="gnb_3da" href="<?php echo G5_URL?>/page/view?me_id=<?php echo $row2["menu_code"]; ?>&depth1_id=<?php echo $row3["id"];?>"><?php echo $row3["depth_name"];?></a></li>
+                                    <li class="gnb_3dli menu_<?php echo $row3["pk_id"];?> <?php echo $chk;?>">
+                                        <a class="gnb_3da" href="<?php echo G5_URL?>/page/view?me_id=<?php echo $row2["menu_code"]; ?>&depth1_id=<?php echo $row3["id"];?>"><?php echo $row3["depth_name"];?></a></li>
                                 <?php }?>
                                 <?php }?>
                             <?php $a++;} echo '</ul>';?>
@@ -642,38 +654,97 @@ while($row=sql_fetch_array($res)){
 <div class="container" <?php if($main){?>id="mainscreen"<?php }?>>
 <?php if(!$main && $sub != "login" && $mypage != true){?>
 <div class="user_guide">
-    <div class="user">
+    <table class="user2">
+        <tr>
         <?php if(!$depth1_id && !$me_code && !$me_id){?>
-            <div>사용자 가이드</div>
+            <td class="navies">사용자 가이드</td>
         <?php }else{ ?>
-            <div>
-                    <?php if(substr($incode,0,2)==60 ){?>
-                        <select name="me_id" id="me_id">
-                        <?php for($i=0;$i<count($depth_me);$i++) {?>
-                            <option value="60<?php echo $depth_me[$i]["me_id"];?>" <?php echo get_selected('60'.$depth_me[$i]["me_id"],$me_id);?>><?php echo $depth_me[$i]["menu_name"];?></option>
-                        <?php }?>
-                        </select>
-                    <?php }else{ ?>
-                        <select name="depth1_id" id="depth1_id">
-                        <?php for($i=0;$i<count($depth_me);$i++) {?>
-                        <option value="<?php echo $depth_me[$i]["id"];?>" <?php echo get_selected($depth_me[$i]["id"],$depth1_id);?>><?php echo $depth_me[$i]["depth_name"];?></option>
-                        <?php }?>
-                        </select>
+            <?php if(count($mycont)>0){?>
+            <td class="first">
+                <select name="mylocmap" id="mylocmap" class="cmap_sel" style="width:260px;" onchange="fnChangeConst('<?php echo $member["mb_id"];?>',this.value)">
+                    <option value="" <?php if($current_const["const_id"]==0){?>selected<?php }?>>현장 선택</option>
+                    <?php for($i=0;$i<count($mycont);$i++){?>
+                        <option value="<?php echo $mycont[$i]["id"];?>" <?php if($current_const["const_id"]==$mycont[$i]["id"]){?>selected<?php }?>><?php echo $mycont[$i]["cmap_name"];?></option>
                     <?php }?>
-            </div>
+                </select>
+            </td>
+            <?php } ?>
+            <td class="navies">
+                <?php if(substr($incode,0,2)==60 ){?>
+                    <select name="me_id" id="me_id">
+                    <?php for($i=0;$i<count($depth_me);$i++) {?>
+                        <option value="60<?php echo $depth_me[$i]["me_id"];?>" <?php echo get_selected('60'.$depth_me[$i]["me_id"],$me_id);?>><?php echo $depth_me[$i]["menu_name"];?></option>
+                    <?php }?>
+                    </select>
+                <?php }else{ ?>
+                    <select name="depth1_id" id="depth1_id">
+                    <?php for($i=0;$i<count($depth_me);$i++) {?>
+                    <option value="<?php echo $depth_me[$i]["id"];?>" <?php echo get_selected($depth_me[$i]["id"],$depth1_id);?>><?php echo $depth_me[$i]["depth_name"];?></option>
+                    <?php }?>
+                    </select>
+                <?php }?>
+            </td>
         <?php }?>
-        <div><?php if($useguide["menu_desc"]){echo $useguide["menu_desc"];}else{echo "사용자 가이드를 입력해주세요.";}?></div>
-    </div>
-        <div class="clear"></div>
+            <td><span title="<?php if($useguide["menu_desc"]){echo $useguide["menu_desc"];}else{echo "사용자 가이드를 입력해주세요.";}?>" ><?php if($useguide["menu_desc"]){echo $useguide["menu_desc"];}else{echo "사용자 가이드를 입력해주세요.";}?></span></td>
+        </tr>
+    </table>
+    <div class="clear"></div>
 </div>
 <?php }else if(!$main && $sub != "login" && $mypage != false){?>
 <div class="user_guide">
     <div class="user">
         <div>사용자 가이드</div>
-        <div><?php if($useguide[$menu_id]["menu_desc"]){echo $useguide[$menu_id]["menu_desc"];}else{echo "사용자 가이드를 입력해주세요.";}?></div>
+        <div><span><?php if($useguide[$menu_id]["menu_desc"]){echo $useguide[$menu_id]["menu_desc"];}else{echo "사용자 가이드를 입력해주세요.";}?></span></div>
     </div>
     <div class="clear"></div>
 </div>
 <?php }?>
+<span class="widthchk" style="opacity: 0;white-space: nowrap;height: 0;display:none;"><?php if($useguide["menu_desc"]){echo $useguide["menu_desc"];}else{echo "사용자 가이드를 입력해주세요.";}?></span>
+
+<script>
+    jQuery.fn.hasOverflown = function () {
+        var res;
+        var cont = $('<div>'+this.text()+'</div>').css("display", "table")
+            .css("z-index", "-1").css("position", "absolute")
+            .css("font-family", this.css("font-family"))
+            .css("font-size", this.css("font-size"))
+            .css("font-weight", this.css("font-weight")).appendTo('body');
+        res = (cont.width()>this.width());
+        cont.remove();
+        return res;
+    };
+
+    var ww = 0;
+    var left = 0;
+    var chk = false;
+    $(function(){
+        ww = $(".widthchk").width();
+        console.log(ww);
+        chk = $(".user2 td:last-child span").hasOverflown();
+        left = $(".user2 td:last-child span").css("left");
+        if(chk){
+            animateSpan();
+        }
+    });
+
+    function animateSpan(){
+        if($(".user2 td:last-child span").position().left > -ww){
+            $(".user2 td:last-child span").animate({
+                left: "-=5"
+            }, 100, animateSpan);
+        }else{
+            animateSpan2();
+        }
+    }
+    function animateSpan2(){
+        if($(".user2 td:last-child span").position().left <= 0){
+            $(".user2 td:last-child span").animate({
+                left: "+=8"
+            }, 100, animateSpan2);
+        }else{
+            setTimeout(animateSpan,2000);
+        }
+    }
+</script>
 <!-- } 상단 끝 -->
 

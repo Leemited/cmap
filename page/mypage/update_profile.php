@@ -43,6 +43,7 @@ $sql = "update `g5_member` set
           mb_1 = '{$mb_1}',
           mb_2 = '{$mb_2}',
           mb_3 = '{$mb_3}',
+          mb_4 = '{$mb_4}',
           mb_tel = '{$mb_tel}',
           mb_zip1 = '{$mb_zip}',
           mb_addr1 = '{$mb_addr1}',

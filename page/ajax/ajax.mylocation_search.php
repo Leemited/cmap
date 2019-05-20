@@ -21,7 +21,7 @@ for ($i=0;$i<count($list);$i++) {
     <td class="td_center"><?php echo $insert_date;?></td>
     <td class="td_center">
         <input type="button" value="상세보기" class="basic_btn02 width30" style="padding:7px 0" onclick="location.href=g5_url+'/page/mylocation/mylocation_view?id=<?php echo $list[$i]["id"];?>'">
-        <input type="button" value="사용요청" class="basic_btn02 width30" style="padding:7px 0" onclick="fn_join('<?php echo $list[$i]["id"];?>')">
+        <input type="button" value="사용요청" class="basic_btn02 width30" style="padding:7px 0" onclick="fn_join('<?php echo $list[$i]["id"];?>','<?php echo $member["mb_id"];?>')">
     </td>
 </tr>
 <?php

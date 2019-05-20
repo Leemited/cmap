@@ -123,7 +123,18 @@ if(count($mynavi)==0){
         </aside>
         <article class="mypage_con">
             <header>
-                <h2>네비게이터 설정 <input type="button" onclick="fnNaviSave();" value="저장" class="basic_btn02" id="navi_save"></h2>
+                <h2>네비게이터 설정 </h2>
+            </header>
+            <div class="navigator_con" style="margin-bottom:40px;">
+                <ul class="sel_set">
+                    <li><input type="radio" name="set_navichk" id="set_navichk1" value="0" <?php if($member["mb_6"]==0 || $member["mb_6"]==""){echo "checked";}?> onclick="fnNaviSet(0)"><label for="set_navichk1"></label> <span>전체항목 표기 : 전체항목에 대한 이행여부를 확인할 수 있도록 확인기능을 표기합니다.</span>
+                    </li>
+                    <li><input type="radio" name="set_navichk" id="set_navichk2" value="1" <?php if($member["mb_6"]==1 ){echo "checked";}?>><label for="set_navichk2" onclick="fnNaviSet(1)"></label> <span>주요항목 표기 : 공사수행 시 의무 또는 필수로 처리하여야 하는 주요 행정업무에 대하여 이행여부 확인기능을 표기합니다.
+</span></li>
+                </ul>
+            </div>
+            <header>
+                <h2>네비게이터 세부설정 <input type="button" onclick="fnNaviSave();" value="저장" class="basic_btn02" id="navi_save"></h2>
             </header>
             <div class="navigator_con">
                 <p>건설관리업무의 적부여부를 설정하여 볼 수 있습니다.</p>
@@ -269,6 +280,20 @@ if(count($mynavi)==0){
             }else if(data=="failed"){
                 alert("저장 실패, 새로고침후 다시 시도해 주세요.")
             }
+        });
+    }
+
+    function fnNaviSet(value){
+        var chk = $("input[name^=set_navichk]:checked").length
+        if(chk<=0){
+            alert("설정을 선택해주세요");
+            return false;
+        }
+
+        $.ajax({
+            url:g5_url+'/page/mypage/ajax.update_naviset.php',
+            method:"post",
+            data:{value:value}
         });
     }
 </script>

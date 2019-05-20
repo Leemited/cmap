@@ -1,5 +1,9 @@
 <?php
 include_once ("../../common.php");
+
+$delaylist = array_values($delaylist);
+$delaylist = arr_sort($delaylist,"delay_date","asc");
+
 $sub = "sub";
 $bbody = "board";
 $mypage = true;
@@ -52,12 +56,13 @@ $holiday8_1 = $thank[0];
 $holiday8_2 = date("Y-m-d",strtotime(" +1 day",strtotime($thank[0])));
 $holiday8_3 = $thank[1];
 
-if($current_const["id"] && $id=="" && $type == ""){
+if($current_const["id"] && $constid=="" && $type == ""){
     $id = $current_const["const_id"];
 }
 
 //스케쥴 가져오기
-if($id){
+if($_REQUEST["constid"]){
+    $id = $_REQUEST["const_id"];
     $where = " and construct_id = '{$id}'";
 }else {
 //내가 속한 현장 가져오기
@@ -80,6 +85,10 @@ while($row = sql_fetch_array($res)){
     $myschedule[$row["schedule_date"]][] = $row;
 }
 ?>
+<div class="etc_view messages">
+
+</div>
+<span class="etc_view_bg"></span>
 <div class="full-width" style="padding:0 20px">
     <header class="sub">
         <h2>스케쥴</h2>
@@ -234,8 +243,10 @@ while($row = sql_fetch_array($res)){
         </table>
     </section>
     <section class="cal_data">
+        <div class="delay_msg_btns">
+            <input type="button" class="basic_btn02" value="업무연락서" onclick="fnWriteMessage('')">
+        </div>
         <div>
-            <!-- todo : 해당 탭 구현 -->
             <ul class="tab">
                 <li class="active" >일정관리</li>
                 <li>제출지연</li>
@@ -243,11 +254,10 @@ while($row = sql_fetch_array($res)){
             <div class="clear"></div>
         </div>
         <div class="contruct_sel">
-            <!-- todo : 현장선택시 해당 스케쥴만 가져오기 or 최초 진입시 기본값 설정? -->
             <select name="cons_id" id="cons_id" onchange="fnScheduleConst(this.value)">
                 <option value="">현장선택</option>
                 <?php for($i=0;$i<count($mycont);$i++){?>
-                    <option value="<?php echo $mycont[$i]["id"];?>" <?php if($id==$mycont[$i]["id"]){?>selected<?php }?>><?php echo $mycont[$i]["cmap_name"];?></option>
+                    <option value="<?php echo $mycont[$i]["id"];?>" <?php if($constid==$mycont[$i]["id"]){?>selected<?php }?>><?php echo $mycont[$i]["cmap_name"];?></option>
                 <?php }?>
             </select>
         </div>
@@ -267,7 +277,16 @@ while($row = sql_fetch_array($res)){
             </div>
         </div>
         <div class="tab2">
+            <div>
 
+            </div>
+            <div class="list_con">
+                <ul class="delay_list_ul">
+                <?php for($i=0;$i<count($delaylist);$i++){?>
+                    <li onclick="location.href=g5_url+'/page/view?me_id=<?php echo $delaylist[$i]["me_id"];?>&depth1_id=<?php echo $delaylist[$i]["depth1_id"];?>&depth2_id=<?php echo $delaylist[$i]["depth2_id"];?>&pk_id=<?php echo $delaylist[$i]["pk_id"];?>'"><div><?php echo $delaylist[$i]["content"];?></div><div><?php echo $delaylist[$i]["delay_date"];?></div></li>
+                <?php }?>
+                </ul>
+            </div>
         </div>
     </section>
 </div>
@@ -291,7 +310,7 @@ while($row = sql_fetch_array($res)){
     }
 
     function fnScheduleConst(id){
-        location.href=g5_url+'/page/mypage/schedule?type=schedule&id='+id+"&toYear=<?php echo $year;?>&toMonth=<?php echo $month;?>";
+        location.href=g5_url+'/page/mypage/schedule?type=schedule&constid='+id+"&toYear=<?php echo $year;?>&toMonth=<?php echo $month;?>";
     }
 
     function fnScheduleConUp(){
@@ -348,6 +367,7 @@ while($row = sql_fetch_array($res)){
             if($(this).html()=="제출지연"){
                 $(".tab1").hide();
                 $(".tab2").show();
+
             }else{
                 $(".tab1").show();
                 $(".tab2").hide();

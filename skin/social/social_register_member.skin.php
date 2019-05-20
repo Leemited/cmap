@@ -125,8 +125,8 @@ $email_msg = $is_exists_email ? '등록할 이메일이 중복되었습니다.�
                     <h2><i></i> 개인정보 등록</h2>
                     <div id="login_fs">
                         <?php $user_emails = explode("@",$user_email);?>
-                        <input type="text" name="mb_email" id="reg_mb_email" value="<?php echo $user_emails[0];?>">
-                        <input type="text" name="mb_email2" id="reg_mb_email2" value="<?php echo $user_emails[1];?>">
+                        <input type="hidden" name="mb_email" id="reg_mb_email" value="<?php echo $user_emails[0];?>">
+                        <input type="hidden" name="mb_email2" id="reg_mb_email2" value="<?php echo $user_emails[1];?>">
                         <input type="text" name="mb_email_t" value="<?php echo isset($user_email)?$user_email:''; ?>" id="reg_mb_email_t" required class="frm_input email required full_input" size="70" maxlength="100" placeholder="이메일을 입력해주세요." onchange="fnEmailChange(this.value)">
                         <?php if($email_msg){?>
                         <p class="email_msg"><?php echo $email_msg; ?></p>

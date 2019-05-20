@@ -5,8 +5,8 @@ $mypage = true;
 include_once (G5_PATH."/head.php");
 
 
-if($id){
-    $sql = "select * from `cmap_my_construct_temp` where id = '{$id}'";
+if($constid){
+    $sql = "select * from `cmap_my_construct_temp` where id = '{$constid}'";
     $view = sql_fetch($sql);
     $priceKorea = getConvertNumberToKorean($view["cmap_construct_price"]);
 }
@@ -25,7 +25,7 @@ add_javascript(G5_POSTCODE_JS, 0);
             <h2>현장개설</h2>
             <h3><i></i> 공사개요</h3>
             <form action="<?php echo G5_URL;?>/page/mylocation/mylocation_step1_update" method="post" name="write_step1">
-                <input type="hidden" value="<?php echo $id;?>" name="id">
+                <input type="hidden" value="<?php echo $constid;?>" name="constid">
             <div class="write_box">
                 <table>
                     <tr>
@@ -90,7 +90,7 @@ add_javascript(G5_POSTCODE_JS, 0);
                     </tr>
                 </table>
                 <div class="btn_group">
-                    <input type="button" class="basic_btn02 width20" value="< 이전" onclick="history.back();">
+                    <input type="button" class="basic_btn02 width20" value="< 이전" onclick="location.href=g5_url+'/page/mylocation/mylocation'">
                     <input type="submit" class="basic_btn01 width20" value="다음 >" >
                 </div>
             </div>

@@ -12,8 +12,8 @@ include_once (G5_PATH."/head.php");
 $sql ="select *,count(id) as cnt from `cmap_my_construct_temp` where mb_id = '{$member["mb_id"]}' and status = 0 order by id desc limit 0, 1";
 $chkTemp = sql_fetch($sql);
 if($chkTemp["cnt"] > 0 && $chk == false){
-    confirm("등록 중이던 현장이 있습니다. 계속 등록하시겠습니까?",G5_URL.'/page/mylocation/mylocation_step1?id='.$chkTemp["id"],'./mylocation?chk=false');
-
+    echo "<script>fnConstRe('".$chkTemp["id"]."', '".G5_URL."/page/mylocation/mylocation_step1?constid=".$chkTemp["id"]."')</script>";
+    //confirm("등록 중이던 현장이 있습니다. 계속 등록하시겠습니까?",G5_URL.'/page/mylocation/mylocation_step1?id='.$chkTemp["id"],'./mylocation?chk=false');
 }
 
 $sql = "select count(*) as cnt from `cmap_my_construct` where (mb_id = '{$member["mb_id"]}' or members in ('{$member['mb_id']}')) and status = 0";
@@ -78,8 +78,10 @@ while($row = sql_fetch_array($res)){
                                 <td><?php echo $mycons[$i]["cmap_name"];?></td>
                                 <td class="td_center"><?php echo $insert_date;?></td>
                                 <td class="td_center">
-                                    <input type="button" value="상세보기" class="basic_btn02 width30" style="padding:7px 0" onclick="location.href=g5_url+'/page/mylocation/mylocation_view?id=<?php echo $mycons[$i]["id"];?>';">
-                                    <input type="button" value="삭제하기" class="basic_btn02 width30 <?php if($type=="사용현장"){?>disabled<?php }?>"  style="padding:7px 0" <?php if($type=="사용현장"){?>disabled<?php }?> onclick="fnDelete('/page/mylocation/mylocation_delete?id=<?php echo $mycons[$i]["id"];?>')">
+                                    <input type="button" value="상세보기" class="basic_btn02 width30" style="padding:7px 0" onclick="location.href=g5_url+'/page/mylocation/mylocation_view?constid=<?php echo $mycons[$i]["id"];?>';">
+                                    <?php if($type=="개설현장"){?>
+                                    <input type="button" value="삭제하기" class="basic_btn02 width30 <?php if($type=="사용현장"){?>disabled<?php }?>"  style="padding:7px 0" <?php if($type=="사용현장"){?>disabled<?php }?> onclick="fnDelete('/page/mylocation/mylocation_delete?constid=<?php echo $mycons[$i]["id"];?>')">
+                                    <?php }?>
                                 </td>
                             </tr>
                         <?php }
@@ -140,9 +142,13 @@ while($row = sql_fetch_array($res)){
         });
     }
     function fnDelete(url){
-        if(confirm("해당 건설현장을 삭제하시겠습니까?\n삭제시 다시 복구 할 수 없습니다.\n신중히 선택해 주시기 바랍니다.")){
-            location.href=g5_url+url;
-        }
+        $.ajax({
+            url:g5_url+"/page/modal/ajax.alert.php",
+            method:"post",
+            data:{title:"현장삭제",msg:"해당 건설현장을 삭제하시겠습니까?<br>삭제시 다시 복구 할 수 없습니다.<br>신중히 선택해 주시기 바랍니다.",link:g5_url+url,btns:"삭제하기"}
+        }).done(function(data){
+            fnShowModal(data);
+        });
     }
 </script>
 <?php

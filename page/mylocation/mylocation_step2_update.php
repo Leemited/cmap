@@ -1,7 +1,7 @@
 <?php
 include_once ("../../common.php");
 
-if(!$id){
+if(!$constid){
     alert("입력정보에 이상이 있습니다.\\r처음부터 다시 입력해 주세요.",G5_URL."/page/mylocation/mylocation_step1.php");
     return false;
 }
@@ -21,15 +21,15 @@ $sql = "update `cmap_my_construct_temp` set
           cmap_construct_addr2_service = '{$cmap_construct_addr2_service}',
           cmap_construct_addr3_service = '{$cmap_construct_addr3_service}',
           cmap_construct_jibeon_service = '{$cmap_construct_jibeon_service}' 
-          where id = '{$id}';
+          where id = '{$constid}';
 ";
 
 
 
 if(sql_query($sql)){
-    goto_url(G5_URL."/page/mylocation/mylocation_step3?id=".$id);
+    goto_url(G5_URL."/page/mylocation/mylocation_step3?constid=".$constid);
 }else{
-    alert("문제가 발생되어 처음으로 돌아갑니다.", G5_URL."/page/mylocation/mylocation_step1?id=".$id);
+    alert("문제가 발생되어 처음으로 돌아갑니다.", G5_URL."/page/mylocation/mylocation_step1?constid=".$constid);
     return false;
 }
 ?>
