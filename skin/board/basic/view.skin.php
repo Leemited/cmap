@@ -11,10 +11,10 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
 <!-- 게시물 읽기 시작 { -->
 <div class="width-fixed">
     <ul class="board_tab">
-        <li <?php if($bo_table=="databoard"){?>class="active"<?php }?> onclick="location.href='<?php echo G5_BBS_URL;?>/board.php?bo_table=databoard'">CMAP 소식</li>
-        <li <?php if($bo_table=="boards"){?>class="active"<?php }?> onclick="location.href='<?php echo G5_BBS_URL;?>/board.php?bo_table=boards'">유권해석</li>
-        <li <?php if($bo_table=="review"){?>class="active"<?php }?> onclick="location.href='<?php echo G5_BBS_URL;?>/board.php?bo_table=review'">사용후기</li>
-        <li <?php if($bo_table=="free"){?>class="active"<?php }?> onclick="location.href='<?php echo G5_BBS_URL;?>/board.php?bo_table=free'">커뮤니티</li>
+        <li <?php if($bo_table=="databoard"){?>class="active"<?php }?> onclick="location.href='<?php echo G5_BBS_URL;?>/board?bo_table=databoard'">CMAP 소식</li>
+        <li <?php if($bo_table=="review"){?>class="active"<?php }?> onclick="location.href='<?php echo G5_BBS_URL;?>/board?bo_table=review'">사용현황</li>
+        <li <?php if($bo_table=="boards"){?>class="active"<?php }?> onclick="location.href='<?php echo G5_BBS_URL;?>/board?bo_table=boards'">유권해석</li>
+        <!--<li <?php /*if($bo_table=="free"){*/?>class="active"<?php /*}*/?> onclick="location.href='<?php /*echo G5_BBS_URL;*/?>/board.php?bo_table=free'">커뮤니티</li>-->
     </ul>
     <div class="clear"></div>
 <article id="bo_v" style="width:<?php echo $width; ?>">
