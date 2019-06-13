@@ -1,9 +1,8 @@
 <?php
 include_once ("../../common.php");
-
-$delaylist = array_values($delaylist);
-$delaylist = arr_sort($delaylist,"delay_date","asc");
-
+if($member["mb_auth"]==false){
+    alert("무료 이용기간이 만료 되었거나,\\r맴버쉽 기간이 만료 되었습니다. \\n맴버쉽 구매후 이용바랍니다.",G5_URL);
+}
 $sub = "sub";
 $bbody = "board";
 $mypage = true;
@@ -57,14 +56,14 @@ $holiday8_2 = date("Y-m-d",strtotime(" +1 day",strtotime($thank[0])));
 $holiday8_3 = $thank[1];
 
 if($current_const["id"] && $constid=="" && $type == ""){
-    $id = $current_const["const_id"];
+    $constid = $current_const["const_id"];
 }
 
 //스케쥴 가져오기
-if($_REQUEST["constid"]){
-    $id = $_REQUEST["const_id"];
-    $where = " and construct_id = '{$id}'";
-}else {
+if(isset($_GET["constid"]) && $_GET["constid"]!=""){
+    $constid = $_GET["constid"];
+    $where = " and construct_id = '{$constid}'";
+}else if(isset($_GET["constid"]) && $_GET["constid"]==""){
 //내가 속한 현장 가져오기
     $sql = "select * from `cmap_my_construct` where (mb_id = '{$member["mb_id"]}' or instr(members,'{$member["mb_id"]}')!= 0) and status = 0";
     $cres = sql_query($sql);
@@ -75,7 +74,11 @@ if($_REQUEST["constid"]){
         $constid = implode(",", $const_id["const_id"]);
         $where .= " and construct_id in ({$constid})";
     }
+}else{
+    $constid = $current_const["const_id"];
+    $where = " and construct_id = '{$current_const["const_id"]}'";
 }
+
 $sql = "select * from `cmap_myschedule` where status != -1 {$where} order by id";
 $res = sql_query($sql);
 while($row = sql_fetch_array($res)){
@@ -83,7 +86,43 @@ while($row = sql_fetch_array($res)){
     $chkstatus = sql_fetch($sql);
     if($chkstatus["status"] == -1) continue;*/
     $myschedule[$row["schedule_date"]][] = $row;
+    $myschedule[$row["schedule_date"]]["construct_id"] = $row["construct_id"];
 }
+
+$activesql = "select * from `cmap_my_construct_map` where mb_id ='{$member["mb_id"]}' and const_id = '{$constid}'";
+$activechk = sql_fetch($activesql);
+$map_pk_id = explode("``",$activechk["pk_ids"]);
+$map_pk_actives = explode("``",$activechk["pk_actives"]);
+$map_pk_actives_date = explode("``",$activechk["pk_actives_date"]);
+
+$delaysql = "select * from `cmap_myschedule` where construct_id = '{$constid}' and schedule_date < '{$delay_now}' and pk_id <> '' order by schedule_date desc";
+$delayres = sql_query($delaysql);
+$a=0;
+while($delayrow = sql_fetch_array($delayres)){
+    $pk_ids = explode("``",$delayrow["pk_id"]);
+
+    $diff = strtotime($delay_now) - strtotime($delayrow["schedule_date"]);
+
+    $days = $diff / (60*60*24);
+    for($i=0;$i<count($pk_ids);$i++){
+        for($j=0;$j<count($map_pk_id);$j++){
+            if($pk_ids[$i]==$map_pk_id[$j]){
+                if($map_pk_actives[$j]==0){
+                    $sql = "select *,d.pk_id as pk_id,c.depth1_id as depth1_id,a.pk_id as depth1_pk_id,c.depth2_id as depth2_id ,d.depth_name as depth_name,a.depth_name as depth1_name from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$pk_ids[$i]}'";
+                    $ddd = sql_fetch($sql);
+                    if(strpos($chcccid,$ddd["pk_id"])!==false) {
+                        continue;
+                    }
+                    $chcccid .= ','.$ddd["pk_id"];
+                    $delaylists[$pk_ids[$i]] = $ddd;
+                    $delaylists[$pk_ids[$i]]["delay_date"] = "-".$days;
+                }
+            }
+        }
+    }
+}
+$delaylists = array_values($delaylists);
+$delaylists = arr_sort($delaylists,"delay_date","asc");
 ?>
 <div class="etc_view messages">
 
@@ -102,17 +141,17 @@ while($row = sql_fetch_array($res)){
             </ul>
         </div>
         <div class="todays">
-            <input type="button" value="TODAY" class="basic_btn02 "onclick="location.href=g5_url+'/page/mypage/schedule?toYear<?php echo date("Y");?>&toMonth=<?php echo date("m");?>&id=<?php echo $id;?>'">
+            <input type="button" value="TODAY" class="basic_btn02 "onclick="location.href=g5_url+'/page/mypage/schedule?toYear<?php echo date("Y");?>&toMonth=<?php echo date("m");?>&constid=<?php echo $constid;?>'">
         </div>
         <div class="big_month">
-            <a class="prev_year" href="javascript:location.href='<?php echo G5_URL?>/page/mypage/schedule?toYear=<?php echo ($month != 1)?($prevYear - 1):$prevYear?>&toMonth=<?php echo $month ?>&id=<?php echo $id;?>'">
+            <a class="prev_year" href="javascript:location.href='<?php echo G5_URL?>/page/mypage/schedule?toYear=<?php echo ($month != 1)?($prevYear - 1):$prevYear?>&toMonth=<?php echo $month ?>&constid=<?php echo $constid;?>'">
                 <img src="<?php echo G5_IMG_URL?>/cal_arrow_year_prev.png" alt=""> </a>
-            <a class="prev_month" href="javascript:location.href='<?php echo G5_URL?>/page/mypage/schedule?toYear=<?php echo $prevYear?>&toMonth=<?php echo $prevMonth?>&id=<?php echo $id;?>'">
+            <a class="prev_month" href="javascript:location.href='<?php echo G5_URL?>/page/mypage/schedule?toYear=<?php echo $prevYear?>&toMonth=<?php echo $prevMonth?>&constid=<?php echo $constid;?>'">
                 <img src="<?php echo G5_IMG_URL?>/cal_arrow_m_prev.png" alt=""> </a>
             <span><?php echo $year;?>. <?php echo (strlen($month)==1)?"0".$month:$month;?></span>
-            <a class="next_month" href="javascript:location.href='<?php echo G5_URL?>/page/mypage/schedule?toYear=<?php echo $nextYear?>&toMonth=<?php echo $nextMonth?>&id=<?php echo $id;?>'">
+            <a class="next_month" href="javascript:location.href='<?php echo G5_URL?>/page/mypage/schedule?toYear=<?php echo $nextYear?>&toMonth=<?php echo $nextMonth?>&constid=<?php echo $constid;?>'">
                 <img src="<?php echo G5_IMG_URL?>/cal_arrow_m_next.png" alt=""> </a>
-            <a class="next_year" href="javascript:location.href='<?php echo G5_URL?>/page/mypage/schedule?toYear=<?php echo ($month != 12)?($nextYear + 1):$nextYear?>&toMonth=<?php echo $month?>&id=<?php echo $id;?>'">
+            <a class="next_year" href="javascript:location.href='<?php echo G5_URL?>/page/mypage/schedule?toYear=<?php echo ($month != 12)?($nextYear + 1):$nextYear?>&toMonth=<?php echo $month?>&constid=<?php echo $constid;?>'">
                 <img src="<?php echo G5_IMG_URL?>/cal_arrow_year_next.png" alt=""> </a>
         </div>
         <table class="schedule_tbl">
@@ -153,7 +192,7 @@ while($row = sql_fetch_array($res)){
                             $key = $year."-".$mon."-".$ndate;
 
                             ?>
-                            <td onclick="fnScheduleList('<?php echo $key;?>','<?php echo $id;?>')" class="days <?php echo "d_".$key;?> <?php if($cols==6){ echo "sat_tbl"; } ?>" <?php if( date("d") == $nowDayCount && date("m") == $month) {?>id="today"<?php }?>> <!-- 일주일 내의 일을 나누는 for 문 -->
+                            <td onclick="fnScheduleList('<?php echo $key;?>','<?php echo $myschedule[$key]["construct_id"];?>')" class="days <?php echo "d_".$key;?> <?php if($cols==6){ echo "sat_tbl"; } ?>" <?php if( date("d") == $nowDayCount && date("m") == $month) {?>id="today"<?php }?>> <!-- 일주일 내의 일을 나누는 for 문 -->
                                 <?php if ( date( "w", mktime( 0, 0, 0, $month, $nowDayCount, $year ) ) == 6 ) { 	// 토요일
                                     if( date("d") == $nowDayCount  && date("m") == $month ) { ?>
                                         <div><p class="calendar_date sat today" style="color:orange;font-weight:bold"><b><?php echo $nowDayCount++?></b></p></div>
@@ -182,7 +221,6 @@ while($row = sql_fetch_array($res)){
                                 if(count($myschedule[$key]) > 0){?>
                                     <ul>
                                         <?php for($item = 0; $item <count($myschedule[$key]);$item++){
-                                            //todo : 적기 제출 상태 체크 및 단순 메모 체크
                                             if($item>5){continue;}
                                             ?>
                                             <li class="" id="cal_<?php echo $myschedule[$key][$item]["id"];?>" title="<?php echo $myschedule[$key][$item]["schedule_name"];?>"><?php echo $myschedule[$key][$item]["schedule_name"];?></li>
@@ -197,13 +235,12 @@ while($row = sql_fetch_array($res)){
                                 $presmon = (strlen($prevMonth)==1)?"0".$prevMonth:$prevMonth;
                                 $key = $year."-".$presmon."-".$prevDayCount;
                             ?>
-                            <td <?php if($cols==6){ echo" class='sat_tbl'"; } ?> onclick="fnScheduleList('<?php echo $key;?>','<?php echo $id;?>')">
+                            <td <?php if($cols==6){ echo" class='sat_tbl'"; } ?> onclick="fnScheduleList('<?php echo $key;?>','<?php echo $myschedule[$key]["construct_id"];?>')">
                                 <div><p class="calendar_date other_m"><?php echo $prevDayCount++?></p></div>
                                 <?php
                                 if(count($myschedule[$key]) > 0){?>
                                     <ul>
                                         <?php for($item = 0; $item <count($myschedule[$key]);$item++){
-                                            //todo : 적기 제출 상태 체크 및 단순 메모 체크
                                             if($item>5){continue;}
                                             ?>
                                             <li class="" id="cal_<?php echo $myschedule[$key][$item]["id"];?>" title="<?php echo $myschedule[$key][$item]["schedule_name"];?>"><?php echo $myschedule[$key][$item]["schedule_name"];?></li>
@@ -219,13 +256,12 @@ while($row = sql_fetch_array($res)){
                             $nextday = (strlen($nextDayCount)==1)?"0".$nextDayCount:$nextDayCount;
                             $key = $year."-".$nextmon."-".$nextday;
                             ?>
-                            <td <?php if($cols==6){ echo" class='sat_tbl'"; } ?> onclick="fnScheduleList('<?php echo $key;?>','<?php echo $id;?>')">
+                            <td <?php if($cols==6){ echo" class='sat_tbl'"; } ?> onclick="fnScheduleList('<?php echo $key;?>','<?php echo $myschedule[$key]["construct_id"];?>')">
                                 <div><p class="calendar_date other_m"><?php echo $nextDayCount++?></p></div>
                                 <?php
                                 if(count($myschedule[$key]) > 0){?>
                                     <ul>
                                         <?php for($item = 0; $item <count($myschedule[$key]);$item++){
-                                            //todo : 적기 제출 상태 체크 및 단순 메모 체크
                                             if($item>5){continue;}
                                             ?>
                                             <li class="" id="cal_<?php echo $myschedule[$key][$item]["id"];?>" title="<?php echo $myschedule[$key][$item]["schedule_name"];?>"><?php echo $myschedule[$key][$item]["schedule_name"];?></li>
@@ -277,13 +313,18 @@ while($row = sql_fetch_array($res)){
             </div>
         </div>
         <div class="tab2">
-            <div>
-
-            </div>
+            <div></div>
             <div class="list_con">
                 <ul class="delay_list_ul">
-                <?php for($i=0;$i<count($delaylist);$i++){?>
-                    <li onclick="location.href=g5_url+'/page/view?me_id=<?php echo $delaylist[$i]["me_id"];?>&depth1_id=<?php echo $delaylist[$i]["depth1_id"];?>&depth2_id=<?php echo $delaylist[$i]["depth2_id"];?>&pk_id=<?php echo $delaylist[$i]["pk_id"];?>'"><div><?php echo $delaylist[$i]["content"];?></div><div><?php echo $delaylist[$i]["delay_date"];?></div></li>
+                <?php for($i=0;$i<count($delaylists);$i++){?>
+                    <li onclick="location.href=g5_url+'/page/view?me_id=<?php echo $delaylists[$i]["me_code"];?>&depth1_id=<?php echo $delaylists[$i]["depth1_id"];?>&depth2_id=<?php echo $delaylists[$i]["depth2_id"];?>&pk_id=<?php echo $delaylist[$i]["pk_id"];?>'">
+                        <?php if(substr($delaylists[$i]["me_code"],0,2)=="10"){?>
+                        <div><?php echo "[".$delaylists[$i]["depth1_name"]."]".$delaylists[$i]["content"];?></div>
+                        <?php }else{?>
+                        <div><?php echo "[".$delaylists[$i]["depth1_name"]."]".$delaylists[$i]["depth_name"];?></div>
+                        <?php }?>
+                        <div><?php echo $delaylists[$i]["delay_date"];?></div>
+                    </li>
                 <?php }?>
                 </ul>
             </div>

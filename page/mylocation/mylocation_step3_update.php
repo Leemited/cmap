@@ -45,7 +45,7 @@ if($type != "save") {
 
         //현장 평가 상태 등록
         //시공평가의 pk_ids 가져오기 가변값이 아니라 오류 생길 수 있음
-        $sql = "select  * from `cmap_content` as a left join `cmap_depth1` as b on a.depth1_id = b.id where b.me_id = 60 and b.me_code = 6064 order by a.id";
+        $sql = "select *,a.pk_id as pk_id from `cmap_content` as a left join `cmap_depth1` as b on a.depth1_id = b.id where b.me_id = 60 and b.me_code = 6064 order by a.id";
         $eval1res = sql_query($sql);
         while($eval1row = sql_fetch_array($eval1res)){
             $eval1[] = $eval1row["pk_id"];
@@ -59,7 +59,7 @@ if($type != "save") {
         $evals = implode("``",$eval1);
 
         //용역평가의 pk_ids 가져오기
-        $sql = "select  * from `cmap_content` as a left join `cmap_depth1` as b on a.depth1_id = b.id where b.me_id = 60 and b.me_code = 60129 order by a.id";
+        $sql = "select *,a.pk_id as pk_id from `cmap_content` as a left join `cmap_depth1` as b on a.depth1_id = b.id where b.me_id = 60 and b.me_code = 60129 order by a.id";
         $eval2res = sql_query($sql);
         while($eval2row = sql_fetch_array($eval2res)){
             $eval2[] = $eval2row["pk_id"];
@@ -71,7 +71,7 @@ if($type != "save") {
         }
         $evals2 = implode("``",$eval2);
 
-        $sql = "insert into `cmap_my_construct_eval` set const_id = '{$constid}' , mb_id ='{$member["mb_id"]}', pk_ids1 = '{$evals}', pk_score1 = '{$eval1score}', pk_ids2 = '{$evals2}', pk_score2 = '{$eval2score}' , pk_score1_total = '0', pk_score2_total = '0'";
+        $sql = "insert into `cmap_my_construct_eval` set const_id = '{$constid}' , mb_id ='{$member["mb_id"]}', pk_ids1 = '{$evals}', pk_score1 = '{$eval1score}', pk_ids2 = '{$evals2}', pk_score2 = '{$eval2score}' , pk_score1_total = '0``0``0', pk_score2_total = '0``0``0``0``0``0``0``0'";
         sql_query($sql);
 
         //계약상 착공일 등록

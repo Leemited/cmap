@@ -71,7 +71,9 @@ $res = sql_query($sql);
 while($row=sql_fetch_array($res)){
     $papular[] = $row;
 }
-
+$todays = date("Y-m-d");
+$sql = "select * from `cmap_payments` where mb_id = '{$member["mb_id"]}' and order_cancel = 0 and payment_end_date >= '{$todays}' order by payment_end_date desc limit 0 , 1";
+$mypayments = sql_fetch($sql);
 ?>
 
 <!-- 로그인 -->
@@ -85,134 +87,111 @@ while($row=sql_fetch_array($res)){
         <?php }?>
     </div>
 </div>
-<div class="my_profile">
+<div class="my_profile <?php if($menu=="on"){?>active<?php }?>">
     <div class="my_profile_top">
-        <h2 onclick="location.href=g5_url+'/page/mypage/mypage'">
-            <label><?php echo $member["mb_id"];?></label> 님
-            <img src="<?php echo G5_IMG_URL?>/ic_profile_setting.svg" alt="">
+        <h2 >
+            <span class="<?php if($member["mb_level"]==3){echo "cm";}else if($member["mb_level"]==5){echo "pm";}?>"><?php if($member["mb_level"]==3){echo "CM";}else if($member["mb_level"]==5){echo "PM";}?></span>
+            <label onclick="location.href=g5_url+'/page/mypage/mypage'"><?php echo $member["mb_id"];?></label> 님
+            <img src="<?php echo G5_IMG_URL?>/ic_logout_w.png" alt="" onclick="location.href=g5_bbs_url+'/logout'">
+            <img src="<?php echo G5_IMG_URL?>/ic_profile_setting.svg" alt="" onclick="location.href=g5_url+'/page/mypage/mypage'">
+            <div class="close" onclick="fnCloseProfile()"></div>
         </h2>
-        <a href="javascript:fnPayment();">결제</a>
-        <div class="close" onclick="fnCloseProfile()"></div>
+        <div class="pays">
+            <?php if($member["mb_level"] >= 3 && $member["mb_level"] < 10){?>
+                <span>맴버쉽기한 : <?php echo $mypayments["payment_end_date"];?></span>
+                <a href="javascript:<?php if(!$is_admin){?>fnPayment();<?php }else{?>alert('최고관리자는 구매 하실 수 없습니다.')<?php }?>">연장 <span></span> </a>
+            <?php }if($member["mb_level"] <= 2 && $member["mb_level"] != 10){?>
+                <span>맴버쉽 구매가 필요합니다.</span>
+                <a href="javascript:<?php if(!$is_admin){?>fnPayment();<?php }else{?>alert('최고관리자는 구매 하실 수 없습니다.')<?php }?>">결제 <span></span> </a>
+            <?php }?>
+        </div>
     </div>
     <div class="mycmap">
-        <select name="mylocmap" id="mylocmap" class="cmap_sel width100" onchange="fnChangeConst('<?php echo $member["mb_id"];?>',this.value)">
+        <select name="mylocmap" id="mylocmap" class="cmap_sel width100" onchange="fnChangeConst('<?php echo $member["mb_id"];?>',this.value)" onclick="<?php if($member['mb_auth']==false){?>alert('맴버쉽 구매후 이용가능합니다.')<?php }?>">
             <option value="">현장 선택</option>
             <?php for($i=0;$i<count($mycont);$i++){?>
                 <option value="<?php echo $mycont[$i]["id"];?>" <?php if($current_const["const_id"]==$mycont[$i]["id"]){?>selected<?php }?>><?php echo $mycont[$i]["cmap_name"];?></option>
             <?php }?>
         </select>
         <div class="cmap_menu">
-            <div class="cmap_menu_td cmenu1" onclick="fnViewRequest('<?php echo $member["mb_id"];?>','')">
+
+            <div class="cmap_menu_td cmenu1" onclick="<?php if($member['mb_auth']==false){?>alert('맴버쉽 구매후 이용가능합니다.')<?php }else{?>location.href=g5_url+'/page/mylocation/mylocation'<?php }?>">
+                <h2 class="count_title">현장관리 <span><strong><?php echo number_format(count($mycont));?></strong> 개</span></h2>
+                <!--<div class="counts"></div>-->
+            </div>
+            <div class="cmap_menu_td full_td cmenu2" onclick="<?php if($member['mb_auth']==false){?>alert('PMMODE 구매후 이용가능합니다.')<?php }else{?>location.href=g5_url+'/page/manager/'<?php }?>">
+                <img src="<?php echo G5_IMG_URL?>/ic_construct.svg" alt=""><h2>PM MODE</h2>
+            </div>
+            <div class="cmap_menu_td cmenu3" onclick="<?php if($member['mb_auth']==false){?>alert('맴버쉽 구매후 이용가능합니다.')<?php }else{?>fnViewRequest('<?php echo $member["mb_id"];?>','')<?php }?>">
                 <input type="hidden" id="const_id" value="">
-                <h2>사용자관리</h2>
-                <div class="counts">
-                    <span><?php echo number_format(count($reqlist));?></span> 건
-                </div>
+                <h2 class="count_title">사용자관리 <span><strong><?php echo number_format(count($reqlist));?></strong> 건</span></h2>
+                <!--<div class="counts">
+
+                </div>-->
             </div>
-            <div class="cmap_menu_td cmenu2" onclick="fnViewMessage('<?php echo $member["mb_id"];?>','')">
-                <h2>업무연락서</h2>
-                <div class="counts">
-                    <span><?php echo number_format(count($msglist));?></span> 건
-                </div>
+            <div class="cmap_menu_td cmenu4" onclick="<?php if($member['mb_auth']==false){?>alert('맴버쉽 구매후 이용가능합니다.')<?php }else{?>location.href=g5_url+'/page/mypage/schedule'<?php }?>">
+                <img src="<?php echo G5_IMG_URL;?>/ic_schedule.svg" alt=""> <h2>스케쥴</h2>
             </div>
-            <div class="cmap_menu_td cmenu3" onclick="location.href=g5_url+'/page/mylocation/mylocation'">
-                <div class="img"><img src="<?php echo G5_IMG_URL?>/ic_construct.svg" alt=""></div>
-                <div>현장관리</div>
+            <div class="cmap_menu_td cmenu5" onclick="<?php if($member['mb_auth']==false){?>alert('맴버쉽 구매후 이용가능합니다.')<?php }else{?>fnViewMessage('<?php echo $member["mb_id"];?>','')<?php }?>">
+                <h2 class="count_title">업무연락서 <span><strong><?php echo number_format(count($msglist));?></strong> 건</span></h2>
+                <!--<div class="counts">
+
+                </div>-->
             </div>
-            <div class="cmap_menu_td cmenu4" onclick="fnViewDelay('<?php echo $member["mb_id"];?>','')">
-                <h2>제출 지연 현황</h2>
-                <div class="counts">
-                    <span><?php echo number_format(count($delaylist));?></span> 건
-                </div>
+            <div class="cmap_menu_td cmenu6" onclick="<?php if($member['mb_auth']==false){?>alert('맴버쉽 구매후 이용가능합니다.')<?php }else{?>location.href=g5_bbs_url+'/board?bo_table=databoard'<?php }?>">
+                <img src="<?php echo G5_IMG_URL;?>/ic_databoard.svg" alt=""> <h2>게시판</h2>
             </div>
-            <div class="cmap_menu_td cmenu5" onclick="location.href=g5_bbs_url+'/board?bo_table=databoard'">
-                <img src="<?php echo G5_IMG_URL;?>/ic_databoard.svg" alt=""> 커뮤니티
+            <div class="cmap_menu_td cmenu7" onclick="<?php if($member['mb_auth']==false){?>alert('맴버쉽 구매후 이용가능합니다.')<?php }else{?>fnViewDelay('<?php echo $member["mb_id"];?>','')<?php }?>">
+                <h2 class="count_title">제출지연건 <span><strong><?php echo number_format(count($delaylist));?></strong> 건</span></h2>
+                <!--<div class="counts">
+                </div>-->
             </div>
-            <div class="cmap_menu_td cmenu6" onclick="location.href=g5_url+'/page/mypage/schedule'">
-                <img src="<?php echo G5_IMG_URL;?>/ic_schedule.svg" alt=""> 스케쥴
-            </div>
-            <div class="cmap_menu_td cmenu7" onclick="location.href=g5_url+'/page/board/inquiry'">
-                <img src="<?php echo G5_IMG_URL;?>/ic_inquiry.svg" alt=""> 제안하기
-            </div>
-            <div class="cmap_menu_td full_td cmenu8">
-                <h3>시공평가 점수</h3>
-                <div class="eval1">
-                    <?php if(count($evalsall)==0){?>
-                        <span>
-                            <p>0</p>
-                            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 50 26" style="enable-background:new 0 0 50 26;" xml:space="preserve">
-                            <style type="text/css">
-                                .st0{fill:#FFFFFF;}
-                            </style>
-                            <g>
-                                <polygon class="st0" points="13.1,25.5 1.5,13 13.1,0.5 36.9,0.5 48.5,13 36.9,25.5 	"/>
-                                <path d="M36.7,1l11.2,12L36.7,25H13.3L2.2,13L13.3,1H36.7 M37.1,0H12.9L0.8,13l12.1,13h24.2l12.1-13L37.1,0L37.1,0z"/>
-                            </g>
-                            </svg>
-                        </span>
-                        <div><label>80</label></div>
-                        <div><label>90</label></div>
-                        <div></div>
-                    <?php }else{?>
-                        <span>
-                            <p>0</p>
-                            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 50 26" style="enable-background:new 0 0 50 26;" xml:space="preserve">
-                            <style type="text/css">
-                                .st0{fill:#FFFFFF;}
-                            </style>
-                            <g>
-                                <polygon class="st0" points="13.1,25.5 1.5,13 13.1,0.5 36.9,0.5 48.5,13 36.9,25.5 	"/>
-                                <path d="M36.7,1l11.2,12L36.7,25H13.3L2.2,13L13.3,1H36.7 M37.1,0H12.9L0.8,13l12.1,13h24.2l12.1-13L37.1,0L37.1,0z"/>
-                            </g>
-                            </svg>
-                        </span>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                    <?php }?>
-                </div>
-                <h3>용역평가 점수</h3>
-                <div class="eval2">
-                    <?php if(count($evalsall)==0){?>
-                        <span>
-                            <p>0</p>
-                            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                                 viewBox="0 0 50 26" style="enable-background:new 0 0 50 26;" xml:space="preserve">
-                            <style type="text/css">
-                                .st0{fill:#FFFFFF;}
-                            </style>
-                            <g>
-                                <polygon class="st0" points="13.1,25.5 1.5,13 13.1,0.5 36.9,0.5 48.5,13 36.9,25.5 	"/>
-                                <path d="M36.7,1l11.2,12L36.7,25H13.3L2.2,13L13.3,1H36.7 M37.1,0H12.9L0.8,13l12.1,13h24.2l12.1-13L37.1,0L37.1,0z"/>
-                            </g>
-                            </svg>
-                        </span>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                    <?php }else{?>
-                        <span>
-                            <p>0</p>
-                            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                                 viewBox="0 0 50 26" style="enable-background:new 0 0 50 26;" xml:space="preserve">
-                            <style type="text/css">
-                                .st0{fill:#FFFFFF;}
-                            </style>
-                            <g>
-                                <polygon class="st0" points="13.1,25.5 1.5,13 13.1,0.5 36.9,0.5 48.5,13 36.9,25.5 	"/>
-                                <path d="M36.7,1l11.2,12L36.7,25H13.3L2.2,13L13.3,1H36.7 M37.1,0H12.9L0.8,13l12.1,13h24.2l12.1-13L37.1,0L37.1,0z"/>
-                            </g>
-                            </svg>
-                        </span>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                    <?php }?>
-                </div>
+
+            <div class="cmap_menu_td cmenu8" onclick="<?php if($member['mb_auth']==false){?>alert('맴버쉽 구매후 이용가능합니다.')<?php }else{?>location.href=g5_url+'/page/board/inquiry'<?php }?>">
+                <img src="<?php echo G5_IMG_URL;?>/ic_inquiry.svg" alt=""> <h2>제안하기</h2>
             </div>
             <div class="cmap_menu_td full_td cmenu9">
+                <h3>시공평가 점수</h3>
+                <div class="eval1 <?php echo $evel1_class;?>">
+                    <span style="<?php if($eval1_left){?>left:calc(<?php echo ceil($eval1_left);?>% - 40px);<?php }?>" class="<?php echo $evel1_class;?>">
+                        <p class="eval1_p"><?php echo ceil($eval1_total);?></p>
+                        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 50 26" style="enable-background:new 0 0 50 26;" xml:space="preserve">
+                        <style type="text/css">
+                            .st0{fill:#FFFFFF;}
+                        </style>
+                        <g>
+                            <polygon class="st0" points="13.1,25.5 1.5,13 13.1,0.5 36.9,0.5 48.5,13 36.9,25.5" />
+                            <path d="M36.7,1l11.2,12L36.7,25H13.3L2.2,13L13.3,1H36.7 M37.1,0H12.9L0.8,13l12.1,13h24.2l12.1-13L37.1,0L37.1,0z" />
+                        </g>
+                        </svg>
+                    </span>
+                    <div><label>80</label></div>
+                    <div><label>90</label></div>
+                    <div></div>
+                </div>
+                <h3>용역평가 점수</h3>
+                <div class="eval2 <?php echo $evel2_class;?>">
+                    <span style="<?php if($eval2_left){?>left:calc(<?php echo ceil($eval2_left);?>% - 40px);<?php }?>" class="<?php echo $evel2_class;?>">
+                        <p class="eval2_p"><?php echo $eval2_total;?></p>
+                        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                             viewBox="0 0 50 26" style="enable-background:new 0 0 50 26;" xml:space="preserve">
+                        <style type="text/css">
+                            .st0{fill:#FFFFFF;}
+                        </style>
+                        <g>
+                            <polygon class="st0" points="13.1,25.5 1.5,13 13.1,0.5 36.9,0.5 48.5,13 36.9,25.5" />
+                            <path d="M36.7,1l11.2,12L36.7,25H13.3L2.2,13L13.3,1H36.7 M37.1,0H12.9L0.8,13l12.1,13h24.2l12.1-13L37.1,0L37.1,0z" />
+                        </g>
+                        </svg>
+                    </span>
+                    <div><label>80</label></div>
+                    <div><label>90</label></div>
+                    <div></div>
+                </div>
+            </div>
+            <div class="cmap_menu_td full_td cmenu10">
                 <h2>오늘의 할일</h2>
-                <div class="more" onclick="fnScheduleView()">MORE ></div>
+                <div class="more" onclick="<?php if($member['mb_auth']==false){?>alert('맴버쉽 구매후 이용가능합니다.')<?php }else{?>fnScheduleView()<?php }?>">MORE ></div>
                 <div class="lists">
                     <ul>
                     <?php if(count($myschedule)>0){?>
@@ -230,8 +209,8 @@ while($row=sql_fetch_array($res)){
                     </ul>
                 </div>
             </div>
-            <div class="cmap_menu_td full_td cmenu10" onclick="fnWeather('<?php echo $member["mb_id"];?>','<?php echo $currentConst["id"];?>');">
-                <div class="left">
+            <div class="cmap_menu_td full_td cmenu11" >
+                <div class="left" onclick="<?php if($member['mb_auth']==false){?>alert('맴버쉽 구매후 이용가능합니다.')<?php }else{?>fnWeather('<?php echo $member["mb_id"];?>','<?php echo $currentConst["id"];?>');<?php }?>">
                     <div class="todays">
                     <?php
                     $w = date("w");
@@ -279,11 +258,7 @@ while($row=sql_fetch_array($res)){
                     </div>
                 </div>
             </div>
-        <?php if($member["mb_level"]==5){?>
-            <div class="cmap_menu_td full_td cmenu11">
-                PM
-            </div>
-        <?php }?>
+
         </div>
     </div>
 </div>
@@ -378,7 +353,7 @@ while($row=sql_fetch_array($res)){
             <?php /*}  */?>
 
         </ul>
-  
+
     </div>-->
     <nav id="gnb" class="<?php echo $myset["theme"];?> <?php echo "cate_".$myset["cate_theme"];?>">
         <div id="logo">
@@ -396,7 +371,7 @@ while($row=sql_fetch_array($res)){
                 <?php
                 $sql = " select *
                             from `cmap_menu`
-                            where menu_status = 0 
+                            where menu_status = 0
                               and menu_depth = 0
                             order by menu_order ";
                 $result = sql_query($sql, false);
@@ -440,11 +415,10 @@ while($row=sql_fetch_array($res)){
                             $mynavimenu[] = $rows;
                         }
                     }
-
                 ?>
                 <li class="gnb_1dli" style="z-index:<?php echo $gnb_zindex--; ?>"> <!-- 메인 메뉴 5개 -->
                     <?php if($me_id==60 || $row["menu_name"] == "평가"){?>
-                    <a href="<?php echo G5_URL?>/page/view2?me_id=<?php echo $row["menu_code"]; ?>" class="gnb_1da"><?php echo $row['menu_name'] ?></a>
+                    <a href="#" class="gnb_1da"><?php echo $row['menu_name'] ?></a>
                     <?php }else{?>
                     <a href="<?php echo G5_URL?>/page/view?me_id=<?php echo $row["menu_code"]; ?>" class="gnb_1da"><?php echo $row['menu_name'] ?></a>
                     <?php }?>
@@ -487,7 +461,7 @@ while($row=sql_fetch_array($res)){
                         $num = sql_num_rows($res);
 
                     ?>
-                        <li class="gnb_2dli <?php if($num>1){?>arrows<?php }?> <?php if($row2["delay"] || $delayhead2[$row2["menu_code"]]){?>chk<?php }?> " > <!-- 1depth -->
+                        <li class="gnb_2dli <?php if($num>1){?>arrows<?php }?> <?php if($row2["delay"] || $delayhead2[$row2["menu_code"]]){ if($activeMenu[$row2["me_id"]]=="1"){ ?>chk<?php } }?> " > <!-- 1depth  -->
                             <a href="<?php if($num == 1){?><?php echo G5_URL?>/page/view?me_id=<?php echo $row2["menu_code"]; ?><?php }else{ ?>#<?php }?>" class="gnb_2da"><?php echo $row2['menu_name'] ?></a>
                             <?php
                             if($num >= 10){
@@ -505,7 +479,7 @@ while($row=sql_fetch_array($res)){
 
                             if($row2["menu_name"]=="용역평가"){?>
                                 <li class="gnb_3dli "><a class="gnb_3da" href="<?php echo G5_URL?>/page/view3?me_id=<?php echo $row2["menu_code"]; ?>&depth1_id=339">업체평가 (80)</a></li>
-                                <li class="gnb_3dli "><a class="gnb_3da" href="<?php echo G5_URL?>/page/view3?me_id=<?php echo $row2["menu_code"]; ?>&depth1_id=342">기술자평가 (20)</a></li>
+                                <li class="gnb_3dli "><a class="gnb_3da" href="<?php echo G5_URL?>/page/view3?me_id=<?php echo $row2["menu_code"]; ?>&depth1_id=342">기술자평가 (20)</a>
                             <?php }else{
 
                             while($row3 = sql_fetch_array($res)){
@@ -515,10 +489,14 @@ while($row=sql_fetch_array($res)){
                                         continue;
                                     }
                                 }*/
-                                if($delayhead[$row3["pk_id"]]){
-                                    $chk = "chk";
+                                if($subsmnues[$row2["me_id"]][$row3["pk_id"]] == 1){
+                                  if($delayhead[$row3["pk_id"]]){
+                                      $chk = "chk";
+                                  }else{
+                                      $chk = "";
+                                  }
                                 }else{
-                                    $chk = "";
+                                  $chk = "";
                                 }
 
                                 if($row3["depth_name"]){
@@ -552,41 +530,41 @@ while($row=sql_fetch_array($res)){
                     <li class="gnb_empty">메뉴 준비 중입니다.<?php if ($is_admin) { ?> <a href="<?php echo G5_ADMIN_URL; ?>/menu_list">관리자모드 &gt; 환경설정 &gt; 메뉴설정</a>에서 설정하실 수 있습니다.<?php } ?></li>
                 <?php } ?>
             </ul>
-            <div id="gnb_all">
-                <h2>전체메뉴</h2>
-                <ul class="gnb_al_ul">
+        </div>
+        <div id="gnb_all">
+            <h2>전체메뉴</h2>
+            <ul class="gnb_al_ul">
+                <?php
+
+                $i = 0;
+                foreach( $menu_datas as $row ){
+                ?>
+                <li class="gnb_al_li">
+                    <a href="<?php echo $row['me_link']; ?>" class="gnb_al_a"><?php echo $row['menu_name'] ?></a>
                     <?php
-                    
-                    $i = 0;
-                    foreach( $menu_datas as $row ){
+                    $k = 0;
+                    foreach( (array) $row['sub'] as $row2 ){
+                        if($k == 0)
+                            echo '<ul>'.PHP_EOL;
                     ?>
-                    <li class="gnb_al_li">
-                        <a href="<?php echo $row['me_link']; ?>" class="gnb_al_a"><?php echo $row['menu_name'] ?></a>
-                        <?php
-                        $k = 0;
-                        foreach( (array) $row['sub'] as $row2 ){
-                            if($k == 0)
-                                echo '<ul>'.PHP_EOL;
-                        ?>
-                            <li><a href="<?php echo $row2['me_link']; ?>" ><i class="fa fa-caret-right" aria-hidden="true"></i> <?php echo $row2['menu_name'] ?></a></li>
-                        <?php
-                        $k++;
-                        }   //end foreach $row2
-
-                        if($k > 0)
-                            echo '</ul>'.PHP_EOL;
-                        ?>
-                    </li>
+                        <li><a href="<?php echo $row2['me_link']; ?>" ><i class="fa fa-caret-right" aria-hidden="true"></i> <?php echo $row2['menu_name'] ?></a></li>
                     <?php
-                    $i++;
-                    }   //end foreach $row
+                    $k++;
+                    }   //end foreach $row2
 
-                    if ($i == 0) {  ?>
-                        <li class="gnb_empty">메뉴 준비 중입니다.<?php if ($is_admin) { ?> <br><a href="<?php echo G5_ADMIN_URL; ?>/menu_list">관리자모드 &gt; 환경설정 &gt; 메뉴설정</a>에서 설정하실 수 있습니다.<?php } ?></li>
-                    <?php } ?>
-                </ul>
-                <button type="button" class="gnb_close_btn"><i class="fa fa-times" aria-hidden="true"></i></button>
-            </div>
+                    if($k > 0)
+                        echo '</ul>'.PHP_EOL;
+                    ?>
+                </li>
+                <?php
+                $i++;
+                }   //end foreach $row
+
+                if ($i == 0) {  ?>
+                    <li class="gnb_empty">메뉴 준비 중입니다.<?php if ($is_admin) { ?> <br><a href="<?php echo G5_ADMIN_URL; ?>/menu_list">관리자모드 &gt; 환경설정 &gt; 메뉴설정</a>에서 설정하실 수 있습니다.<?php } ?></li>
+                <?php } ?>
+            </ul>
+            <button type="button" class="gnb_close_btn"><i class="fa fa-times" aria-hidden="true"></i></button>
         </div>
         <div class="etc_btns">
             <input type="button" onclick="fnSearch();" class="search_btns">
@@ -596,7 +574,7 @@ while($row=sql_fetch_array($res)){
         </div>
     </nav>
     <script>
-    
+
     $(function(){
         $(".navigator_set").click(function(){
             if($(".icons").hasClass("active")) {
@@ -626,11 +604,11 @@ while($row=sql_fetch_array($res)){
         $("li.gnb_3dli").each(function(){
             $(this).mouseover(function(){
                 <?php if($myset["cate_theme"]=="blue"){?>
-                    $(this).parent().parent().find($(".gnb_2da")).attr({"style":"color:#000 !important;background-image:url('<?php echo G5_IMG_URL?>/ic_arrow_right_b.svg');background-repeat:no-repeat;background-position:right center;background-size:28px;"});
+                    $(this).parent().parent().find($(".gnb_2da")).attr({"style":"color:#000 !important;background-image:url('<?php echo G5_IMG_URL?>/ic_arrow_right_b.svg');background-repeat:no-repeat;background-position:right center;background-size:28px 28px;"});
                 <?php }else if($myset["cate_theme"]=="black"){ ?>
-                    $(this).parent().parent().find($(".gnb_2da")).attr({"style":"color:#FFF !important;background-image:url('<?php echo G5_IMG_URL?>/ic_arrow_right.svg');background-repeat:no-repeat;background-position:right center;background-size:28px;"});
+                    $(this).parent().parent().find($(".gnb_2da")).attr({"style":"color:#FFF !important;background-image:url('<?php echo G5_IMG_URL?>/ic_arrow_right.svg');background-repeat:no-repeat;background-position:right center;background-size:28px 28px;"});
                 <?php }else if($myset["cate_theme"]=="white"){ ?>
-                    $(this).parent().parent().find($(".gnb_2da")).attr({"style":"color:#FFF !important;background-image:url('<?php echo G5_IMG_URL?>/ic_arrow_right.svg');background-repeat:no-repeat;background-position:right center;background-size:28px;"});
+                    $(this).parent().parent().find($(".gnb_2da")).attr({"style":"color:#FFF !important;background-image:url('<?php echo G5_IMG_URL?>/ic_arrow_right.svg');background-repeat:no-repeat;background-position:right center;background-size:28px 28px;"});
                 <?php }?>
             });
             $(this).mouseout(function(){
@@ -653,6 +631,7 @@ while($row=sql_fetch_array($res)){
 </div>
 <div class="container" <?php if($main){?>id="mainscreen"<?php }?>>
 <?php if(!$main && $sub != "login" && $mypage != true){?>
+    <?php if($sub!="search"){?>
 <div class="user_guide">
     <table class="user2">
         <tr>
@@ -661,7 +640,7 @@ while($row=sql_fetch_array($res)){
         <?php }else{ ?>
             <?php if(count($mycont)>0){?>
             <td class="first">
-                <select name="mylocmap" id="mylocmap" class="cmap_sel" style="width:260px;" onchange="fnChangeConst('<?php echo $member["mb_id"];?>',this.value)">
+                <select name="mylocmap" id="mylocmap" class="cmap_sel" style="width:200px;" onchange="fnChangeConst2('<?php echo $member["mb_id"];?>',this.value)">
                     <option value="" <?php if($current_const["const_id"]==0){?>selected<?php }?>>현장 선택</option>
                     <?php for($i=0;$i<count($mycont);$i++){?>
                         <option value="<?php echo $mycont[$i]["id"];?>" <?php if($current_const["const_id"]==$mycont[$i]["id"]){?>selected<?php }?>><?php echo $mycont[$i]["cmap_name"];?></option>
@@ -677,7 +656,7 @@ while($row=sql_fetch_array($res)){
                     <?php }?>
                     </select>
                 <?php }else{ ?>
-                    <select name="depth1_id" id="depth1_id">
+                    <select name="depth1_id" id="depth1_id" style="width:176px;" >
                     <?php for($i=0;$i<count($depth_me);$i++) {?>
                     <option value="<?php echo $depth_me[$i]["id"];?>" <?php echo get_selected($depth_me[$i]["id"],$depth1_id);?>><?php echo $depth_me[$i]["depth_name"];?></option>
                     <?php }?>
@@ -690,7 +669,9 @@ while($row=sql_fetch_array($res)){
     </table>
     <div class="clear"></div>
 </div>
+    <?php }?>
 <?php }else if(!$main && $sub != "login" && $mypage != false){?>
+    <?php if($sub!="search"){?>
 <div class="user_guide">
     <div class="user">
         <div>사용자 가이드</div>
@@ -698,6 +679,7 @@ while($row=sql_fetch_array($res)){
     </div>
     <div class="clear"></div>
 </div>
+    <?php }?>
 <?php }?>
 <span class="widthchk" style="opacity: 0;white-space: nowrap;height: 0;display:none;"><?php if($useguide["menu_desc"]){echo $useguide["menu_desc"];}else{echo "사용자 가이드를 입력해주세요.";}?></span>
 
@@ -719,7 +701,6 @@ while($row=sql_fetch_array($res)){
     var chk = false;
     $(function(){
         ww = $(".widthchk").width();
-        console.log(ww);
         chk = $(".user2 td:last-child span").hasOverflown();
         left = $(".user2 td:last-child span").css("left");
         if(chk){
@@ -733,9 +714,11 @@ while($row=sql_fetch_array($res)){
                 left: "-=5"
             }, 100, animateSpan);
         }else{
-            animateSpan2();
+            $(".user2 td:last-child span").css({"left":"0"});
+            //animateSpan2();
         }
     }
+    /*
     function animateSpan2(){
         if($(".user2 td:last-child span").position().left <= 0){
             $(".user2 td:last-child span").animate({
@@ -744,7 +727,6 @@ while($row=sql_fetch_array($res)){
         }else{
             setTimeout(animateSpan,2000);
         }
-    }
+    }*/
 </script>
 <!-- } 상단 끝 -->
-

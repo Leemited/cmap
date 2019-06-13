@@ -5,7 +5,6 @@ include_once ("../../common.php");
 $sql = "delete from `cmap_myschedule` where construct_id = '{$constid}' and mb_id = '{$member["mb_id"]}'";
 sql_query($sql);
 
-
 $pk_ids = implode("``",$pk_id);
 $pk_id_actives = implode("``",$pk_id_active);
 $start_dates = implode("``",$start_date);

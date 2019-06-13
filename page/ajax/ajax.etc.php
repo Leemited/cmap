@@ -136,6 +136,7 @@ if($etc["attachment2"]!=""){
                     $downfile = explode(".",$pdf2name[$i]);
                     $dwfilename = $downfile[0];
                     $dwfile = str_replace("https://xn--z69akkg7o1wgdnk53m.com:443/data/cmap_content/","",$pdf2[$i]);
+                    $dwfile = str_replace("https://xn--z69akkg7o1wgdnk53m.com/data/cmap_content/","",$pdf2[$i]);
                     ?>
                     <a href="<?php echo G5_URL;?>/page/view_download.php?file=<?php echo $dwfile;?>&filename=<?php echo $dwfilename;?>"><?php echo $pdf2name[$i];?></a> <!--<input type="button" onclick="fnFileView('<?php /*echo $pdf2[$i];*/?>','<?php /*echo $pdf2name[$i];*/?>')" value="보기">-->
                 <?php }

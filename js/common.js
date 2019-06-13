@@ -540,7 +540,10 @@ var win_zip2 = function(frm_name, frm_zip, frm_addr1, frm_addr2, frm_addr3, frm_
 
         // 사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
         //if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+        if(data.roadAddress)
             fullAddr = data.roadAddress;
+        else
+            fullAddr = data.jibunAddress;
         //} else { // 사용자가 지번 주소를 선택했을 경우(J)
         //    fullAddr = data.jibunAddress;
         //}
@@ -895,7 +898,7 @@ function fnCloseModal2(){
 function fnModalTop(){
     var height = $(".modalpopup .modal_in").height() + 40; //40은 style 속성 고정값
     var top = height / 2;
-    $(".modalpopup .modal_in").attr("style","top:50%;margin-top: -"+top+"px");
+    //$(".modalpopup .modal_in").attr("style","top:50%;margin-top: -"+top+"px");
 }
 
 function fnMyprofile(mb_id){
@@ -997,7 +1000,6 @@ $(function() {
 
     $(document).on("click",".quickmenus ",function(){
         var name = $(this).find("label").text();
-        console.log(name);
         switch(name){
             case "CMAP GUIDE":
                 
@@ -1008,20 +1010,24 @@ $(function() {
             case "현장관리":
                 location.href=g5_url+'/page/mylocation/mylocation';
                 break;
-            case "작업 요청서 작성":
-
+            case "업무연락서 작성":
+                location.href=g5_url+'/page/mypage/my_message_list.php';
                 break;
             case "MY CMAP":
                 location.href=g5_url+'/page/mypage/mypage';
                 break;
-            case "커뮤니티":
+            case "게시판":
                 location.href=g5_bbs_url+'/board?bo_table=databoard';
                 break;
             case "제안하기":
                 location.href=g5_url+"/page/board/inquiry"
                 break;
             case "결제하기":
-
+                fnQuickView();
+                fnPayment();
+                break;
+            case "천후표":
+                location.href=g5_url+"/page/mypage/weather";
                 break;
             case "PM_MODE":
 
@@ -1107,51 +1113,95 @@ function fnChangeConst(mb_id,id){
         url:g5_url+"/page/ajax/ajax.current_construct_update.php",
         method:"post",
         data:{const_id:id}
+    }).done(function(){
+        location.href=g5_url+'/?menu=on';
     });
-
+/*
     //요청 및 초대된 현장 카운트
     $.ajax({
         url:g5_url+'/page/ajax/ajax.get_invite_count.php',
         method:'post',
         data:{const_id:const_id},
         dataType:'json'
+        ,beforeSend:function(){
+            $(".cmenu1 .counts span").html('...');
+        }
     }).done(function(data){
-        //console.log(data);
         $(".cmenu1 .counts span").html(Number(data.cnt));
     });
 
     //작업 요청서 카운트
-    /*$.ajax({
+    $.ajax({
         url:g5_url+'/page/ajax/ajax.get_invite_count.php',
         method:'post',
         data:{const_id:id}
     }).done(function(data){
         console.log(data);
-    });*/
+    });
 
     //제출 지연 현황 카운트
-    $.ajax({
-        url:g5_url+'/page/ajax/ajax.get_delay_count.php',
-        method:'post',
-        data:{const_id:id},
-        dataType:'json'
-    }).done(function(data){
-        console.log(data);
-        $(".cmenu4 .counts span").html(Number(data.cnt));
-    });
-    
-
+    if(const_id) {
+        $.ajax({
+            url: g5_url + '/page/ajax/ajax.get_delay_count.php',
+            method: 'post',
+            data: {const_id: const_id},
+            dataType: 'json'
+            , beforeSend: function () {
+                $(".cmenu4 .counts span").html('...');
+            }
+        }).done(function (data) {
+            $(".cmenu4 .counts span").html(Number(data.cnt));
+        });
+    }
     //현제 현장의 평가 점수
-    /*$.ajax({
+    if(const_id) {
+        $.ajax({
+            url: g5_url + '/page/ajax/ajax.get_construct_eval.php',
+            method: "post",
+            data: {constid: const_id},
+            dataType: "json"
+        }).done(function (data) {
+            console.log(data);
+            if (data.ajax_eval1_class) {
+                $(".eval1").addClass(data.ajax_eval1_class);
+                $(".eval1 span").addClass(data.ajax_eval1_class);
+            } else {
+                $(".eval1").removeClass('level2');
+                $(".eval1").removeClass('level3');
+                $(".eval1 span").removeClass('level2');
+                $(".eval1 span").removeClass('level3');
+            }
+            if (data.ajax_eval2_class) {
+                $(".eval2").addClass(data.ajax_eval2_class);
+                $(".eval2 span").addClass(data.ajax_eval2_class);
+            } else {
+                $(".eval2").removeClass('level2');
+                $(".eval2").removeClass('level3');
+                $(".eval2 span").removeClass('level2');
+                $(".eval2 span").removeClass('level3');
+            }
 
-    }).done(function(){
-
-    });*/
+            //if(data.eval1_total){
+            $(".eval1_p").text(data.ajax_eval1_total);
+            //}
+            //if(data.eval2_total){
+            $(".eval2_p").text(data.ajax_eval2_total);
+            //}
+            if (data.ajax_eval1_left) {
+                $(".eval1 span").css({"left": "calc(" + data.ajax_eval1_left + "% - 40px)"});
+            }
+            if (data.ajax_eval1_left) {
+                $(".eval2 span").css({"left": "calc(" + data.ajax_eval2_left + "% - 40px)"});
+            }
+        });
+    }
 
     if($(".mymenu_detail").hasClass("active") && chk_menu_on == true) {
         fnViewRequest(mb_id, const_id);
     }
-
+    
+    
+    //날씨정보
     $.ajax({
         url:g5_url+"/page/ajax/ajax.get_weather_location.php",
         method:"post",
@@ -1174,7 +1224,26 @@ function fnChangeConst(mb_id,id){
             getLocation();
         }
     });
+    */
 
+
+}
+
+function fnChangeConst2(mb_id,id) {
+    const_id = id;
+    //저장된 마지막 현장 저장
+    $.ajax({
+        url: g5_url + "/page/ajax/ajax.current_construct_update.php",
+        method: "post",
+        data: {const_id: id}
+    }).done(function(){
+        location.reload();
+    });
+}
+
+function fnChangeConstSearch(id) {
+    const_id = id;
+    location.href=g5_url+'page/mypage/my_message_list?const_id='+const_id;
 }
 
 function fnSearchPapular(text){
@@ -1198,7 +1267,6 @@ function fnMenusHeader(me_code) {
         data:{menu_id:me_code}
     }).done(function(data){
         if(me_code=="") {
-            console.log("A");
             $("#allmenu_header10").addClass("active");
             $("li[id^=allmenu_header]").not($("#allmenu_header10")).removeClass("active");
         }else {
@@ -1215,7 +1283,7 @@ function fnConstInvite(id){
     $.ajax({
         url:g5_url+"/page/modal/ajax.member_invite.php",
         method:"post",
-        data:{id:id}
+        data:{constid:id}
     }).done(function(data){
         fnShowModal(data);
     });
@@ -1233,30 +1301,53 @@ function fnConstShare(id){
 
 function fnConstEdit(type,id){
     if(type==1){
-        location.href=g5_url+'/page/mylocation/mylocation_edit.php?constid='+id;
+        location.href=g5_url+'/page/mylocation/mylocation_edit?constid='+id;
     }else{
-        location.href=g5_url+'/page/mylocation/mylocation_edit2.php?constid='+id;
+        location.href=g5_url+'/page/mylocation/mylocation_edit2?constid='+id;
     }
 }
 
 //설정 복사
-function fnConstCopy(){
+function fnConstCopy(const_id){
+    var chk = $("input[id^=copy_]:checked").val();
+    var chkcnt = $("input[id^=copy_]:checked").length;
+    if(chkcnt==0){
+        alert("복사할 대상을 선택해주세요.");
+        return false;
+    }
 
+    if(confirm("해당 사용자의 지연현황 및 평가데이터를 복사하시겠습니까?\r\n현재 데이터는 자동 저장됩니다.")){
+        location.href=g5_url+'/page/mylocation/mylocation_copy?mb_id='+chk+'&const_id='+const_id;
+    }
 }
 
 //내 설정 복구
-function fnConstRestore(){
-
+function fnConstRestore(mb_id,const_id){
+    $.ajax({
+        url:g5_url+"/page/modal/ajax.mylocation_set_restore.php",
+        method:"post",
+        data:{mb_id:mb_id,constid:const_id}
+    }).done(function(data){
+        fnShowModal(data);
+    });
 }
 
 //내 설정 저장
-function fnConstSave(){
-
+function fnConstSave(link){
+    $.ajax({
+        url:g5_url+"/page/modal/ajax.alert.php",
+        method:"post",
+        data:{title:"저장하기",msg:"현재 현장 개인설정이 저장됩니다.<br>저장 된 항목은 복구 가능합니다.",link:link,btns:"저장하기"}
+    }).done(function(data){
+        fnShowModal(data);
+    });
 }
 
-//현장 탈퇴
-function fnConstLeave(){
-    //내가 현장 생성자일경우 우임자 선택 필요
+//현장 탈퇴는 참여자일경우만 가능
+function fnConstLeave(const_id){
+    if(confirm("해당 현장을 퇼퇴하시겠습니까?")) {
+        location.href = g5_url + '/page/mylocation/mylocation_leave?const_id=' + const_id;
+    }
 }
 
 //현장 조인
@@ -1433,16 +1524,21 @@ function fnViewMessage(mb_id,const_id){
 }
 
 function fnWriteMessage(msg_id){
-    var const_id = $("#cons_id").val();
-    if(const_id==""){
-        alert("현장을 선택해 주세요.");
-        return false;
+    var const_id = "";
+    if(msg_id=="") {
+         const_id = $("#cons_id").val();
+        if (const_id == "") {
+            alert("현장을 선택해 주세요.");
+            $("#cons_id").focus();
+            return false;
+        }
     }
     $.ajax({
         url:g5_url+"/page/ajax/ajax.get_message.php",
         method:"post",
         data:{const_id:const_id,msg_id:msg_id}
     }).done(function(data) {
+        console.log(data);
         if(data==1){
             alert("현장정보가 없습니다.");
         }else if(data==2){
@@ -1473,4 +1569,91 @@ function fn_join(id,mb_id){
         console.log(data);
         alert(data.msg);
     });
+}
+
+
+function selPayType(amount,payment_type,mb_level){
+    if(mb_level > 2){
+        if(mb_level==3 && payment_type<=3){//일반 연장
+            if(!confirm('현재 사용중인 맴버쉽을 연장 하시겠습니까?')){
+                return false;
+            }
+        }
+        if(mb_level==3 && payment_type > 3){//일반에서 PM
+            alert('현재 등록된 맴버쉽 환불 후 PM_MODE로 전환 가능합니다.\n맴버쉽 환불은 정보수정 또는 제안하기를 통해 남겨주세요.');
+            return false;
+        }
+        if(mb_level==5 && payment_type <= 3){//PM에서 일반
+            alert('현재 등록된 맴버쉽 환불 후 일반사용자로 전환 가능합니다.\n맴버쉽 환불은 정보수정 또는 제안하기를 통해 남겨주세요.');
+            return false;
+        }
+        if(mb_level==5 && payment_type > 3){//PM_MODE 연장
+            if(!confirm('현재 사용중인 PM_MODE를 연장하시겠습니까?')){
+                return false;
+            }
+        }
+    }
+    $.ajax({
+        url:g5_url+'/page/modal/ajax.sel_order_type.php',
+        method:"post",
+        data:{amount:amount,payment_type:payment_type}
+    }).done(function(data){
+        fnShowModal(data);
+        //memberPayment(amount,payment_type,data);
+    });
+}
+
+function memberPayment(amount,payment_type,order_type,mb_name,mb_hp,mb_email,mb_id) {
+    if(order_type==""){
+        alert("결제 방식을 선택해 주세요.");
+        return false;
+    }
+    var goodsname = "";
+    switch (payment_type){
+        case "1":
+            goodsname = "맴버쉽 1개월";
+            break;
+        case "2":
+            goodsname = "맴버쉽 6개월";
+            break;
+        case "3":
+            goodsname = "맴버쉽 12개월";
+            break;
+        case "4":
+            goodsname = "PM MODE 1개월";
+            break;
+        case "5":
+            goodsname = "PM MODE 6개월";
+            break;
+        case "6":
+            goodsname = "PM MODE 12개월";
+            break;
+
+    }
+    var merchant_uid = 'mb_od_'+new Date().getTime()+'_'+mb_id;
+
+    $("#amount").val(amount);
+    $("#merchant_uid").val(merchant_uid);
+
+    IMP.request_pay({
+        pg:'html5_inicis',
+        amount: amount,
+        merchant_uid: merchant_uid,
+        buyer_name: mb_name,
+        buyer_tel: mb_hp,
+        buyer_email: mb_email,
+        name: goodsname,
+        digital:true,
+        pay_method:order_type,
+        m_redirect_url: g5_url
+    }, function (response) {
+        //결제 후 호출되는 callback함수
+        if (response.success) { //결제 성공
+            location.href=g5_url+'/page/mypage/member_payment?amount='+amount+"&merchant_uid="+response.merchant_uid+'&payment_type='+payment_type+'&order_type='+order_type;
+        } else {
+            alert('결제실패 : ' + response.error_msg);
+            //결제 실패시 임시저장 삭제(임시자장 일경우)
+            fnPayment();
+        }
+    })
 }

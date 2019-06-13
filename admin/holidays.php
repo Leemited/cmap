@@ -23,9 +23,6 @@ while ($row = sql_fetch_array($res)) {
         </div>
         <div class="clear"></div>
         <div class="admin_content">
-            <div class="sub_title">
-                공휴일 입력
-            </div>
             <div class="edit_content">
                 <table class="edit_table">
                     <tr>

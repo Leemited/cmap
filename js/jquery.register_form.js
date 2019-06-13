@@ -79,7 +79,7 @@ var reg_mb_hp_check = function() {
         type: "POST",
         url: g5_bbs_url+"/ajax.mb_hp.php",
         data: {
-            "reg_mb_hp": $("#mb_hp1").val()+"-"+$("#mb_hp2").val()+"-"+$("#mb_hp3").val(),
+            "reg_mb_hp": $("#reg_mb_hp").val(),
             "reg_mb_id": encodeURIComponent($("#reg_mb_id").val())
         },
         cache: false,

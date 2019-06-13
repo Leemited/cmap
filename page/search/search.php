@@ -1,7 +1,7 @@
 <?php
 include_once ("../../common.php");
-$sub = "sub";
-$mypage = true;
+$sub = "search";
+$mypage = false;
 include_once (G5_PATH."/head.php");
 
 //검색어 저장
@@ -174,7 +174,7 @@ while($row = sql_fetch_array($res)){
                 <?php for($i=0;$i<count($tabmenu);$i++){?>
                     <li onclick="location.href=g5_url+'/page/search/search?search_type=<?php echo $tabmenu[$i]["menu_code"];?>&search_text=<?php echo $search_text;?>'" <?php if($tabmenu[$i]["menu_code"]==$search_type){?>class="active"<?php }?>><?php echo $tabmenu[$i]["menu_name"]." (".number_format($tabmenu[$i]["cnt"])."건)";?></li>
                 <?php }?>
-                <li>포털검색</li>
+                <li onclick="fnPortalSearch('<?php echo $search_text;?>');">포털검색</li>
             </ul>
             <div class="clear"></div>
         </div>
@@ -214,6 +214,15 @@ while($row = sql_fetch_array($res)){
     </section>
 </div>
 <script>
+    function fnPortalSearch(search_text){
+        $.ajax({
+            url:g5_url+'/page/modal/ajax.portal.php',
+            method:"post",
+            data:{search_text:search_text}
+        }).done(function(data){
+            fnShowModal(data);
+        });
+    }
 </script>
 <?php
 include_once (G5_PATH."/tail.php");

@@ -46,6 +46,11 @@ if( ! $mb_nick || ! $mb_name ){
     $mb_name = $mb_name ? $mb_name : $tmp[0];
 }
 
+if ($w == '' && !$mb_password)
+    alert('비밀번호가 넘어오지 않았습니다.');
+if($w == '' && $mb_password != $mb_password_re)
+    alert('비밀번호가 일치하지 않습니다.');
+
 /*if( ! isset($mb_password) || ! $mb_password ){
     $mb_password = md5(pack('V*', rand(), rand(), rand(), rand()));
 }*/
@@ -179,7 +184,7 @@ if($result) {
     // 사용자 코드 실행
     @include_once ($member_skin_path.'/register_form_update.tail.skin.php');
 
-    goto_url(G5_HTTP_BBS_URL.'/register_result.php');
+    goto_url(G5_URL);
 
 } else {
 

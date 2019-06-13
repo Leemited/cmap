@@ -1,5 +1,8 @@
 <?php
 include_once ("../../common.php");
+if($member["mb_auth"]==false){
+    alert("무료 이용기간이 만료 되었거나,\\r맴버쉽 기간이 만료 되었습니다. \\n맴버쉽 구매후 이용바랍니다.",G5_URL);
+}
 $bbody = "board";
 $sub = "sub";
 $mypage = true;

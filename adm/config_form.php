@@ -880,7 +880,7 @@ if ($config['cf_sms_use'] && $config['cf_icode_id'] && $config['cf_icode_pw']) {
             <th scope="row" class="cf_cert_service"><label for="cf_cert_req">본인확인 필수</label></th>
             <td class="cf_cert_service">
                 <?php echo help('회원가입 때 본인확인을 필수로 할지 설정합니다. 필수로 설정하시면 본인확인을 하지 않은 경우 회원가입이 안됩니다.'); ?>
-                <input type="checkbox" name="cf_cert_req" value="1" id="cf_cert_req"<?php echo get_checked($config['cf_cert_req'], 1); ?>> 예
+                <input type="checkbox" name="cf_cert_req" value="1" id="cf_cert_req" <?php echo get_checked($config['cf_cert_req'], 1); ?>> 예
             </td>
         </tr>
         </tbody>

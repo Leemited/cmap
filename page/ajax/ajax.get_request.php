@@ -42,7 +42,7 @@ if($num!=0){
                 $mb = get_member($row["send_mb_id"]);
             }
 ?>
-<tr id="invite_<?php echo $row["invite_id"];?>">
+<tr class="main_lists" id="invite_<?php echo $row["invite_id"];?>">
     <td><?php echo $mb["mb_name"];?></td>
     <td><?php echo $row["cmap_name"];?></td>
     <td>

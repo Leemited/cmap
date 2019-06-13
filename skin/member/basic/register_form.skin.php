@@ -1,4 +1,4 @@
-<?php
+7<?php
 if (!defined('_GNUBOARD_')) exit; // 개별 페이지 접근 불가
 
 // add_stylesheet('css 구문', 출력순서); 숫자가 작을 수록 먼저 출력됨
@@ -120,14 +120,11 @@ if($is_member) {
                     --><?php /*}  */?>
 
                             <label for="reg_mb_hp" class="sound_only">휴대폰번호<?php if ($config['cf_req_hp']) { ?><strong>필수</strong><?php } ?></label>
-
-                            <select name="mb_hp[]" id="mb_hp1" class="frm_input <?php echo $required;?>" <?php echo $required;?>>
-                                <option value="010" <?php echo get_selected($tel[0],"010");?>>010</option>
-                                <!--<option value="017">017</option>
-                                <option value="018">018</option>
-                                <option value="019">019</option>-->
-                                <option value="070" <?php echo get_selected($tel[0],"070");?>>070</option>
-                            </select> - <input type="text" name="mb_hp[]" id="mb_hp2" value="<?php echo $hp[0];?>" class="frm_input <?php echo $required;?>" <?php echo $required;?> maxlength="4"> - <input type="text" name="mb_hp[]" id="mb_hp3" value="<?php echo $hp[0];?>" class="frm_input <?php echo $required;?>" <?php echo $required;?> maxlength="4">
+                            <!--<select name="mb_hp[]" id="mb_hp1" class="frm_input <?php /*echo $required;*/?>" <?php /*echo $required;*/?>>
+                                <option value="010" <?php /*echo get_selected($tel[0],"010");*/?>>010</option>
+                                <option value="070" <?php /*echo get_selected($tel[0],"070");*/?>>070</option>
+                            </select> - <input type="text" name="mb_hp[]" id="mb_hp2" value="<?php /*echo $hp[0];*/?>" class="frm_input <?php /*echo $required;*/?>" <?php /*echo $required;*/?> maxlength="4"> - <input type="text" name="mb_hp[]" id="mb_hp3" value="<?php /*echo $hp[0];*/?>" class="frm_input <?php /*echo $required;*/?>" <?php /*echo $required;*/?> maxlength="4">-->
+                            <input type="text" name="mb_hp" value="<?php echo get_text($member['mb_hp']) ?>" id="reg_mb_hp" <?php echo ($config['cf_req_hp'])?"required":""; ?> class="frm_input left_input half_input <?php echo ($config['cf_req_hp'])?"required":""; ?>" maxlength="20" placeholder="휴대폰 본인확인버튼을 눌러주세요." readonly style="width:50%">
                             <?php if ($config['cf_cert_use'] && $config['cf_cert_hp']) { ?>
                                 <input type="hidden" name="old_mb_hp" value="<?php echo get_text($member['mb_hp']) ?>">
                             <?php } ?>
@@ -291,10 +288,10 @@ if($is_member) {
                     </li>
                     --><?php /*}  */?>
 
-                        <li class="is_captcha_use">
+                        <!--<li class="is_captcha_use">
                             자동등록방지
-                            <?php echo captcha_html(); ?>
-                        </li>
+                            <?php /*echo captcha_html(); */?>
+                        </li>-->
                     </ul>
                 </div>
 
@@ -491,7 +488,7 @@ if($is_member) {
                     }
                 }
 
-                <?php echo chk_captcha_js();  ?>
+                <?php /*echo chk_captcha_js();  */?>
 
                 document.getElementById("btn_submit").disabled = "disabled";
 
@@ -499,6 +496,11 @@ if($is_member) {
             }
             function fnIdchk(){
                 var mb_id = $("#reg_mb_id").val();
+                if(mb_id==""){
+                    $("#msg_mb_id").html("아이디를 입력해주세요.");
+                    setTimeout(function(){$("#msg_mb_id").html('');},1000);
+                    return false;
+                }
                 $.ajax({
                     url:g5_url+"/page/modal/ajax.mb_id_chk.php",
                     method:"post",
@@ -514,6 +516,13 @@ if($is_member) {
                         setTimeout(function(){$("#msg_mb_id").html('');},1000);
                     }
                 })
+            }
+
+            function fnTelCert(hp){
+                var hps = hp.split("-");
+                $("#mb_hp1").val(hps[0]);
+                $("#mb_hp2").val(hps[1]);
+                $("#mb_hp3").val(hps[2]);
             }
         </script>
     </div>

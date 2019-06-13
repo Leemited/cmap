@@ -38,16 +38,19 @@ header("Pragma: no-cache"); // HTTP/1.0
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="GENERATOR" Content="Microsoft Visual Studio .NET 7.1">
-<meta name="CODE_LANGUAGE" Content="C#">
-<meta name="vs_defaultClientScript" content="JavaScript">
-<meta name="vs_targetSchema" content="http://schemas.microsoft.com/intellisense/ie5">
+<meta name="description" content="4차 산업혁명을 넘어 새로운 패러다임을 제시하다!">
+<meta property="og:type" content="website">
+<meta property="og:title" content="건설관리지도[CMAP]">
+<meta property="og:description" content="4차 산업혁명을 넘어 새로운 패러다임을 제시하다!">
+<meta property="og:image" content="<?php echo G5_IMG_URL;?>/logo.png">
+<meta property="og:url" content="<?php echo G5_URL;?>">
 <?php
 if (G5_IS_MOBILE) {
     echo '<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=0,maximum-scale=10,user-scalable=yes">'.PHP_EOL;
     echo '<meta name="HandheldFriendly" content="true">'.PHP_EOL;
     echo '<meta name="format-detection" content="telephone=no">'.PHP_EOL;
 } else {
+    echo '<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=0,maximum-scale=1,user-scalable=yes">'.PHP_EOL;
     echo '<meta http-equiv="imagetoolbar" content="no">'.PHP_EOL;
     echo '<meta http-equiv="X-UA-Compatible" content="IE=Edge,Chrome=1">'.PHP_EOL;
 }
@@ -108,8 +111,15 @@ document.onselectstart = new Function('return false');   // 선택 방지
 <script src="<?php echo G5_JS_URL ?>/wrest.js?ver=<?php echo G5_JS_VER; ?>"></script>
 <script src="<?php echo G5_JS_URL ?>/placeholders.min.js"></script>
 <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.5.js"></script>
+
 <script src="<?php echo G5_JS_URL ?>/jQuery.resizableColumns.js"></script>
-    <link rel="stylesheet" href="<?php echo G5_JS_URL ?>/font-awesome/css/font-awesome.min.css">
+<script>
+    var IMP = window.IMP; // 생략가능
+    IMP.init('imp99875278');
+</script>
+
+<link rel="stylesheet" href="<?php echo G5_JS_URL ?>/font-awesome/css/font-awesome.min.css">
 <?php
 if(G5_IS_MOBILE) {
     echo '<script src="'.G5_JS_URL.'/modernizr.custom.70111.js"></script>'.PHP_EOL; // overflow scroll 감지

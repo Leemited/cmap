@@ -167,7 +167,7 @@ if($me_code) {
                             <td class="td_center"><input type="button" value="수정" class=""  onclick="fnGuideUp2('회원탈퇴','depth_desc_leave','<?php echo $list["depth_desc_leave"]["id"];?>');" style="display:block;position: relative;right:auto;top:auto;margin:0 auto"></td>
                         </tr>
                         <tr>
-                            <td rowspan="4">커뮤니티</td>
+                            <td rowspan="4">게시판</td>
                             <td>CMAP 소식</td>
                             <td><input type="text" value="<?php echo $list["depth_desc_cmap"]["menu_desc"];?>" id="depth_desc_cmap"></td>
                             <td class="td_center"><input type="button" value="수정" class=""  onclick="fnGuideUp2('CMAP 소식','depth_desc_cmap','<?php echo $list["depth_desc_board"]["id"];?>');" style="display:block;position: relative;right:auto;top:auto;margin:0 auto"></td>
@@ -183,9 +183,9 @@ if($me_code) {
                             <td class="td_center"><input type="button" value="수정" class=""  onclick="fnGuideUp2('사용후기','depth_desc_review','<?php echo $list["depth_desc_board"]["id"];?>');" style="display:block;position: relative;right:auto;top:auto;margin:0 auto"></td>
                         </tr>
                         <tr>
-                            <td>커뮤니티</td>
+                            <td>게시판</td>
                             <td><input type="text" value="<?php echo $list["depth_desc_com"]["menu_desc"];?>" id="depth_desc_com"></td>
-                            <td class="td_center"><input type="button" value="수정" class=""  onclick="fnGuideUp2('커뮤니티','depth_desc_com','<?php echo $list["depth_desc_board"]["id"];?>');" style="display:block;position: relative;right:auto;top:auto;margin:0 auto"></td>
+                            <td class="td_center"><input type="button" value="수정" class=""  onclick="fnGuideUp2('게시판','depth_desc_com','<?php echo $list["depth_desc_board"]["id"];?>');" style="display:block;position: relative;right:auto;top:auto;margin:0 auto"></td>
                         </tr>
                         <tr>
                             <td>제안하기</td>

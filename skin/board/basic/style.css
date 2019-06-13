@@ -92,7 +92,7 @@
 /* ### 기본 스타일 커스터마이징 끝 ### */
 
 /* 게시판 목록 */
-#bo_list {position:relative}
+#bo_list {position:relative;margin-bottom:80px;}
 #bo_list:after {display:block;visibility:hidden;clear:both;content:""}
 #bo_list .td_board {width:120px;text-align:center}
 #bo_list .td_chk {width:30px;text-align:center}
@@ -382,5 +382,5 @@ header h2:before{content:"";width:30px;height:3px;background-color:#0e2080;posit
 .board-width header h2:before{content:"";width:30px;height:3px;background-color:#0e2080;position:absolute;top:0;left:0;}
 */
 .board_tab{margin-bottom:20px;}
-.board_tab li{width:25%;padding:10px 0;font-size:20px;border:1px solid #ddd;background-color:#fff;text-align: center;float: left;cursor: pointer;-webkit-box-shadow:  0 3px 3px rgba(0,0,0,.3);-moz-box-shadow:  0 3px 3px rgba(0,0,0,.3);box-shadow:  0 3px 3px rgba(0,0,0,.3);}
+.board_tab li{width:33.33%;padding:10px 0;font-size:20px;border:1px solid #ddd;background-color:#fff;text-align: center;float: left;cursor: pointer;-webkit-box-shadow:  0 3px 3px rgba(0,0,0,.3);-moz-box-shadow:  0 3px 3px rgba(0,0,0,.3);box-shadow:  0 3px 3px rgba(0,0,0,.3);}
 .board_tab li:hover,.board_tab li.active{background-color:#022c5e;color:#fff;border:1px solid #022c5e}

@@ -9,7 +9,7 @@ $home_dir = G5_KCPCERT_PATH; // ct_cli 절대경로 ( bin 전까지 )
 
 // DI 를 위한 중복확인 식별 아이디
 //web_siteid 값이 없으면 KCP 에서 지정한 값으로 설정됨
-$web_siteid = '';
+$web_siteid = 'J19051703454';
 
 if ($config['cf_cert_use'] == 2) { // 실서비스
     $site_cd = 'SM'.$config['cf_cert_kcp_cd'];

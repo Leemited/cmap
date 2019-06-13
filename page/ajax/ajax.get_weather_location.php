@@ -55,6 +55,10 @@ if($result["status"] != 1){
     $base_time = date("H");
     $time = date("i");
 
+    if($base_time == 0){
+        $base_date = date("Ymd",strtotime("- 1 day"));
+    }
+
     if($time < 30){
         $base_time = date("H",strtotime("- 1 hour"));
         if($base_time < 0){
@@ -94,7 +98,7 @@ if($result["status"] != 1){
         }
 
         //현재 정보
-        $url = "http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/ForecastTimeData?ServiceKey=n1t%2B4j2iWa7OlDB0dGxtEk0TRjTN%2Fs9XVV%2FoUgexCxN5i%2BPQA%2BbkmslYrOWgK82GK28prPQB4rfMA4vQZlALXA%3D%3D&numOfRows=50&base_date=" . $today . "&base_time=".$base_time."&nx=" . $result["lat"] . "&ny=" . $result["lng"];
+        $url = "http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/ForecastTimeData?ServiceKey=n1t%2B4j2iWa7OlDB0dGxtEk0TRjTN%2Fs9XVV%2FoUgexCxN5i%2BPQA%2BbkmslYrOWgK82GK28prPQB4rfMA4vQZlALXA%3D%3D&numOfRows=50&base_date=" . $base_date . "&base_time=".$base_time."&nx=" . $result["lat"] . "&ny=" . $result["lng"];
         $result["url2"]=$url;
 
         $ch = curl_init(); //curl 사용 전 초기화 필수(curl handle)
@@ -109,6 +113,7 @@ if($result["status"] != 1){
         $object = simplexml_load_string($res);
         $result["obj"] = $object;
         $i=0;
+        $result["temp"] = 0;
         foreach ($object->body->items->item as $obj) {
             if ($today == $obj->fcstDate) {
                 if ($obj->category == "T1H"){

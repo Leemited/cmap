@@ -2,9 +2,9 @@
 include_once ("../../common.php");
 
 if($const_id){
-    $where = " (read_mb_id = '{$member["mb_id"]}' or send_mb_id = '{$member["mb_id"]}') and msg_status = 0 and const_id = '{$const_id}' or (read_mb_id = '{$member["mb_id"]}' and msg_status = 0)";
+    $where = " (instr(read_mb_id,'{$member["mb_id"]}') != 0 or send_mb_id = '{$member["mb_id"]}') and msg_status = 0 and const_id = '{$const_id}'";
 }else{
-    $where = " (read_mb_id = '{$member["mb_id"]}' or send_mb_id = '{$member["mb_id"]}') and msg_status = 0 ";
+    $where = " (instr(read_mb_id,'{$member["mb_id"]}') != 0 or send_mb_id = '{$member["mb_id"]}') and msg_status = 0 and const_id = '{$current_const["const_id"]}'";
 }
 
 $sql = "select count(*) as cnt from `cmap_construct_invite` where {$where}";

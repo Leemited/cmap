@@ -142,7 +142,7 @@ border: 1px solid #558ab7 !important;
 
 /*body.main {background-image:url("../img/main_bg.jpg");background-size: cover;background-position: center bottom;background-repeat: no-repeat;height:100vh;width:100%;}*/
 #main{width:100vw;height:100vh;position: absolute;top:0;left:0}
-#main .text{width:680px;height:400px;position: absolute;top:50%;margin-top:-300px;left:50%;margin-left:-340px;text-align: center}
+#main .text{width:80%;position: absolute;top:28%;left:50%;text-align: center;-webkit-transform: translate(-50%,-50%);-moz-transform: translate(-50%,-50%);-ms-transform: translate(-50%,-50%);-o-transform: translate(-50%,-50%);transform: translate(-50%,-50%);}
 #main .text h2{padding-bottom:24px;font-size:38px;color:#000;}
 #main .text p{color:#1b1b1b;font-size:16px;line-height: 22px;}
 /* 레이아웃 크기 지정 */
@@ -394,7 +394,7 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
 #gnb_all .gnb_al_li li a{color:#555}
 .gnb_3dul .gnb_3dli a{color:#000 !important;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;}
 .gnb_3dul .gnb_3dli {border-bottom:1px solid #d8e3e7;}
-.gnb_3dul .gnb_3dli.chk {border-left: 5px solid red;}
+.gnb_3dul .gnb_3dli.chk {border-left: 5px solid red !important;}
 .gnb_3dul .gnb_3dli:hover {background-color:#fff !important;}
 .gnb_3dul .gnb_3dli:hover a{color:#FFF !important;}
 .gnb_3dul .gnb_3dli:last-child{border:none;}

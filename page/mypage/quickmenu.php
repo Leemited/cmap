@@ -86,8 +86,8 @@ if($quickcnt>0){
                                 </li>
                                 <li class="ui-state-default">
                                     <input type="checkbox" name="work" id="work" checked value="1">
-                                    <label for="work"><span></span> 작업 요청서 작성 <img src="<?php echo G5_IMG_URL;?>/ic_work.svg" alt=""></label>
-                                    <input type='hidden' value='작업 요청서 작성' id='in_work'>
+                                    <label for="work"><span></span> 업무연락서 작성 <img src="<?php echo G5_IMG_URL;?>/ic_work.svg" alt=""></label>
+                                    <input type='hidden' value='업무연락서 작성' id='in_work'>
                                 </li>
                                 <li class="ui-state-default">
                                     <input type="checkbox" name="schedule" id="schedule" checked value="1">
@@ -101,8 +101,8 @@ if($quickcnt>0){
                                 </li>
                                 <li class="ui-state-default">
                                     <input type="checkbox" name="databoard" id="databoard" checked value="1">
-                                    <label for="databoard"><span></span> 커뮤니티 <img src="<?php echo G5_IMG_URL;?>/ic_databoard.svg" alt=""></label>
-                                    <input type='hidden' value='자료실' id='in_databoard'>
+                                    <label for="databoard"><span></span> 게시판 <img src="<?php echo G5_IMG_URL;?>/ic_databoard.svg" alt=""></label>
+                                    <input type='hidden' value='게시판' id='in_databoard'>
                                 </li>
                                 <li class="ui-state-default">
                                     <input type="checkbox" name="inquiry" id="inquiry" checked value="1">
@@ -143,10 +143,10 @@ if($quickcnt>0){
                             <ul class="preview_ul">
                                 <?php if(count($menuquick) == 0){?>
                                     <li class="guide"> CMAP GUIDE <div><img src="<?php echo G5_IMG_URL;?>/ic_guide.svg" alt=""></div></li>
-                                    <li class="work"> 작업 요청서 작성 <div><img src="<?php echo G5_IMG_URL;?>/ic_work.svg" alt=""></div></li>
+                                    <li class="work"> 업무연락서 작성 <div><img src="<?php echo G5_IMG_URL;?>/ic_work.svg" alt=""></div></li>
                                     <li class="schedule"> 스케쥴 <div><img src="<?php echo G5_IMG_URL;?>/ic_schedule.svg" alt=""></div></li>
                                     <li class="construct"> 현장관리 <div><img src="<?php echo G5_IMG_URL;?>/ic_construct.svg" alt=""></div></li>
-                                    <li class="databoard"> 커뮤니티 <div><img src="<?php echo G5_IMG_URL;?>/ic_databoard.svg" alt=""></div></li>
+                                    <li class="databoard"> 게시판 <div><img src="<?php echo G5_IMG_URL;?>/ic_databoard.svg" alt=""></div></li>
                                     <li class="inquiry"> 제안하기 <div><img src="<?php echo G5_IMG_URL;?>/ic_inquiry.svg" alt=""></div></li>
                                     <li class="mypage"> MY CMAP <div><img src="<?php echo G5_IMG_URL;?>/ic_mypage.svg" alt=""></div></li>
                                     <li class="payment"> 결제하기 <div><img src="<?php echo G5_IMG_URL;?>/ic_payment.svg" alt=""></div></li>

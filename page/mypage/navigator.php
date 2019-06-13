@@ -97,6 +97,7 @@ if(count($mynavi)==0){
         }
     }
 }
+
 ?>
 <div class="full-width" style="padding:0 20px;">
     <section class="sub_sec" id="mypages">
@@ -274,9 +275,11 @@ if(count($mynavi)==0){
             method:"post",
             data:{depth1:depth1,depth2:depth2,menu_code:"<?php echo $menu_id;?>"}
         }).done(function(data){
+            data = data.trim();
             console.log(data);
             if(data=="success"){
                 alert("저장 완료");
+                location.reload();
             }else if(data=="failed"){
                 alert("저장 실패, 새로고침후 다시 시도해 주세요.")
             }

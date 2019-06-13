@@ -10,6 +10,8 @@ body {
 .clear{clear:both;}
 .full-width{width:100%;position: relative;margin:0;padding:0;}
 
+.adm_input{border: 1px solid rgb(221, 221, 221); border-image: none; width: 30%; background-color: rgb(255, 255, 255);}
+
 .grid_30 {width:30% !important;float:left;}
 .grid_70 {width:70% !important;}
 
@@ -208,3 +210,9 @@ li.accordion ul li.accordion .list-item div a{
 #files2 a{background-color: #f4fe74;color:#000;font-weight:bold}
 
 .holiday_li li{float:left;display: inline-block}
+
+.adm_input{background-color:#fff !important;color:#000 !important;border:1px solid #ddd !important;}
+
+.admin_content .edit_content table.image_table{width:100%;}
+.admin_content .edit_content table.image_table th{background-color: #283f79;color: #fff;font-size: 16px;font-weight: bold;padding: 5px 0;}
+.admin_content .edit_content table.image_table td{background-color: #eee;padding: 10px;position: relative;border: 2px solid #fff;font-size:16px;}

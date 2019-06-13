@@ -129,8 +129,18 @@ $email_msg = $is_exists_email ? '등록할 이메일이 중복되었습니다.�
                         <input type="hidden" name="mb_email2" id="reg_mb_email2" value="<?php echo $user_emails[1];?>">
                         <input type="text" name="mb_email_t" value="<?php echo isset($user_email)?$user_email:''; ?>" id="reg_mb_email_t" required class="frm_input email required full_input" size="70" maxlength="100" placeholder="이메일을 입력해주세요." onchange="fnEmailChange(this.value)">
                         <?php if($email_msg){?>
-                        <p class="email_msg"><?php echo $email_msg; ?></p>
+                        <p class="email_msg" style="padding-top:10px;"><?php echo $email_msg; ?></p>
                         <?php } ?>
+
+                    </div>
+
+                    <div id="login_fs" style="margin-top:20px;">
+                        <input type="password" name="mb_password" id="reg_mb_password" value="" required class="frm_input full_input" placeholder="비밀번호를 입력해주세요.">
+                        <p class="pw_msg" style="padding-top:10px;">비밀번호는 공백없는 8~16자의 영문/숫자를 조합하여 입력</p>
+                    </div>
+                    <div id="login_fs" style="margin-top:20px;">
+                        <input type="password" name="mb_password_re" id="reg_mb_password_re" value="" required class="frm_input full_input" placeholder="비밀번호확인">
+                        <p class="pw_msg" style="padding-top:10px;">비밀번호 확인을 위해 한 번 더 입력해 주시기 바랍니다.</p>
                     </div>
                 </section>
 
@@ -195,6 +205,29 @@ $email_msg = $is_exists_email ? '등록할 이메일이 중복되었습니다.�
                 //alert(msg);
                 $(".email_msg").html(msg);
                 f.reg_mb_email.select();
+                return false;
+            }
+        }
+        
+        //비밀번호 검사
+        if (f.w.value == "") {
+            if (f.mb_password.value.length < 3) {
+                alert("비밀번호를 3글자 이상 입력하십시오.");
+                f.mb_password.focus();
+                return false;
+            }
+        }
+
+        if (f.mb_password.value != f.mb_password_re.value) {
+            alert("비밀번호가 같지 않습니다.");
+            f.mb_password_re.focus();
+            return false;
+        }
+
+        if (f.mb_password.value.length > 0) {
+            if (f.mb_password_re.value.length < 3) {
+                alert("비밀번호를 3글자 이상 입력하십시오.");
+                f.mb_password_re.focus();
                 return false;
             }
         }

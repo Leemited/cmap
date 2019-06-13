@@ -5,13 +5,13 @@ $time = date("i");
 $base_time = date("H");
 $today = date("Ymd");
 $today2 = date("Y-m-d");
-if($time > 30){
+/*if($time > 30){
     $base_time = date("H", strtotime("+ 1 hour"));
     if($base_time < 0){
         $today = date("Ymd",strtotime("- 1 day"));
         $base_time = "23";
     }
-}
+}*/
 
 $base_time = $base_time."00";
 
@@ -32,7 +32,7 @@ for($i=0;$row = sql_fetch_array($res);$i++) {
         $setaddr .= " , addr3 = '{$row["weather_addr3"]}'";
     }
 
-    $url = "http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/ForecastSpaceData?ServiceKey=n1t%2B4j2iWa7OlDB0dGxtEk0TRjTN%2Fs9XVV%2FoUgexCxN5i%2BPQA%2BbkmslYrOWgK82GK28prPQB4rfMA4vQZlALXA%3D%3D&base_date=" . $today . "&base_time=".$base_time."&nx=" . $row["cmap_construct_lat"] . "&ny=" . $row["cmap_construct_lng"];
+    $url = "http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/ForecastSpaceData?ServiceKey=n1t%2B4j2iWa7OlDB0dGxtEk0TRjTN%2Fs9XVV%2FoUgexCxN5i%2BPQA%2BbkmslYrOWgK82GK28prPQB4rfMA4vQZlALXA%3D%3D&base_date=" . $today . "&base_time=".$base_time."&nx=" . $row["cmap_construct_lat"] . "&ny=" . $row["cmap_construct_lng"]."&numOfRows=20";
 
     $set = getData($url,$setaddr,$row,$today);
 
@@ -89,21 +89,6 @@ function getData($url,$setaddr,$row,$today){
                     break;
                 case "TMX": //낮 최고기온
                     $set .= " , TMX = '{$obj->fcstValue}'";
-                    break;
-                case "UUU": //풍속(동서성분)
-                    $set .= " , UUU = '{$obj->fcstValue}'";
-                    break;
-                case "VVV": //풍속(남북성분)
-                    $set .= " , VVV = '{$obj->fcstValue}'";
-                    break;
-                case "WAV": //파고
-                    $set .= " , WAV = '{$obj->fcstValue}'";
-                    break;
-                case "VEC": //풍향
-                    $set .= " , VEC = '{$obj->fcstValue}'";
-                    break;
-                case "WSD": //풍속
-                    $set .= " , WSD = '{$obj->fcstValue}'";
                     break;
             }
         }

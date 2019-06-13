@@ -1,7 +1,9 @@
 <?php
 include_once ("../common.php");
 $sub="sub";
-
+if($member["mb_auth"]==false){
+    alert("무료 이용기간이 만료 되었거나,\\r맴버쉽 기간이 만료 되었습니다. \\n맴버쉽 구매후 이용바랍니다.",G5_URL);
+}
 /*if(!$is_member){
     alert("로그인후 이용 가능합니다.", G5_BBS_URL."/login");
 }*/
@@ -10,13 +12,14 @@ $sub="sub";
 $sql = "select * from `cmap_my_construct_map` where const_id = '{$current_const["const_id"]}' and mb_id ='{$member["mb_id"]}'";
 $delayitem = sql_fetch($sql);
 
+
 $vpk_ids = explode("``",$delayitem["pk_ids"]);
 $vpk_active = explode("``",$delayitem["pk_actives"]);
 $vpk_active_date = explode("``",$delayitem["pk_actives_date"]);
 $vpk_ids_other = explode("``",$delayitem["pk_ids_other"]);
 $vpk_actives_other = explode("``",$delayitem["pk_actives_other"]);
 $vpk_actives_dates_other = explode("``",$delayitem["pk_actives_dates_other"]);
-
+$todays = date("Y-m-d");
 for($i=0;$i<count($vpk_ids);$i++){
     if($vpk_ids[$i]==""){continue;}
     if($vpk_active[$i]==""){$vpk_active[$i]=0;}
@@ -25,6 +28,23 @@ for($i=0;$i<count($vpk_ids);$i++){
     $delayview[$vpk_ids[$i]]["pk_id"] = $vpk_ids[$i];
     $delayview[$vpk_ids[$i]]["pk_active"] = $vpk_active[$i];
     $delayview[$vpk_ids[$i]]["pk_active_date"] = $vpk_active_date[$i];
+}
+
+$sql = "select * from `cmap_myschedule` where construct_id = '{$current_const["const_id"]}' and schedule_date < '{$todays}'";
+$res = sql_query($sql);
+while($row = sql_fetch_array($res)) {
+    $schedule_pk = explode("``",$row["pk_id"]);
+    for($j=0;$j<count($schedule_pk);$j++) {
+        if ($delayview[$schedule_pk[$j]]["pk_active"]==1) {
+            continue;
+        }else {
+            $diff = strtotime($todays) - strtotime($row["schedule_date"]);
+
+            $days = $diff / (60*60*24);
+
+            $delayview[$schedule_pk[$j]]["delay_date"] = "-".$days;
+        }
+    }
 }
 
 for($i=0;$i<count($vpk_ids_other);$i++){
@@ -243,7 +263,7 @@ $myconstruction = false;
                     <th style="width:120px;">참고</th>
                     <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
                         <th style="width:5%;">확인</th>
-                        <th style="width:10%;">제출일</th>
+                        <th style="width:10%;"><?php if(substr($me_id,0,2)==50){?>확인일<?php }else{?>제출일<?php }?></th>
                         <th style="width:6%;">지연일</th>
                     <?php }?>
                 </tr>
@@ -261,7 +281,7 @@ $myconstruction = false;
                 <th style="width:120px;">참고</th>
                 <?php if($is_member && $mycont  && $current_const["const_id"]!=0){?>
                     <th style="width:5%;">확인</th>
-                    <th style="width:10%;">제출일</th>
+                    <th style="width:10%;"><?php if(substr($me_id,0,2)==50){?>확인일<?php }else{?>제출일<?php }?></th>
                     <th style="width:6%;">지연일</th>
                 <?php }?>
             </tr>
@@ -333,7 +353,7 @@ $myconstruction = false;
                             $depth_last++;
                             $fileid = "files".$list[$i]["depth2"][$j]["depth3"][$k]["depth4"][$l]["depth5"][$m]["id"];
                             ?>
-                            <td class="depth3 <?php if($pk_id==$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"]){echo "active";}?>" <?php if($delaylist[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["delay_date"]){?>style="border-left:2px solid red"<?php }?>>
+                            <td class="depth3 <?php if($pk_id==$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"]){echo "active";}?> depth_name_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"]?> <?php if($delayview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["delay_date"]){?>red_td<?php }?>" >
                                 <?php if(!$is_member){?>
                                     <span class="gray">로그인 후 이용 가능합니다.</span>
                                 <?php }else {?>
@@ -368,29 +388,36 @@ $myconstruction = false;
                             <td class="confirm" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" >
                                 <?php if($member["mb_6"]==1){?>
                                 <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type']!="-1"){?>
-                                <input type="checkbox" id="chk_pk_id_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" <?php if($delayview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active"]==1){ ?>checked onclick="alert('이미 처리된 항목입니다.');return false;"<?php }else{?>onclick="fnCheckDelay('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>','<?php echo $current_const["const_id"];?>');" <?php }?>>
+                                <input type="checkbox" id="chk_pk_id_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" <?php if($delayview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active"]==1){ ?>checked onclick="fnCheckDelay('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>','<?php echo $current_const["const_id"];?>');" <?php }else{?>onclick="fnCheckDelay('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>','<?php echo $current_const["const_id"];?>');" <?php }?>>
                                 <label for="chk_pk_id_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>"></label>
                                 <?php }?>
                                 <?php }else{?>
                                     <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type']!="-1"){?>
-                                        <input type="checkbox" id="chk_pk_id_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" <?php if($delayview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active"]==1){ ?>checked onclick="alert('이미 처리된 항목입니다.');return false;"<?php }else{?>onclick="fnCheckDelay('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>','<?php echo $current_const["const_id"];?>');" <?php }?>>
+                                        <input type="checkbox" id="chk_pk_id_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" <?php if($delayview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active"]==1){ ?>checked <?php } ?> onclick="fnCheckDelay('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>','<?php echo $current_const["const_id"];?>');" >
                                         <label for="chk_pk_id_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>"></label>
                                     <?php }else{?>
-                                        <input type="checkbox" id="chk_pk_id_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" <?php if($allview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active"]==1){ ?>checked onclick="alert('이미 처리된 항목입니다.');return false;"<?php }else{?>onclick="fnCheckDelay2('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>','<?php echo $current_const["const_id"];?>');" <?php }?>>
+                                        <input type="checkbox" id="chk_pk_id_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" <?php if($allview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active"]==1){ ?>checked<?php }?> onclick="fnCheckDelay2('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>','<?php echo $current_const["const_id"];?>');">
                                         <label for="chk_pk_id_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>" class="other"></label>
                                     <?php }?>
                                 <?php }?>
                             </td>
-                            <td class="date td_center" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>">
-                                <?php if($member["mb_6"]==1){?>
-                                <?php if($delayview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active_date"] != "0000-00-00"){ echo $delayview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active_date"]; }?>
-                                <?php }else{?>
-                                    <?php if($allview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active_date"] != "0000-00-00"){ echo $allview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active_date"]; }?>
-                                <?php }?>
+                            <td class="date td_center" id="date_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>">
+                                <?php
+                                if($member["mb_6"]==1){
+                                    if($delayview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active_date"] != "0000-00-00"){
+                                        echo $delayview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active_date"];
+                                    }
+                                }else{
+                                    if($delayview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active_date"] != "0000-00-00"){
+                                        echo $delayview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active_date"];
+                                    } if($allview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active_date"] != "0000-00-00"){
+                                        echo $allview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["pk_active_date"];
+                                    }
+                                }?>
                             </td>
-                            <td class="depth6">
+                            <td class="depth6" id="delays_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>">
                                 <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['submit_date_type']!="-1"){
-                                    echo ($delaylist[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["delay_date"])?$delaylist[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["delay_date"]:"-";
+                                    echo ($delayview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["delay_date"])?$delayview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id']]["delay_date"]:"-";
                                 }?>
                             </td>
                             <?php }?>
@@ -412,19 +439,16 @@ $myconstruction = false;
                 <?php if($num4 > 0 && $num3 > 0){
                     ?>
             <thead>
-            <colgroup>
-                <col width="10%">
-                <col width="12%">
-                <col width="*">
-                <col width="10%">
-                <col width="6%">
-            </colgroup>
                 <tr>
-                    <th>구분</th>
-                    <th>항목</th>
-                    <th>주요확인내용</th>
-                    <th>참고</th>
-                    <th>기준일</th>
+                    <th style="width:10%">구분</th>
+                    <th style="width:12%">항목</th>
+                    <th style="width:*">주요확인내용</th>
+                    <th style="width:10%">참고</th>
+                    <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
+                        <th style="width:5%;">확인</th>
+                        <th style="width:10%;">확인일</th>
+                    <?php }?>
+
                 </tr>
             </thead>
             <tbody>
@@ -512,9 +536,20 @@ $myconstruction = false;
                         <?php }?>
                     <?php }?>
                 </td>
-                <td class="depth6">
-                    <?php echo $sd_type.$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['submit_date'];?>
-                </td>
+                <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
+                    <td class="confirm" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['pk_id'];?>">
+                    <?php if($member["mb_6"]==0){?>
+                            <input type="checkbox" id="chk_pk_id_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['pk_id'];?>" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['pk_id'];?>" <?php if($allview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['pk_id']]["pk_active"]==1){ ?>checked <?php }?> onclick="fnCheckDelay2('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['pk_id'];?>','<?php echo $current_const["const_id"];?>');" >
+                            <label for="chk_pk_id_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['pk_id'];?>" class="other"></label>
+                    <?php }?>
+                    </td>
+                    <td class="date td_center" id="date_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['pk_id'];?>">
+                        <?php if($allview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['pk_id']]["pk_active_date"] != "0000-00-00"){ echo $allview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['pk_id']]["pk_active_date"]; }?>
+                    </td>
+                <?php }?>
+                <!--<td class="depth6">
+                    <?php /*echo $sd_type.$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['submit_date'];*/?>
+                </td>-->
             </tr>
             <?php if($list[$i]['cnt'] >= $depth_last){?>
             <tr class="<?php if($list[$i]['cnt'] == $depth_last){echo "finish_".$list[$i]["id"];}?>">
@@ -526,16 +561,14 @@ $myconstruction = false;
                 <?php }
                 if($num3 > 0 && (!$num4 || $num4 == 0)){
                     ?>
-                    <colgroup>
-                        <!--<col width="10%">-->
-                        <col width="12%">
-                        <col width="*">
-                        <col width="6%">
-                    </colgroup>
                     <tr>
-                        <th>공정단계별</th>
-                        <th>주요검사항목</th>
-                        <th>참고</th>
+                        <th style="width:12%;">공정단계별</th>
+                        <th style="width:auto;">주요검사항목</th>
+                        <th style="width:6%;">참고</th>
+                        <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
+                            <th style="width:5%;">확인</th>
+                            <th style="width:10%;">확인일</th>
+                        <?php }?>
                     </tr>
                     <tr></tr>
                     <?php
@@ -602,6 +635,17 @@ $myconstruction = false;
                                         <?php }?>
                                     <?php }?>
                                 </td>
+                                <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
+                                    <td class="confirm" id="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['pk_id'];?>">
+                                        <?php if($member["mb_6"]==0){?>
+                                            <input type="checkbox" id="chk_pk_id_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['pk_id'];?>" value="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['pk_id'];?>" <?php if($allview[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['pk_id']]["pk_active"]==1){ ?>checked <?php }?> onclick="fnCheckDelay2('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['pk_id'];?>','<?php echo $current_const["const_id"];?>');" >
+                                            <label for="chk_pk_id_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['pk_id'];?>" class="other"></label>
+                                        <?php }?>
+                                    </td>
+                                    <td class="date td_center" id="date_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['pk_id'];?>">
+                                        <?php if($allview[$list[$i]['depth2'][$j]['depth3'][$k]['pk_id']]["pk_active_date"] != "0000-00-00"){ echo $allview[$list[$i]['depth2'][$j]['depth3'][$k]['pk_id']]["pk_active_date"]; }?>
+                                    </td>
+                                <?php }?>
                                 </tr>
                                 <?php if($list[$i]['cnt'] >= $depth_last){?>
                                     <tr class="<?php if($list[$i]['cnt'] == $depth_last){echo "finish_".$list[$i]["id"];}?>">
@@ -697,6 +741,7 @@ function fnCheckDelay(pk_id,const_id){
         data:{pk_id:pk_id,const_id:const_id},
         dataType:"json"
     }).done(function(data){
+        console.log(data);
         if(data.msg=="1"){
             alert("현장을 선택해주세요.");
         }else if(data.msg=="2"){
@@ -709,6 +754,13 @@ function fnCheckDelay(pk_id,const_id){
             alert("알 수 없는 오류입니다.\n관리자에게 문의 바랍니다.");
         }else {
             location.reload();
+            /*$("#date_"+pk_id).html(data.insert_date);
+            $(".depth_name_"+pk_id).toggleClass("red_td");
+            if(data.insert_date) {
+                $("#delay" + pk_id).html("-");
+            }else{
+                $("#delay" + pk_id).html("");
+            }*/
         }
     });
 }
@@ -720,6 +772,7 @@ function fnCheckDelay2(pk_id,const_id){
         data:{pk_id:pk_id,const_id:const_id},
         dataType:"json"
     }).done(function(data){
+        console.log(data);
         if(data.msg=="1"){
             alert("현장을 선택해주세요.");
         }else if(data.msg=="2"){
@@ -731,7 +784,8 @@ function fnCheckDelay2(pk_id,const_id){
         }else if(data.msg=="5"){
             alert("알 수 없는 오류입니다.\n관리자에게 문의 바랍니다.");
         }else {
-            location.reload();
+            //location.reload();
+            $("#date_"+pk_id).html(data.insert_date);
         }
     });
 }

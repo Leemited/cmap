@@ -22,34 +22,31 @@ if(is_null($map)){
     return false;
 }
 
-$pk_ids_other = explode("``",$map["pk_ids_other"]);
-$pk_actives_other = explode("``",$map["pk_actives_other"]);
-$pk_actives_dates_other = explode("``",$map["pk_actives_dates_other"]);
+$chk_pk_ids_other = explode("``",$map["pk_ids_other"]);
+$chk_pk_actives_other = explode("``",$map["pk_actives_other"]);
+$chk_pk_actives_dates_other = explode("``",$map["pk_actives_dates_other"]);
 
-for($i=0;$i<count($pk_ids_other);$i++){
-    if($pk_ids_other[$i]==$pk_id){
-        if($pk_actives_other[$i] == 1){
-            $result["msg"]="4";
-            echo json_encode($result);
-            return false;
-            break;
+for($i=0;$i<count($chk_pk_ids_other);$i++){
+    if($chk_pk_ids_other[$i]==$pk_id){
+        if($chk_pk_actives_other[$i] == 1){
+            $chk_pk_actives_other[$i] = "0";
+            $chk_pk_actives_dates_other[$i] = "0000-00-00";
+            $insert_date = '';
+        }else {
+            $chk_pk_actives_other[$i] = "1";
+            $chk_pk_actives_dates_other[$i] = date("Y-m-d");
+            $insert_date = date("Y-m-d");
         }
-        $pk_actives_other[$i] = "1";
-        $pk_actives_dates_other[$i] = date("Y-m-d");
     }
 }
 
+$chk_pk_actives_otherss = implode("``",$chk_pk_actives_other);
+$chk_pk_actives_dates_otherss = implode("``",$chk_pk_actives_dates_other);
 
-$pk_actives_otherss = implode("``",$pk_actives_other);
-$pk_actives_dates_otherss = implode("``",$pk_actives_dates_other);
-
-
-$sql = "update `cmap_my_construct_map` set pk_actives_other = '{$pk_actives_otherss}', pk_actives_dates_other = '{$pk_actives_dates_otherss}' where id= '{$map["id"]}'";
-$result["sqls"]=$sql;
-$result["pk_id"]=$pk_id;
+$sql = "update `cmap_my_construct_map` set pk_actives_other = '{$chk_pk_actives_otherss}', pk_actives_dates_other = '{$chk_pk_actives_dates_otherss}' where id= '{$map["id"]}'";
 if(sql_query($sql)){
     $result["msg"]="6";
-    $result["insert_date"] = date("Y-m-d");
+    $result["insert_date"] = $insert_date;
     echo json_encode($result);
 }else{
     $result["msg"]="5";

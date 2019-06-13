@@ -16,7 +16,7 @@ if($chkTemp["cnt"] > 0 && $chk == false){
     //confirm("등록 중이던 현장이 있습니다. 계속 등록하시겠습니까?",G5_URL.'/page/mylocation/mylocation_step1?id='.$chkTemp["id"],'./mylocation?chk=false');
 }
 
-$sql = "select count(*) as cnt from `cmap_my_construct` where (mb_id = '{$member["mb_id"]}' or members in ('{$member['mb_id']}')) and status = 0";
+$sql = "select count(*) as cnt from `cmap_my_construct` where (mb_id = '{$member["mb_id"]}' or instr(members,'{$member["mb_id"]}') != 0) and status = 0";
 $total = sql_fetch($sql);
 if(!$page)
     $page=1;
@@ -25,7 +25,7 @@ $rows=10;
 $start=($page-1)*$rows;
 $total_page=ceil($total/$rows);
 
-$sql = "select * from `cmap_my_construct` where (mb_id = '{$member["mb_id"]}' or members in ('{$member['mb_id']}')) and status = 0 order by `insert_date` desc limit {$start},{$rows} ";
+$sql = "select * from `cmap_my_construct` where (mb_id = '{$member["mb_id"]}' or instr(members,'{$member["mb_id"]}') != 0) and status = 0 order by `insert_date` desc limit {$start},{$rows} ";
 $res = sql_query($sql);
 while($row = sql_fetch_array($res)){
     $mycons[] = $row;
@@ -41,9 +41,16 @@ while($row = sql_fetch_array($res)){
         </header>
         <div class="mylocation">
             <div class="myloc">
+                <div class="search_box">
+                    <h2>현장검색</h2>
+                    <div>
+                        <input type="text" name="stx" id="stx" class="basic_input01" placeholder="현장명 또는 용역명" onkeyup="fnMylocSearchStx()"><input type="button" class="basic_btn01" value="검색" onclick="fnMylocSearch()">
+                        <input type="button" value="현장개설" onclick="fnConstConfirm();" class="basic_btn03">
+                    </div>
+                </div>
                 <h3><i></i> 사용중인 현장</h3>
                 <div class="myloc_btns">
-                    <input type="button" value="현장개설" onclick="fnConstConfirm();" class="basic_btn03">
+
                 </div>
                 <table>
                     <tr>
@@ -80,7 +87,7 @@ while($row = sql_fetch_array($res)){
                                 <td class="td_center">
                                     <input type="button" value="상세보기" class="basic_btn02 width30" style="padding:7px 0" onclick="location.href=g5_url+'/page/mylocation/mylocation_view?constid=<?php echo $mycons[$i]["id"];?>';">
                                     <?php if($type=="개설현장"){?>
-                                    <input type="button" value="삭제하기" class="basic_btn02 width30 <?php if($type=="사용현장"){?>disabled<?php }?>"  style="padding:7px 0" <?php if($type=="사용현장"){?>disabled<?php }?> onclick="fnDelete('/page/mylocation/mylocation_delete?constid=<?php echo $mycons[$i]["id"];?>')">
+                                    <input type="button" value="삭제하기" class="basic_btn02 width30 <?php if($type=="사용현장"){?>disabled<?php }?>"  style="padding:7px 0" <?php if($type=="사용현장"){?>disabled<?php }?> onclick="fnDelete('/page/mylocation/mylocation_delete?constid=<?php echo $mycons[$i]["id"];?>','<?php echo $mycons[$i]["id"];?>')">
                                     <?php }?>
                                 </td>
                             </tr>
@@ -88,24 +95,22 @@ while($row = sql_fetch_array($res)){
                     } ?>
                 </table>
             </div>
-            <div class="search_box">
-                <h2>현장검색</h2>
-                <div>
-                    <input type="text" name="stx" id="stx" class="basic_input01" placeholder="현장명 또는 용역명" onkeyup="fnMylocSearchStx()"><input type="button" class="basic_btn01" value="검색" onclick="fnMylocSearch()">
-                </div>
-            </div>
+
             <div class="search_loc">
                 <h3><i></i> 검색된 현장</h3>
                 <div class="myloc_btns">
                     <input type="button" value="현장개설" onclick="fnConstConfirm();" class="basic_btn03">
                 </div>
                 <table>
+                    <colgroup>
+
+                    </colgroup>
                     <thead>
                     <tr>
-                        <th>등록자</th>
-                        <th>건설현장</th>
-                        <th>등록일</th>
-                        <th>EDIT</th>
+                        <th style="width:10%">등록자</th>
+                        <th >건설현장</th>
+                        <th style="width:10%">등록일</th>
+                        <th style="width:200px">EDIT</th>
                     </tr>
                     </thead>
                     <tbody class="seach_list">
@@ -141,14 +146,45 @@ while($row = sql_fetch_array($res)){
             $(".seach_list").html(data);
         });
     }
-    function fnDelete(url){
+    function fnDelete(url,const_id){
+        //참여 인원 체크
         $.ajax({
+            url:g5_url+'/page/ajax/ajax.get_mylocation_member.php',
+            method:"post",
+            data:{const_id:const_id},
+            dataType:"json"
+        }).done(function(data){
+            if(data.msg==0){
+                fnShowModal(data.modal_data);
+            }else{
+                $.ajax({
+                    url:g5_url+"/page/modal/ajax.alert.php",
+                    method:"post",
+                    data:{title:"현장삭제",msg:"해당 건설현장을 삭제하시겠습니까?<br>삭제 시 다시 복구 할 수 없습니다.<br>신중히 선택해 주시기 바랍니다.",link:g5_url+url,btns:"삭제하기"}
+                }).done(function(data){
+                    fnShowModal(data);
+                });
+            }
+        });
+
+
+        /*$.ajax({
             url:g5_url+"/page/modal/ajax.alert.php",
             method:"post",
-            data:{title:"현장삭제",msg:"해당 건설현장을 삭제하시겠습니까?<br>삭제시 다시 복구 할 수 없습니다.<br>신중히 선택해 주시기 바랍니다.",link:g5_url+url,btns:"삭제하기"}
+            data:{title:"현장삭제",msg:"해당 건설현장을 삭제하시겠습니까?<br>삭제 시 다시 복구 할 수 없습니다.<br>신중히 선택해 주시기 바랍니다.",link:g5_url+url,btns:"삭제하기"}
         }).done(function(data){
             fnShowModal(data);
-        });
+        });*/
+    }
+
+    function fnConstDelete(constid){
+        var chk_mb_id = $(".member_list li input:checked").length;
+        var mb_id = $(".member_list li input:checked").val();
+        if(chk_mb_id==0){
+            alert("위임할 대상을 선택해 주세요.");
+            return false;
+        }
+        location.href=g5_url+'/page/mylocation/mylocation_delete?constid='+constid+'&mb_id='+mb_id;
     }
 </script>
 <?php

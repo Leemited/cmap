@@ -9,7 +9,7 @@ if(!$mb_id){
 //제출 지연 현황
 $delay_now = date("Y-m-d");
 if(!$const_id){
-    //$delaylist=null;
+    unset($delaylists);
 }else {
     $activesql = "select * from `cmap_my_construct_map` where mb_id ='{$member["mb_id"]}' and const_id = '{$const_id}'";
     $activechk = sql_fetch($activesql);
@@ -44,9 +44,10 @@ if(!$const_id){
         }
     }
 }
-$delaylists = array_values($delaylists);
-$delaylists = arr_sort($delaylists,"delay_date","asc");
-
+if(count($delaylists)>0) {
+    $delaylists = array_values($delaylists);
+    $delaylists = arr_sort($delaylists, "delay_date", "asc");
+}
 ?>
 <style>
     .detail_list{width: calc(100% + 5px);}
@@ -64,14 +65,18 @@ $delaylists = arr_sort($delaylists,"delay_date","asc");
 if(count($delaylists)!=0){
     for($i=0;$i<count($delaylists);$i++) {
 ?>
-    <tr id="delay_<?php echo $delaylists[$i]["pk_id"]; ?>" style="cursor:pointer" onclick="location.href=g5_url+'/page/view?me_id=<?php echo $delaylists[$i]["me_code"];?>&depth1_id=<?php echo $delaylists[$i]["depth1_id"]; ?>&depth2_id=<?php echo $delaylists[$i]["depth2_id"]; ?>'">
-        <td style="text-align: left;padding:10px;height:auto"><span title="<?php echo $delaylist[$i]["depth_name"]; ?>"><?php echo "[".$delaylists[$i]["depth1_name"]."]"; ?><?php echo $delaylists[$i]["depth_name"]; ?></span></td>
+    <tr class="main_lists" id="delay_<?php echo $delaylists[$i]["pk_id"]; ?>" style="cursor:pointer" onclick="location.href=g5_url+'/page/view?me_id=<?php echo $delaylists[$i]["me_code"];?>&depth1_id=<?php echo $delaylists[$i]["depth1_id"]; ?>&depth2_id=<?php echo $delaylists[$i]["depth2_id"]; ?>'">
+        <?php if(substr($delaylists[$i]["me_code"],0,2)=="10"){?>
+            <td style="text-align: left;padding:10px;height:auto"><span title="<?php echo $delaylists[$i]["content"]; ?>"><?php echo "[".$delaylists[$i]["depth1_name"]."]"; ?><?php echo cut_str($delaylists[$i]["content"],15,"..."); ?></span></td>
+        <?php }else{?>
+            <td style="text-align: left;padding:10px;height:auto"><span title="<?php echo $delaylists[$i]["depth_name"]; ?>"><?php echo "[".$delaylists[$i]["depth1_name"]."]"; ?><?php echo $delaylists[$i]["depth_name"]; ?></span></td>
+        <?php }?>
         <td style="padding:10px;height:auto"><?php echo $delaylists[$i]["delay_date"]; ?></td>
     </tr>
 <?php
     }
 ?>
-<?php }else if(count($delaylists)==0){?>
+<?php }if(count($delaylists)==0){?>
     <tr><td colspan="2" class="td_center">승인요청 및 요청이력이 없습니다. 현장선택을 확인해 주세요.</td></tr>
 <?php }?>
 </table>

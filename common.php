@@ -640,21 +640,44 @@ header('Pragma: no-cache'); // HTTP/1.0
 $html_process = new html_process();
 
 if($is_member) {
+    $member["mb_auth"]=true;
+    //구매 확인 | 가입후 1주일은 무료 | 이후 결제 여부 판단 | 결제가 있다면 현재 기간이 있는지 판단
+    $todays = date("Y-m-d");
+    $sql = "select count(*) as cnt from `cmap_payments` where mb_id = '{$member["mb_id"]}' and '{$todays}' BETWEEN payment_start_date and payment_end_date and order_cancel = 0";
+    $chkMembeship = sql_fetch($sql);
+    if(date("Y-m-d",strtotime("+ 7 day", strtotime($member["mb_datetime"]))) < $todays){
+        if($chkMembeship["cnt"]==0){
+            $member["mb_auth"]=false;
+        }
+    }
+
+    if($is_admin){
+        $member["mb_auth"]=true;
+    }
+
     $sql = "select * from `cmap_my_current_construct` where mb_id = '{$member["mb_id"]}'";
     $current_const = sql_fetch($sql);
 
+    if($member["mb_level"]==5){
+        $constwhere = " or manager_mb_id = '{$member["mb_id"]}'";
+    }
+
     //내 현장 목록
-    $res = sql_query("select * from `cmap_my_construct` where (mb_id ='{$member["mb_id"]}' or instr(members,'{$member["mb_id"]}') != 0) and status = 0 order by id desc") ;
+    $managerconst=0;
+    $res = sql_query("select * from `cmap_my_construct` where (mb_id ='{$member["mb_id"]}' or instr(members,'{$member["mb_id"]}') != 0  {$constwhere}) and status = 0 order by id desc") ;
     while ($row = sql_fetch_array($res)) {
         $mycont[] = $row;
         $mycontid[] = $row["id"];
+        if($row["manager_mb_id"]==$member["mb_id"]){
+            $managerconst++;
+        }
     }
 
     if($current_const["const_id"]!="" && $current_const["const_id"] != 0){//현장 저장됨
         $com_where = " and const_id = '{$current_const["const_id"]}'";
         $com_where2 = " and construct_id = '{$current_const["const_id"]}'";
     }else{//저장된 현장 없음
-        if(count($mycont)==0){//등록된 형장없음
+        if(count($mycont)==0){//등록된 현장없음
 
         }else{
             $current_const["const_id"] = $mycont[0]["id"];
@@ -687,12 +710,57 @@ if($is_member) {
         }
     }
 
+    //네비게이터 설정정보 유무 파악
+    $sql = "select * from `cmap_navigator` where mb_id = '{$member["mb_id"]}'";
+    $mynavis = sql_query($sql);
+    while($myrow = sql_fetch_array($mynavis)){
+        $setNavi[] = $myrow;
+    }
+    if(count($setNavi) < 5){
+        //
+        $navis1 = sql_fetch("select * from `cmap_navigator` where mb_id = '{$member["mb_id"]}' and menu_code = '10'");
+        $navis2 = sql_fetch("select * from `cmap_navigator` where mb_id = '{$member["mb_id"]}' and menu_code = '30'");
+        $navis3 = sql_fetch("select * from `cmap_navigator` where mb_id = '{$member["mb_id"]}' and menu_code = '40'");
+        $navis4 = sql_fetch("select * from `cmap_navigator` where mb_id = '{$member["mb_id"]}' and menu_code = '50'");
+        $navis5 = sql_fetch("select * from `cmap_navigator` where mb_id = '{$member["mb_id"]}' and menu_code = '60'");
+
+        if($navis1==null){
+            $sql = "insert into `cmap_navigator` set menu_ids = '5``7``8``9``10``11``12``13', menu_ids_actives = '1``1``1``1``1``1``1``1', sub_ids = '', sub_ids_actives = '' , mb_id = '{$member["mb_id"]}', menu_code = '10', update_date = now(), update_time = now()";
+            //echo $sql;
+            sql_query($sql);
+        }
+
+        if($navis2==null){
+            $sql = "insert into `cmap_navigator` set menu_ids = '35``97``49``50``51``52``53``54``95``94``47``46``36``37``38``39``45``40``41``42``96``44``57', menu_ids_actives = '1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1', sub_ids = '51|142``51|143``51|144``52|525``52|526``53|146``53|147``53|148``53|149``95|151``95|152``95|153``95|154``95|155``95|156``95|157``47|159``47|160``46|161``46|162``46|163``46|164``36|165``36|166``36|167``36|168``36|169``36|170``96|177``96|178', sub_ids_actives = '1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1' , mb_id = '{$member["mb_id"]}', menu_code = '30', update_date = now(), update_time = now()";
+            //echo $sql;
+            sql_query($sql);
+        }
+
+        if($navis3==null){
+            $sql = "insert into `cmap_navigator` set menu_ids = '121``60``125``104``105``106``107``108``109``110``111``112``113``114``115``116``117``118``119``120', menu_ids_actives = '1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1', sub_ids = '121|428``121|429``121|430``121|431``121|432``121|433``121|434``60|308``60|309``60|310``60|311``60|312``125|500``125|501``125|502``125|503``125|504``125|505``104|318``104|319``104|320``104|321``105|322``105|323``105|324``105|325``105|326``106|327``106|328``106|329``106|330``106|331``106|332``107|333``107|334``107|335``107|336``107|337``107|338``107|339``108|340``108|341``108|342``108|343``108|344``108|345``109|346``109|347``109|348``109|349``110|408``110|409``110|410``110|411``110|412``110|413``110|414``110|415``110|416``110|417``110|418``110|419``110|420``110|421``110|422``110|423``110|424``110|425``110|426``110|427``111|350``111|351``111|352``112|478``112|479``112|477``113|355``113|356``113|357``113|358``113|359``114|360``114|361``114|362``114|363``114|364``114|365``114|366``114|367``114|368``114|369``115|370``115|371``115|372``116|450``116|451``116|452``117|374``117|375``117|376``117|377``118|378``118|379``118|380``118|381``118|382``118|383``118|384``118|385``118|386``118|387``118|388``118|389``119|390``119|391``120|392``120|393``120|394``120|395``120|396``120|397``120|398``120|399``120|400``120|401``120|402``120|403``120|404``120|405``120|406``120|407', sub_ids_actives = '1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1``1' , mb_id = '{$member["mb_id"]}', menu_code = '40', update_date = now(), update_time = now()";
+            //echo $sql;
+            sql_query($sql);
+        }
+
+        if($navis4==null){
+            $sql = "insert into `cmap_navigator` set menu_ids = '58', menu_ids_actives = '1', sub_ids = '', sub_ids_actives = '' , mb_id = '{$member["mb_id"]}', menu_code = '50', update_date = now(), update_time = now()";
+            //echo $sql;
+            sql_query($sql);
+        }
+
+        if($navis5==null){
+            $sql = "insert into `cmap_navigator` set menu_ids = '64``129', menu_ids_actives = '1``1', sub_ids = '64|511``64|510``64|509``129|517``129|518``129|519``129|520``129|521``129|522``129|523``129|524', sub_ids_actives = '1``1``1``1``1``1``1``1``1``1``1' , mb_id = '{$member["mb_id"]}', menu_code = '60', update_date = now(), update_time = now()";
+            //echo $sql;
+            sql_query($sql);
+        }
+    }
+
     //my현장 평가
-    $evals = "select * from `cmap_my_construct_eval` where mb_id = '{$member["mb_id"]}' {$com_where}";
+    /*$evals = "select * from `cmap_my_construct_eval` where mb_id = '{$member["mb_id"]}' {$com_where}";
     $evalsres = sql_query($sql);
     while($evalrows = sql_fetch_array($evalsres)){
         $evalsall[] = $evalrows;
-    }
+    }*/
 
     //my현장 신청 관리
     if($com_where){
@@ -707,7 +775,7 @@ if($is_member) {
     }
 
     //my현장 업무연락서
-    $msgsql = "select * from `cmap_construct_work_msg` where (read_mb_id = '{$member["mb_id"]}' or send_mb_id = '{$member["mb_id"]}') and read_status = 0 {$com_where} ";
+    $msgsql = "select * from `cmap_construct_work_msg` where (instr(read_mb_id,'{$member["mb_id"]}') != 0) and read_status = 0 ";
     $msgres = sql_query($msgsql);
     while($msgrow = sql_fetch_array($msgres)){
         $msglist[] = $msgrow;
@@ -737,7 +805,7 @@ if($is_member) {
                 for($j=0;$j<count($map_pk_id);$j++){
                     if($pk_ids[$i]==$map_pk_id[$j]){
                         if($map_pk_actives[$j]==0){
-                            $sql = "select *,d.pk_id as pk_id,c.depth1_id as depth1_id, a.pk_id as depth1_pk_id from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$pk_ids[$i]}'";
+                            $sql = "select *,c.pk_id as pk_id,d.pk_id as depth4_pk_id,c.depth1_id as depth1_id, a.pk_id as depth1_pk_id,a.depth_name as depth1_name,d.depth_name as depth_name from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$pk_ids[$i]}'";
                             $ddd = sql_fetch($sql);
                             if(strpos($id,$ddd["pk_id"])!==false) {
                                 continue;
@@ -745,6 +813,7 @@ if($is_member) {
                             $id .= ','.$ddd["pk_id"];
                             $delaylist[$pk_ids[$i]] = $ddd;
                             $delaylist[$pk_ids[$i]]["delay_date"] = "-".$days;
+                            $delaylist[$pk_ids[$i]]["schedule_date"] = $delayrow["schedule_date"];
                             $delayhead[$ddd["depth1_pk_id"]] = true;
                             $delayhead2[$ddd["me_code"]] = true;
                         }
@@ -753,6 +822,285 @@ if($is_member) {
             }
         }
     }
+    //평가
+    $maineval = sql_fetch("select * from `cmap_my_construct_eval` where const_id = '{$current_const["const_id"]}' and mb_id ='{$member["mb_id"]}'");
+    if($maineval==null || ($maineval["pk_ids1"] == "" && $maineval["pk_score1"]=="")||($maineval["pk_ids2"] == "" && $maineval["pk_score2"]=="")){
+        //현장 평가 상태 등록
+        //시공평가의 pk_ids 가져오기 가변값이 아니라 오류 생길 수 있음
+        $sql = "select *,a.pk_id as pk_id from `cmap_content` as a left join `cmap_depth1` as b on a.depth1_id = b.id where b.me_id = 60 and b.me_code = 6064 order by a.id";
+        $eval1res = sql_query($sql);
+        while($eval1row = sql_fetch_array($eval1res)){
+            $eval1[] = $eval1row["pk_id"];
+            $evalscore[] = "0";
+        }
+        $evals = implode("``",$eval1);
+        $eval1score = implode("``",$evalscore);
+
+        //용역평가의 pk_ids 가져오기
+        $sql = "select *,a.pk_id as pk_id from `cmap_content` as a left join `cmap_depth1` as b on a.depth1_id = b.id where b.me_id = 60 and b.me_code = 60129 order by a.id";
+        $eval2res = sql_query($sql);
+        while($eval2row = sql_fetch_array($eval2res)){
+            $eval2[] = $eval2row["pk_id"];
+            $evalscore2[] = "0";
+        }
+        $evals2 = implode("``",$eval2);
+        $eval2score = implode("``",$evalscore2);
+
+        if($maineval==null) {
+            $sql = "insert into `cmap_my_construct_eval` set const_id = '{$current_const["const_id"]}' , mb_id ='{$member["mb_id"]}', pk_ids1 = '{$evals}', pk_score1 = '{$eval1score}', pk_ids2 = '{$evals2}', pk_score2 = '{$eval2score}' , pk_score1_total = '0``0``0', pk_score2_total = '0``0``0``0``0``0``0``0'";
+        }else{
+            $sql = "update `cmap_my_construct_eval` set pk_ids1 = '{$evals}', pk_score1 = '{$eval1score}', pk_ids2 = '{$evals2}', pk_score2 = '{$eval2score}' , pk_score1_total = '0``0``0', pk_score2_total = '0``0``0``0``0``0``0``0' where mb_id = '{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'";
+        }
+        sql_query($sql);
+
+        $maineval = sql_fetch("select * from `cmap_my_construct_eval` where mb_id = '{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'");
+    }
+
+    //시공 토탈
+    $main_evals1 = explode("``",$maineval["pk_score1_total"]);
+    for($i=0;$i<count($main_evals1);$i++){
+        $eval1_sum += (double)$main_evals1[$i];
+    }
+    $eval1_total = ceil($eval1_sum / 100 * 100);
+    if($eval1_total<80) {
+        if($eval1_total >= 0 && $eval1_total < 10){
+            $eval1_left = 15;
+        }
+        if($eval1_total >= 10 && $eval1_total < 20){
+            $eval1_left = 18;
+        }
+        if($eval1_total >= 20 && $eval1_total < 30){
+            $eval1_left = 22;
+        }
+        if($eval1_total >= 30 && $eval1_total < 40){
+            $eval1_left = 25;
+        }
+        if($eval1_total >= 40 && $eval1_total < 50){
+            $eval1_left = 29;
+        }
+        if($eval1_total >= 50 && $eval1_total < 60){
+            $eval1_left = 32;
+        }
+        if($eval1_total >= 60 && $eval1_total < 70){
+            $eval1_left = 36;
+        }
+        if($eval1_total >= 70 && $eval1_total < 80){
+            $eval1_left = 40;
+        }
+    }else{
+        if($eval1_total >= 80 && $eval1_total < 90){
+            switch ($eval1_total){
+                case 80:
+                    $eval1_left = 41;
+                    break;
+                case 81:
+                    $eval1_left = 44;
+                    break;
+                case 82:
+                    $eval1_left = 48;
+                    break;
+                case 83:
+                    $eval1_left = 51;
+                    break;
+                case 84:
+                    $eval1_left = 55;
+                    break;
+                case 85:
+                    $eval1_left = 58;
+                    break;
+                case 86:
+                    $eval1_left = 62;
+                    break;
+                case 87:
+                    $eval1_left = 65;
+                    break;
+                case 88:
+                    $eval1_left = 69;
+                    break;
+                case 89:
+                    $eval1_left = 73;
+                    break;
+            }
+            $evel1_class = "level2";
+        }else if($eval1_total >= 90){
+            switch ($eval1_total){
+                case 90:
+                    $eval1_left = 74;
+                    break;
+                case 91:
+                    $eval1_left = 76;
+                    break;
+                case 92:
+                    $eval1_left = 79;
+                    break;
+                case 93:
+                    $eval1_left = 81;
+                    break;
+                case 94:
+                    $eval1_left = 84;
+                    break;
+                case 95:
+                    $eval1_left = 87;
+                    break;
+                case 96:
+                    $eval1_left = 89;
+                    break;
+                case 97:
+                    $eval1_left = 92;
+                    break;
+                case 98:
+                    $eval1_left = 94;
+                    break;
+                case 99:
+                    $eval1_left = 97;
+                    break;
+                case 100:
+                    $eval1_left = 100;
+                    break;
+            }
+            if($eval1_total>100){
+                $eval1_left = 100;
+            }
+            $evel1_class = "level3";
+        }
+    }
+    //용역 토탈
+    $main_evals2 = explode("``",$maineval["pk_score2_total"]);
+    for($i=0;$i<count($main_evals2);$i++){
+        if($i <= 2) {
+            if($main_evals2[$i]!=0) {
+                $eval2_sum += (double)$main_evals2[$i];
+            }else{
+                $eval2_sum += 0;
+            }
+        }else if($i > 2 && $i != 6){
+            if($i > 2 && $i < 6){
+                if($main_evals2[$i]!=0) {
+                    $eval3_1_sum += (double)$main_evals2[$i];
+                }else{
+                    $eval3_1_sum += 0;
+                }
+            }
+            if($i == 7){
+                if($main_evals2[$i]!=0) {
+                    $eval3_2_sum += (double)$main_evals2[$i];
+                }else{
+                    $eval3_2_sum += 0;
+                }
+            }
+        }else if($i == 6){
+            if($main_evals2[$i]!=0) {
+                $eval4_sum += (double)$main_evals2[$i];
+            }else{
+                $eval4_sum += 0;
+            }
+        }
+    }
+    $eval2_sum_total = ($eval2_sum * 0.8) + (((($eval3_1_sum * 0.8) + $eval3_2_sum) + $eval4_sum) * 0.2);
+    $eval2_total = ceil($eval2_sum_total / 100 * 100);
+    if($eval2_total<80) {
+        if($eval2_total >= 0 && $eval2_total < 10){
+            $eval2_left = 15;
+        }
+        if($eval2_total >= 10 && $eval2_total < 20){
+            $eval2_left = 18;
+        }
+        if($eval2_total >= 20 && $eval2_total < 30){
+            $eval2_left = 22;
+        }
+        if($eval2_total >= 30 && $eval2_total < 40){
+            $eval2_left = 25;
+        }
+        if($eval2_total >= 40 && $eval2_total < 50){
+            $eval2_left = 29;
+        }
+        if($eval2_total >= 50 && $eval2_total < 60){
+            $eval2_left = 32;
+        }
+        if($eval2_total >= 60 && $eval2_total < 70){
+            $eval2_left = 36;
+        }
+        if($eval2_total >= 70 && $eval2_total < 80){
+            $eval2_left = 40;
+        }
+    }else{
+        if($eval2_total >= 80 && $eval2_total < 90){
+            switch ($eval2_total){
+                case 80:
+                    $eval2_left = 41;
+                    break;
+                case 81:
+                    $eval2_left = 44;
+                    break;
+                case 82:
+                    $eval2_left = 48;
+                    break;
+                case 83:
+                    $eval2_left = 51;
+                    break;
+                case 84:
+                    $eval2_left = 55;
+                    break;
+                case 85:
+                    $eval2_left = 58;
+                    break;
+                case 86:
+                    $eval2_left = 62;
+                    break;
+                case 87:
+                    $eval2_left = 65;
+                    break;
+                case 88:
+                    $eval2_left = 69;
+                    break;
+                case 89:
+                    $eval2_left = 73;
+                    break;
+            }
+            $evel2_class = "level2";
+        }else if($eval2_total >= 90){
+            switch ($eval2_total){
+                case 90:
+                    $eval2_left = 74;
+                    break;
+                case 91:
+                    $eval2_left = 76;
+                    break;
+                case 92:
+                    $eval2_left = 79;
+                    break;
+                case 93:
+                    $eval2_left = 81;
+                    break;
+                case 94:
+                    $eval2_left = 84;
+                    break;
+                case 95:
+                    $eval2_left = 87;
+                    break;
+                case 96:
+                    $eval2_left = 89;
+                    break;
+                case 97:
+                    $eval2_left = 92;
+                    break;
+                case 98:
+                    $eval2_left = 94;
+                    break;
+                case 99:
+                    $eval2_left = 97;
+                    break;
+                case 100:
+                    $eval2_left = 100;
+                    break;
+            }
+            if($eval2_total>100){
+                $eval2_left = 100;
+            }
+            $evel2_class = "level3";
+        }
+    }
+
 }
 
 //navigator

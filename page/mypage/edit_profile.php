@@ -5,8 +5,9 @@ $mypage = true;
 $menu_id = "depth_desc_edit";
 include_once (G5_PATH."/page/mypage/confirm.php");
 include_once (G5_PATH."/_head.php");
-if(!$chk){
-    alert("비밀번호 인증이 필요합니다.",G5_URL."/page/mypage/edit_profile_chkpwd");
+
+if(!$_REQUEST["chk"]){
+    alert("비밀번호 인증이 필요합니다. ",G5_URL."/page/mypage/edit_profile_chkpwd");
 }
 
 $mb_3 = explode("-",$member["mb_3"]);
@@ -14,8 +15,16 @@ $tel = explode("-",$member["mb_tel"]);
 $hp = explode("-",$member["mb_hp"]);
 $email = explode("@",$member["mb_email"]);
 
+$todays = date("Y-m-d");
+$sql = "select * from `cmap_payments` where mb_id = '{$member["mb_id"]}' and order_cancel = 0 and payment_end_date >= '{$todays}' order by payment_end_date desc limit 0 , 1";
+$mypayments = sql_fetch($sql);
+
 add_javascript(G5_POSTCODE_JS, 0);
 ?>
+
+<?php if($config['cf_cert_use'] && ($config['cf_cert_ipin'] || $config['cf_cert_hp'])) { ?>
+    <script src="<?php echo G5_JS_URL ?>/certify.js?v=<?php echo G5_JS_VER; ?>"></script>
+<?php } ?>
 <div class="width-fixed">
     <section class="sub_sec" id="mypages">
         <header class="top">
@@ -52,8 +61,10 @@ add_javascript(G5_POSTCODE_JS, 0);
                     <span></span> 나의 정보관리
                 </h2>
                 <div class="profile_form">
-                    <form action="<?php echo G5_URL;?>/page/mypage/update_profile" name="edit_form" method="post">
+                    <form action="<?php echo G5_URL;?>/page/mypage/update_profile" name="fregisterform" method="post" enctype="multipart/form-data" onsubmit="return fnSubmit(this);">
                         <input type="hidden" name="mb_id" value="<?php echo $member["mb_id"];?>">
+                        <input type="hidden" name="cert_type" value="<?php echo $member['mb_certify']; ?>">
+                        <input type="hidden" name="cert_no" value="">
                         <table>
                             <tr>
                                 <th>성명 <span>*</span></th>
@@ -122,6 +133,28 @@ add_javascript(G5_POSTCODE_JS, 0);
                                     <input type="text" name="mb_tel[]" id="mb_tel3" value="<?php echo $tel[2];?>" class="basic_input01 width20" maxlength="4">
                                 </td>
                             </tr>
+                            <!--<tr>
+                                <th>회사로고 등록</th>
+                                <td>
+                                    <input type="text" name="file_name" id="file_name" class="basic_input01 width50" readonly placeholder="파일을 선택해주세요." value="">
+                                    <input type="file" name="mb_9" id="reg_mb_9" value="<?php /*echo $member["mb_9"];*/?>" class="" style="display:none;" onchange="$('#file_name').val(this.value);">
+                                    <label for="reg_mb_9" class="basic_btn02">파일 등록</label>
+                                    <div style="width:60px;display:inline-block;vertical-align: middle;margin-left:20px;"><img src="<?php /*echo G5_DATA_URL;*/?>/member/<?php /*echo substr($member["mb_id"],0,2);*/?>/<?php /*echo $member["mb_9"];*/?>" alt="" style="width:100%;"></div>
+
+                                    <div class="msg">* 작업연락서에서 사용됩니다.</div>
+                                </td>
+                            </tr>-->
+                            <tr>
+                                <th>직인 등록</th>
+                                <td>
+                                    <input type="text" name="file_name" id="file_name" class="basic_input01 width50" readonly placeholder="파일을 선택해주세요." value="">
+                                    <input type="file" name="mb_8" id="reg_mb_8" value="<?php echo $member["mb_8"];?>" class="" style="display:none;" onchange="$('#file_name').val(this.value);">
+                                    <label for="reg_mb_8" class="basic_btn02">파일 등록</label>
+                                    <div style="width:60px;display:inline-block;vertical-align: middle;margin-left:20px;"><img src="<?php echo G5_DATA_URL;?>/member/<?php echo substr($member["mb_id"],0,2);?>/<?php echo $member["mb_8"];?>" alt="" style="width:100%;"></div>
+
+                                    <div class="msg">* 작업연락서에서 사용됩니다.</div>
+                                </td>
+                            </tr>
                             <tr>
                                 <th>회사 주소</th>
                                 <td>
@@ -151,18 +184,17 @@ add_javascript(G5_POSTCODE_JS, 0);
                                         <label for="reg_mb_mailling"><span></span> 이메일을 통해 C.MAP의 다양한 정보를 받아보겠습니다.</label>
                                     </div>
                                     <div>
-                                        <select name="mb_hp[]" id="mb_hp1" class="basic_input01 left_input width20" >
-                                            <option value="010" <?php echo get_selected($hp[0],"010");?>>010</option>
-                                            <!--<option value="017">017</option>
-                                            <option value="018">018</option>
-                                            <option value="019">019</option>-->
-                                            <option value="070" <?php echo get_selected($hp[0],"070");?>>070</option>
-                                        </select>
-                                        -
-                                        <input type="text" name="mb_hp[]" id="mb_hp2" value="<?php echo $hp[1];?>" class="basic_input01 width20" maxlength="4">
-                                        -
-                                        <input type="text" name="mb_hp[]" id="mb_hp3" value="<?php echo $hp[2];?>" class="basic_input01 width20" maxlength="4">
-                                        <input type="button" value="인증하기" class="basic_btn01 bg_gray" onclick="alert('준비중입니다.')">
+                                        <input type="text" name="mb_hp" id="reg_mb_hp" value="<?php echo $member["mb_hp"];?>" readonly class="basic_input01 width20" >
+                                        <?php
+                                        if($config['cf_cert_use']) {
+                                            if($config['cf_cert_ipin'])
+                                                echo '<button type="button" id="win_ipin_cert" class="basic_btn01 bg_gray">아이핀 본인확인</button>'.PHP_EOL;
+                                            if($config['cf_cert_hp'])
+                                                echo '<button type="button" id="win_hp_cert" class="basic_btn01 bg_gray">본인확인</button>'.PHP_EOL;
+
+                                            echo '<noscript>본인확인을 위해서는 자바스크립트 사용이 가능해야합니다.</noscript>'.PHP_EOL;
+                                        }
+                                        ?>
                                         <br>
                                         <input type="checkbox" name="mb_sms" id="reg_mb_sms" <?php echo get_checked($member["mb_sms"],"1");?> value="1">
                                         <label for="reg_mb_sms"><span></span> SMS를 통해 C.MAP의 다양한 정보를 받아보겠습니다.</label>
@@ -176,6 +208,17 @@ add_javascript(G5_POSTCODE_JS, 0);
                                     <label for="reg_mb_password">정보를 수정 하시려면 기존 비밀번호를 입력 하시기 바랍니다.</label>
                                 </td>
                             </tr>
+                            <?php if($member["mb_level"]==3 || $member["mb_level"]==5){?>
+                            <tr>
+                                <th>맴버쉽</th>
+                                <td>
+                                    <div style="font-size:16px">맴버쉽기한 : <?php echo $mypayments["payment_end_date"];?></div>
+                                    <div style="position: absolute;right:10px;top:11px;">
+                                    <input type="button" value="맴버쉽 취소" class="basic_btn01">
+                                    </div>
+                                </td>
+                            </tr>
+                            <?php }?>
                         </table>
                         <div class="mypage_btns">
                             <input type="submit" class="basic_btn01 width20" value="나의정보 수정">
@@ -221,6 +264,38 @@ add_javascript(G5_POSTCODE_JS, 0);
 </div>
 <script>
     $(function(){
+        <?php if($config['cf_cert_use'] && $config['cf_cert_hp']) { ?>
+        // 휴대폰인증
+        $("#win_hp_cert").click(function() {
+            if(!cert_confirm())
+                return false;
+
+            <?php
+            switch($config['cf_cert_hp']) {
+                case 'kcb':
+                    $cert_url = G5_OKNAME_URL.'/hpcert1';
+                    $cert_type = 'kcb-hp';
+                    break;
+                case 'kcp':
+                    $cert_url = G5_KCPCERT_URL.'/kcpcert_form';
+                    $cert_type = 'kcp-hp';
+                    break;
+                case 'lg':
+                    $cert_url = G5_LGXPAY_URL.'/AuthOnlyReq';
+                    $cert_type = 'lg-hp';
+                    break;
+                default:
+                    echo 'alert("기본환경설정에서 휴대폰 본인확인 설정을 해주십시오");';
+                    echo 'return false;';
+                    break;
+            }
+            ?>
+
+            certify_win_open("<?php echo $cert_type; ?>", "<?php echo $cert_url; ?>");
+            return;
+        });
+        <?php } ?>
+
         $("#reg_new_mb_password").keyup(function(){
             var pwd = $(this).val();
             var num = pwd.search(/[0-9]/g);
@@ -269,6 +344,19 @@ add_javascript(G5_POSTCODE_JS, 0);
             return false;
         }
         return true;
+    }
+
+    function fnSubmit(f){
+        <?php if (($config['cf_use_hp'] || $config['cf_cert_hp']) && $config['cf_req_hp']) {  ?>
+        // 휴대폰번호 체크
+        var msg = reg_mb_hp_check();
+        msg  = msg.replace(/(\n|\r\n)/g, "");
+        if (msg) {
+            alert(msg);
+            $("#mb_hp2").focus();
+            return false;
+        }
+        <?php } ?>
     }
 </script>
 <?php

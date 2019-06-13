@@ -26,13 +26,13 @@ include_once ("../../common.php");
 </div>
 <script>
     function fnMemberSearch(){
-        var id = "<?php echo $id;?>";
+        var constid = "<?php echo $constid;?>";
         var sch_type = $("#sch_type").val();
         var search = $("#search").val();
         $.ajax({
             url:g5_url+"/page/ajax/ajax.member_search.php",
             method:"post",
-            data:{sch_type:sch_type,search:search,id:id}
+            data:{sch_type:sch_type,search:search,constid:constid}
         }).done(function(data){
             $(".member_list").html(data);
         });

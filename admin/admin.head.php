@@ -83,6 +83,7 @@ while($row = sql_fetch_array($res)){
                         <div data-content class="list-item">
                             <div><a href="<?php echo G5_URL."/admin/navigator"; ?>">사용자 가이드</a></div>
                             <div><a href="<?php echo G5_URL."/admin/holidays"; ?>">공휴일 관리</a></div>
+                            <div><a href="<?php echo G5_URL."/admin/main_image"; ?>">메인이미지 관리</a></div>
                         </div>
                     </li>
                     <li class="accordion" data-accordion>

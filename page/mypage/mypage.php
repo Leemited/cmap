@@ -41,8 +41,7 @@ $myset = sql_fetch("select * from `cmap_mymenu_theme` where mb_id = '{$member["m
                     <ul>
                         <li class="float">
                             <label for="theme1">
-                                <div for="theme1">
-                                    <img src="<?php echo G5_IMG_URL;?>/theme1.jpg" alt="테마1">
+                                <div style="background-image:url('<?php echo G5_IMG_URL;?>/theme1.jpg');background-size:contain;background-position:center;background-repeat:no-repeat;">
                                 </div>
                             </label>
                             <input type="radio" name="theme" id="theme1" value="black" <?php if($myset["theme"]=="black" || $myset["theme"] == ""){?>checked<?php }?>>
@@ -50,17 +49,15 @@ $myset = sql_fetch("select * from `cmap_mymenu_theme` where mb_id = '{$member["m
                         </li>
                         <li class="float">
                             <label for="theme2">
-                                <div>
-                                    <img src="<?php echo G5_IMG_URL;?>/theme2.jpg" alt="테마2">
+                                <div style="background-image:url('<?php echo G5_IMG_URL;?>/theme2.jpg');background-size:contain;background-position:center;background-repeat:no-repeat;">
                                 </div>
                             </label>
                             <input type="radio" name="theme" id="theme2" value="blue" <?php if($myset["theme"]=="blue"){?>checked<?php }?>>
                             <label for="theme2"><span></span>블루</label>
                         </li>
-                        <li class="float">
+                        <li class="float last">
                             <label for="theme3">
-                                <div>
-                                    <img src="<?php echo G5_IMG_URL;?>/theme3.jpg" alt="테마3">
+                                <div style="background-image:url('<?php echo G5_IMG_URL;?>/theme3.jpg');background-size:contain;background-position:center;background-repeat:no-repeat;">
                                 </div>
                             </label>
                             <input type="radio" name="theme" id="theme3" value="white" <?php if($myset["theme"]=="white"){?>checked<?php }?>>
@@ -72,8 +69,7 @@ $myset = sql_fetch("select * from `cmap_mymenu_theme` where mb_id = '{$member["m
                     <ul>
                         <li class="float">
                             <label for="cate1">
-                                <div>
-                                    <img src="<?php echo G5_IMG_URL;?>/cate_theme1.jpg" alt="카테고리1">
+                                <div style="background-image:url('<?php echo G5_IMG_URL;?>/cate_theme1.jpg');background-size:contain;background-position:center;background-repeat:no-repeat;">
                                 </div>
                             </label>
                             <input type="radio" name="cate" id="cate1" value="black" <?php if($myset["cate_theme"]=="black"){?>checked<?php }?>>
@@ -81,17 +77,16 @@ $myset = sql_fetch("select * from `cmap_mymenu_theme` where mb_id = '{$member["m
                         </li>
                         <li class="float">
                             <label for="cate2">
-                                <div>
-                                    <img src="<?php echo G5_IMG_URL;?>/cate_theme2.jpg" alt="카테고리2">
+                                <div style="background-image:url('<?php echo G5_IMG_URL;?>/cate_theme2.jpg');background-size:contain;background-position:center;background-repeat:no-repeat;">
                                 </div>
                             </label>
                             <input type="radio" name="cate" id="cate2" value="blue" <?php if($myset["cate_theme"]=="blue"){?>checked<?php }?>>
                             <label for="cate2"><span></span>블루</label>
                         </li>
-                        <li class="float">
+                        <li class="float last">
                             <label for="cate3">
-                                <div>
-                                    <img src="<?php echo G5_IMG_URL;?>/cate_theme3.jpg" alt="카테고리3">
+                                <div style="background-image:url('<?php echo G5_IMG_URL;?>/cate_theme3.jpg');background-size:contain;background-position:center;background-repeat:no-repeat;">
+
                                 </div>
                             </label>
                             <input type="radio" name="cate" id="cate3" value="white" <?php if($myset["cate_theme"]=="white" || $myset["cate_theme"] == ""){?>checked<?php }?>>

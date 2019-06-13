@@ -114,7 +114,7 @@ $colspan = 16;
             <input type="hidden" name="token" value="">
 
             <div class="tbl_head01 tbl_wrap">
-                <table>
+                <table class="edit_table">
                     <caption><?php echo $g5['title']; ?> 목록</caption>
                     <thead>
                     <tr>
@@ -300,11 +300,11 @@ $colspan = 16;
             </div>
 
             <div class="btn_fixed_top">
-                <input type="submit" name="act_button" value="선택수정" onclick="document.pressed=this.value" class="btn btn_02">
+                <!--<input type="submit" name="act_button" value="선택수정" onclick="document.pressed=this.value" class="btn btn_02">-->
                 <input type="submit" name="act_button" value="선택삭제" onclick="document.pressed=this.value" class="btn btn_02">
-                <?php if ($is_admin == 'super') { ?>
+<!--                <?php /*if ($is_admin == 'super') { */?>
                     <a href="./member_form" id="member_add" class="btn btn_01">회원추가</a>
-                <?php } ?>
+                --><?php /*} */?>
 
             </div>
 
@@ -325,7 +325,7 @@ $colspan = 16;
         }
 
         if(document.pressed == "선택삭제") {
-            if(!confirm("선택한 자료를 정말 삭제하시겠습니까?")) {
+            if(!confirm("선택한 자료를 정말 삭제하시겠습니까?\n삭제시 현장 및 설정정보도 삭제 됩니다.\n만약 결제 정보가 있다면 환불 후 삭제 바랍니다.")) {
                 return false;
             }
         }

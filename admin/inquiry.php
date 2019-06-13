@@ -1,6 +1,18 @@
 <?php
-/**
- * User: leemited
- * Date: 2019-03-07
- * Time: 오후 5:45
- */
+include_once ("./_common.php");
+include_once (G5_PATH."/admin/admin.head.php");
+
+
+
+?>
+
+<div id="wrap">
+    <section>
+        <div class="admin_title">
+            <h2>제안관리</h2>
+        </div>
+    </section>
+</div>
+<?php
+include_once (G5_PATH."/admin/admin.tail.php");
+?>

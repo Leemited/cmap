@@ -1,16 +1,37 @@
 <?php
 include_once ("../common.php");
 $sub="sub";
+if($member["mb_auth"]==false){
+    alert("무료 이용기간이 만료 되었거나,\\r맴버쉽 기간이 만료 되었습니다. \\n맴버쉽 구매후 이용바랍니다.",G5_URL);
+}
+//평가 항목 가저오기
+if($is_member && $mycont && $current_const["const_id"]!=0){
+    $evaldata = sql_fetch("select * from `cmap_my_construct_eval` where mb_id='{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'");
+    $pk_ids = explode("``",$evaldata["pk_ids1"]);
+    $pk_scores = explode("``",$evaldata["pk_score1"]);
 
-/*if(!$is_member){
-    alert("로그인후 이용 가능합니다.", G5_BBS_URL."/login");
-}*/
+    for($i=0;$i<count($pk_ids);$i++){
+        $scores[$pk_ids[$i]] = $pk_scores[$i];
+    }
 
+    switch ($depth1_id){
+        case "334":
+            $step = 1;
+            break;
+        case "335":
+            $step = 2;
+            break;
+        case "336":
+            $step = 3;
+            break;
+    }
+}
 
 if(strlen($me_id)==2){
     $sql = "select * from `cmap_depth1` where SUBSTRING(me_code,1,2) like '%{$me_id}%' order by me_code asc limit 0,1 ";
     $codes = sql_fetch($sql);
     $incode = $codes["me_code"];
+    if(!$depth1_id) $depth1_id = $codes["id"];
     if(!$depth2_id){
         $sql = "select * from `cmap_dpeth2` where depth1_id = '{$code["id"]}' order by id asc limit 0, 1";
         $depth2 = sql_fetch($sql);
@@ -21,6 +42,7 @@ if(strlen($me_id)==2){
     if(!$depth2_id){
         $sql = "select * from `cmap_depth1` where me_code = '{$incode}' order by id asc limit 0,1";
         $codes = sql_fetch($sql);
+        if(!$depth1_id) $depth1_id = $codes["id"];
         $sql = "select * from `cmap_depth2` where depth1_id = '{$depth1_id}' order by id asc limit 0, 1";
         $depth2 = sql_fetch($sql);
         $depth2_id = $depth2["id"];
@@ -140,11 +162,11 @@ $myconstruction = false;
 
 ?>
 
-<div class="search">
-    <?php if($is_member && $myconstruction){?>
+<!--<div class="search">
+    <?php /*if($is_member && $myconstruction){*/?>
         <select name="" id=""></select>
-    <?php }?>
-</div>
+    <?php /*}*/?>
+</div>-->
 <div class="full-width">
     <div class="view">
         <div class="left">
@@ -166,7 +188,7 @@ $myconstruction = false;
             <tr class="memo">
                 <td style="position: relative">
                     <form action="<?php echo G5_URL;?>/page/memo_update.php" method="post" >
-                        <input type="hidden" name="return_url" value="view">
+                        <input type="hidden" name="return_url" value="view2">
                         <input type="hidden" name="type" value="in">
                         <input type="hidden" name="me_id" value="<?php echo $me_id;?>">
                         <input type="hidden" name="depth1_id" value="<?php echo $depth1_id;?>">
@@ -196,7 +218,7 @@ $myconstruction = false;
                 <th colspan="2">평가항목</th>
                 <th rowspan="2">배점</th>
                 <th colspan="4">평가등급</th>
-                <?php if($is_member && $myconstruction){?>
+                <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
                 <th rowspan="2">점수</th>
                 <?php }?>
                 <th rowspan="2">평가방법</th>
@@ -204,10 +226,10 @@ $myconstruction = false;
             <tr>
                 <th>중분류(배점)</th>
                 <th>세부분류 (평가방법 미리보기)</th>
-                <th>우수 ( X 1.0)</th>
-                <th>보통 ( X 0.8)</th>
-                <th>미흡 ( X 0.6)</th>
-                <th>불량 ( X 0.4)</th>
+                <th style="width:14%">우수 ( X 1.0)</th>
+                <th style="width:14%">보통 ( X 0.8)</th>
+                <th style="width:14%">미흡 ( X 0.6)</th>
+                <th style="width:14%">불량 ( X 0.4)</th>
             </tr>
             <tr></tr>
             <?php
@@ -218,21 +240,23 @@ $myconstruction = false;
                 <?php for($j=0;$j<count($list[$i]['depth2']);$j++) {
                     ?>
                 <td class="depth1" rowspan="<?php echo $list[$i]['depth2'][$j]['cnt'];?>">
-                    <?php echo $list[$i]['depth2'][$j]['depth_name'];?>
+                    <strong><?php echo $list[$i]['depth2'][$j]['depth_name'];?></strong>
                 </td>
                     <?php for($k=0;$k<count($list[$i]['depth2'][$j]['depth3']);$k++) {
                     ?>
                     <td class="depth2" rowspan="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['cnt'];?>" >
-                    <?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth_name'];?>
+                        <strong><?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth_name'];?></strong>
                     </td>
                         <?php for ($l=0;$l<count($list[$i]['depth2'][$j]['depth3'][$k]['depth4']);$l++) {
                             $total += (float)$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth_name'];
                             ?>
-                        <td class="depth3" style="text-align: center" rowspan="<?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['cnt']>1){echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['cnt'];}?>" >
+                        <td class="depth3" style="text-align: center;background-color:#e4f8f9" rowspan="<?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['cnt']>1){echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['cnt'];}?>" >
+                            <!-- 배점 -->
                             <?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth_name'];?>
                         </td>
                             <?php
                             for ($m = 0; $m < count($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5']); $m++) {
+
                                 if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["attachment"]!="") {
                                     $files = explode("``", $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["attachment"]);
                                     $filenames = explode("``", $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["attachmentname1"]);
@@ -263,12 +287,51 @@ $myconstruction = false;
                             }else{
                             if(count($eval)>0){
                                 for($o=0;$o<count($eval);$o++){
-                                    if(count($eval)==($o+1)) {
-                                        $total2 += (float)$eval;
+                                    switch ($o){
+                                        case 0:
+                                            $nums = 1;
+                                            break;
+                                        case 1:
+                                            $nums = 0.8;
+                                            break;
+                                        case 2:
+                                            $nums = 0.6;
+                                            break;
+                                        case 3:
+                                            $nums = 0.4;
+                                            break;
                                     }
+
+                                    $cals = round($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth_name'] * $nums,1);
+
+                                    if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"] == "21736"){
+                                        if($o==0) {
+                                            $cals = 1.5;
+                                        }else{
+                                            $cals = 0;
+                                        }
+                                    }
+
+                                    if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"] == "21737"){
+                                        if($o==3){
+                                            $cals = 0;
+                                        }
+                                    }
+
+                                    if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"] == "21738"){
+                                        if($o==0) {
+                                            $cals = -10;
+                                        }else{
+                                            $cals = 0;
+                                        }
+                                    }
+                                    /*if(count($eval)==($o+1)) {
+                                        $total2 += (float)$eval;
+                                    }*/
                                     if($eval[$o]=="") continue;
                             ?>
-                            <td class="depth4" style="text-align: center" colspan="<?php echo $span[$o];?>" onclick="fnUpdateNumber();">
+                            <td class="depth4 scores_<?php if($o!=3){echo $o;}else{echo $o+1;}?> pk_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"];?> <?php if((double)$cals == (double)$scores[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"]]){?>active<?php }?>" id="scoretd_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"];?>_<?php echo $o;?>" style="text-align: center" colspan="<?php echo $span[$o];?>" <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>onclick="fnUpdateNumber('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"];?>','<?php echo $o;?>','<?php echo $current_const["const_id"];?>','<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth_name'];?>');" <?php }?> >
+                                <!-- 항목 -->
                                 <?php
                                 echo $eval[$o];
                                 ?>
@@ -276,9 +339,10 @@ $myconstruction = false;
                             <?php }?>
                             <?php }?>
                             <?php }?>
-                            <?php if($is_member && $myconstruction){?>
-                            <td class="score_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>">
-                                0
+                            <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
+                            <td class="score_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?> td_center" style="font-weight:bold;background-color:#e4f8f9">
+                                <!-- 점수 -->
+                                <?php echo $scores[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"]];?>
                             </td>
                             <?php }?>
                             <td class="etc" id="">
@@ -334,8 +398,8 @@ $myconstruction = false;
                     <td colspan="2" class="td_center">점수</td>
                     <td class="td_center"><?php echo $total;?></td>
                     <td colspan="4"></td>
-                    <?php if($is_member && $myconstruction){?>
-                    <td><?php echo $total2;?></td>
+                    <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
+                    <td class="td_center alltotal"></td>
                     <?php }?>
                     <td></td>
                 </tr>
@@ -367,6 +431,7 @@ $myconstruction = false;
 <script src="<?php echo G5_JS_URL ?>/jquery-ui-1.9.2.custom.js"></script>
 <script>
 $(function(){
+    setTotal();
     /*var tbl_width = $(".menu_table").width();
     tbl_width = tbl_width + 24;
     $(".view_table").attr("style","width:calc(100% - "+tbl_width+"px)");*/
@@ -388,11 +453,24 @@ $(function(){
         fnEtcClose();
     });
 
+    <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
+    $("td[id^=scoretd_]").each(function(e){
+        $(this).click(function(){
+            var id = $(this).attr("id");
+            var split_id = id.split("_");
+            if(!$(this).hasClass("active")) {
+                $(this).addClass("active");
+                $("td[id^=scoretd_"+split_id[1]+"]").not($(this)).removeClass("active");
+            }
+        });
+    });
+    <?php }?>
+
     window.onkeydown = function(){
         if(event.keyCode==27 && $(".etc_view").hasClass("active")){
             fnEtcClose();
         }
-    }
+    };
 
     $(function(){
         $(document).tooltip();
@@ -420,6 +498,53 @@ function fnEtcClose(){
     $(".etc_view").removeClass("active");
     $(".etc_view_bg").removeClass("active");
 }
+
+function fnUpdateNumber(pk_id,num,constid,score_cnt){
+    $.ajax({
+        url:g5_url+'/page/ajax/ajax.my_construct_eval.php',
+        method:"post",
+        data:{pk_id:pk_id,num:num,constid:constid,score_cnt:score_cnt,page:1},
+        dataType:"json"
+    }).done(function(data){
+        console.log(data);
+        if(data.msg=="1"){
+            alert("선택된 현장이 없습니다.");
+            return false;
+        }else if(data.msg=="2"){
+            alert("선택된 항목이 없습니다.");
+            return false;
+        }else if(data.msg=="3"){
+            alert("점수 기록에 실패 하였습니다.");
+            return false;
+        }else if(data.msg=="4"){
+            alert("평가 디비가 없습니다.");
+            return false;
+        }else{
+            $(".score_"+pk_id).text(data.score);
+            setTotal();
+        }
+    });
+}
+
+function setTotal(){
+    var score = 0;
+    $("td[class^=score]").each(function(){
+        score += Number($(this).text());
+    });
+    console.log(score);
+    score = score.toFixed(2);
+    $(".alltotal").text(score);
+
+    $.ajax({
+        url:g5_url+'/page/ajax/ajax.my_construct_eval_total.php',
+        method:"post",
+        data:{step:"<?php echo $step;?>",page:1,constid:"<?php echo $current_const["const_id"];?>",total:score}
+    }).done(function(data){
+        //console.log(data);
+    })
+}
+
+
 
 </script>
 <?php

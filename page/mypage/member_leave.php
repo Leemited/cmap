@@ -56,8 +56,7 @@ include_once (G5_PATH."/_head.php");
                             <tr class="mb_leave_etc">
                                 <th>기타</th>
                                 <td>
-                                    <textarea name="mb_leave_content" id="mb_leave_content" cols="30" rows="10" class="basic_input01 width100">
-                                    </textarea>
+                                    <textarea name="mb_leave_content" id="mb_leave_content" cols="30" rows="10" class="basic_input01 width100"></textarea>
                                 </td>
                             </tr>
                         </table>
