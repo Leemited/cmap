@@ -14,7 +14,7 @@ $sql = "select count(*) as cnt from `cmap_construct_invite` where const_id = '{$
 $chkmem = sql_fetch($sql);
 
 if($chkmem["cnt"]>0){
-    $result["msg"] = "이미 초되 된 회원입니다. 초대승인 대기중입니다.";
+    $result["msg"] = "이미 초대 된 회원입니다. 초대승인 대기중입니다.";
     echo json_encode($result);
     return;
 }

@@ -41,7 +41,7 @@ if($etc["attachment"]!=""){
 
                 @closedir($handle);
 
-                $attachment[$i] = iconv("UTF-8","EUC-KR",$attachment[$i]);
+                //$attachment[$i] = iconv("UTF-8","8859_1",$attachment[$i]);
 
                 $pdf1[] = G5_DATA_URL."/cmap_content/".$attachment[$i];
 
@@ -78,11 +78,12 @@ if($etc["attachment2"]!=""){
         $file0 = str_replace("https://xn--z69akkg7o1wgdnk53m.com:443/data/cmap_content/","",$pdf1[0]);
         $fi = explode(".",$file0);
         if($pdf1[0] != ""){
+            //echo $pdf1[0];
             //sort($pdfimgs[$fi[0]]);
+            //$pdf1[0] = iconv("UTF-8","8859_1",$pdf1[0]);
         ?>
         <h2 id="preview_title"><?php echo $pdf1name[0];?></h2>
-            <?php /*if(count($pdfimgs[$fi[0]]) > 10){*/?><!--<div class="page">페이지 바로 가기 <input type="text" onchange="location.href='#'+this.value"> / <?php /*echo count($pdfimgs[$fi[0]])-1; */?></div>--><?php /*}*/?>
-            <iframe src="<?php echo $pdf1[0];?>" frameborder="0" width="100%" height="95%" id="previewer"></iframe>
+        <iframe src="<?php echo $pdf1[0];?>" frameborder="0" width="100%" height="95%" id="previewer" title="<?php echo $pdf1name;?>"></iframe>
             <!--<div style="width:100%;height:95%;overflow-y:scroll">
                 <?php /*for($i=0;$i<count($pdfimgs[$fi[0]]);$i++){*/?>
                     <img src="<?php /*echo G5_DATA_URL."/cmap_content/".$pdfimgs[$fi[0]][$i];*/?>" alt="" style="width: 100%;margin:4px 0;border:1px solid #ddd;padding:50px;" id="<?php /*echo $i;*/?>">
@@ -105,9 +106,9 @@ if($etc["attachment2"]!=""){
 </div>
 <table class="preview_table">
     <tr>
-        <th><img src="<?php echo G5_IMG_URL;?>/ic_links.svg" alt="">관련법령</th>
-        <th><img src="<?php echo G5_IMG_URL;?>/ic_attach.svg" alt="">미리보기</th>
-        <th><img src="<?php echo G5_IMG_URL;?>/ic_attach.svg" alt="">다운로드</th>
+        <th><img src="<?php echo G5_IMG_URL;?>/ic_links2.svg" alt="">관련법령</th>
+        <th><img src="<?php echo G5_IMG_URL;?>/ic_preview.svg" alt="">미리보기</th>
+        <th><img src="<?php echo G5_IMG_URL;?>/ic_attach2.svg" alt="">다운로드</th>
     </tr>
     <?php for($i=0;$i<3;$i++){?>
     <tr>

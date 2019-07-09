@@ -2,8 +2,8 @@
 include_once ("./_common.php");
 include_once (G5_PATH."/admin/admin.head.php");
 
-if($id){
-    $view = sql_fetch("select * from `cmap_mainimage` where id = '{$id}'");
+if($imgid){
+    $view = sql_fetch("select * from `cmap_mainimage` where id = '{$imgid}'");
 }
 ?>
 
@@ -15,7 +15,7 @@ if($id){
         <div class="admin_content">
             <div class="edit_content">
                 <form action="./main_image_update" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="id" value="<?php echo $id;?>">
+                    <input type="hidden" name="imgid" value="<?php echo $imgid;?>">
                 <table class="edit_table">
                     <colgroup>
                         <col width="140px">
@@ -41,9 +41,16 @@ if($id){
                             <textarea id="sub_text" name="sub_text" class="adm_input" style="width:100%;resize:none"><?php echo nl2br($view["sub_text"]);?></textarea>
                         </td>
                     </tr>
+                    <tr>
+                        <th>사용 유무</th>
+                        <td>
+                            <input type="radio" name="used" id="used" style="width:auto" value="1">  <label style="margin-right:10px;" for="time1">사용</label>
+                            <input type="radio" name="used" id="notused" style="width:auto" value="0">  <label style="margin-right:10px;" for="time1">미사용</label>
+                        </td>
+                    </tr>
                 </table>
                 <div class="" style="text-align: right">
-                    <input type="submit" value="<?php if($id){echo "수정";}else{ echo "등록";}?>" class="admin_submit" >
+                    <input type="submit" value="<?php if($imgid){echo "수정";}else{ echo "등록";}?>" class="admin_submit" >
                     <input type="button" value="목록" class="admin_submit" onclick="location.href=g5_url+'/admin/main_image'">
                 </div>
                 </form>

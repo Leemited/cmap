@@ -46,7 +46,6 @@ if($page==1) {
     }
 
     $in_total = implode("``",$pk_ids_score);
-
     $sql = "update `cmap_my_construct_eval` set pk_score2_total = '{$in_total}' where mb_id = '{$member["mb_id"]}' and const_id = '{$constid}'";
     sql_query($sql);
 }

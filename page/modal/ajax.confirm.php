@@ -14,6 +14,6 @@ include_once ("../../common.php");
     </div>
     <div class="modal_btns">
         <input type="button" class="modal_btn02 width30" value="취소" onclick="fnCloseModal()">
-        <input type="button" class="modal_btn01 width30" value="개설하기" onclick="location.href=g5_url+'/page/mylocation/mylocation_step1'">
+        <input type="button" class="modal_btn01 width30" value="개설하기" onclick="location.href=g5_url+'/page/mylocation/mylocation_edit?type=insert'">
     </div>
 </div>

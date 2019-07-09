@@ -13,7 +13,7 @@ $myset = sql_fetch("select * from `cmap_mymenu_theme` where mb_id = '{$member["m
         <header class="top">
             <h2>MY C.MAP</h2>
             <div class="logout">
-                <a href="<?php echo G5_BBS_URL;?>/logout"><span></span>로그아웃</a>
+                <a href="javascript:fnLogout();"><span></span>로그아웃</a>
             </div>
         </header>
         <aside class="mypage_menu">
@@ -27,6 +27,10 @@ $myset = sql_fetch("select * from `cmap_mymenu_theme` where mb_id = '{$member["m
                     <li onclick="location.href=g5_url+'/page/mypage/navigator'"><i></i>네비게이터 설정</li>
                     <!--<li onclick="location.href=g5_url+'/page/mypage/guide'"><i></i>사용자 가이드 설정</li>-->
                     <li onclick="location.href=g5_url+'/page/mypage/edit_profile_chkpwd'"><i></i>개인정보 수정</li>
+                    <?php if($member["mb_level"]==5){?>
+                    <!--<li onclick="location.href=g5_url+'/page/mypage/submember'"><i></i>관리계정 만들기</li>-->
+                    <li onclick="alert('준비중입니다.');"><i></i>관리계정 만들기</li>
+                    <?php }?>
                     <li onclick="location.href=g5_url+'/page/mypage/member_leave'"><i></i>회원탈퇴</li>
                 </ul>
             </div>

@@ -38,14 +38,15 @@ if($ajax_eval==null || ($ajax_eval["pk_ids1"] == "" && $ajax_eval["pk_score1"]==
     $evals2 = implode("``",$eval2);
     $eval2score = implode("``",$evalscore2);
 
-    if($eval==null) {
+    $ajax_eval = sql_fetch("select * from `cmap_my_construct_eval` where mb_id = '{$member["mb_id"]}' and const_id = '{$constid}'");
+
+    if($ajax_eval==null) {
         $sql = "insert into `cmap_my_construct_eval` set const_id = '{$constid}' , mb_id ='{$member["mb_id"]}', pk_ids1 = '{$evals}', pk_score1 = '{$eval1score}', pk_ids2 = '{$evals2}', pk_score2 = '{$eval2score}' , pk_score1_total = '0``0``0', pk_score2_total = '0``0``0``0``0``0``0``0'";
     }else{
         $sql = "update `cmap_my_construct_eval` set const_id = '{$constid}' , mb_id ='{$member["mb_id"]}', pk_ids1 = '{$evals}', pk_score1 = '{$eval1score}', pk_ids2 = '{$evals2}', pk_score2 = '{$eval2score}' , pk_score1_total = '0``0``0', pk_score2_total = '0``0``0``0``0``0``0``0' where mb_id = '{$member["mb_id"]}' and const_id = '{$constid}'";
     }
     sql_query($sql);
 
-    $ajax_eval = sql_fetch("select * from `cmap_my_construct_eval` where mb_id = '{$member["mb_id"]}' and const_id = '{$constid}'");
 }
 
 //시공 토탈

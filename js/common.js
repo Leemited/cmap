@@ -540,6 +540,7 @@ var win_zip2 = function(frm_name, frm_zip, frm_addr1, frm_addr2, frm_addr3, frm_
 
         // 사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
         //if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+        console.log(data);
         if(data.roadAddress)
             fullAddr = data.roadAddress;
         else
@@ -1030,7 +1031,7 @@ $(function() {
                 location.href=g5_url+"/page/mypage/weather";
                 break;
             case "PM_MODE":
-
+                location.href=g5_url+'/page/manager/';
                 break;
         }
     });
@@ -1038,10 +1039,16 @@ $(function() {
         //$("#main").addClass("blur");
         //$("#ft").addClass("blur");
         $(".container").addClass("blur");
+        $("#main").addClass("blur");
+        $(".search").addClass("blur");
+        $(".width-fixed, .full-width").addClass("blur");
     }).mouseout(function(){
         //$("#main").removeClass("blur");
         //$("#ft").removeClass("blur");
         $(".container").removeClass("blur");
+        $("#main").removeClass("blur");
+        $(".search").removeClass("blur");
+        $(".width-fixed, .full-width").removeClass("blur");
     });
 });
 
@@ -1098,6 +1105,10 @@ function viewKorean(num) {
         if(i == 8) str += "억";
         if(i == 12) str += "조";
         result = str + result;
+    }
+    var exp = /억/;
+    if(exp.test(result)){
+        result = result.replace("만","");
     }
     //if(num != 0) result = result + "원";
     return result ;
@@ -1301,9 +1312,9 @@ function fnConstShare(id){
 
 function fnConstEdit(type,id){
     if(type==1){
-        location.href=g5_url+'/page/mylocation/mylocation_edit?constid='+id;
+        location.href=g5_url+'/page/mylocation/mylocation_edit?type=edit&constid='+id;
     }else{
-        location.href=g5_url+'/page/mylocation/mylocation_edit2?constid='+id;
+        location.href=g5_url+'/page/mylocation/mylocation_edit2?type=edit&constid='+id;
     }
 }
 
@@ -1344,9 +1355,9 @@ function fnConstSave(link){
 }
 
 //현장 탈퇴는 참여자일경우만 가능
-function fnConstLeave(const_id){
-    if(confirm("해당 현장을 퇼퇴하시겠습니까?")) {
-        location.href = g5_url + '/page/mylocation/mylocation_leave?const_id=' + const_id;
+function fnConstLeave(mb_id,const_id){
+    if(confirm("해당 현장을 탈퇴하시겠습니까?")) {
+        location.href = g5_url + '/page/mylocation/mylocation_leave?const_id=' + const_id+'&mb_id='+mb_id;
     }
 }
 
@@ -1358,6 +1369,22 @@ function fnConstJoin(mb_id,id){
         data:{mb_id:mb_id,id:id},
         dataType:'json'
     }).done(function(data){
+        if(data.status == 1){
+            fnCloseModal();
+        }
+        alert(data.msg);
+    });
+}
+
+//현장 조인
+function fnConstJoinPm(mb_id,id){
+    $.ajax({
+        url:g5_url+"/page/ajax/ajax.construct_invite_pm.php",
+        method:"post",
+        data:{mb_id:mb_id,pm_constid:id},
+        dataType:'json'
+    }).done(function(data){
+        console.log(data);
         if(data.status == 1){
             fnCloseModal();
         }
@@ -1383,6 +1410,7 @@ function fnViewRequest(mb_id,const_id){
             if (data == 1) {
                 alert("회원 정보가 없습니다.");
             } else {
+                $(".infos").show();
                 $(".mymenu_detail .title h2").html("사용자 승인")
                 $(".mymenu_detail .detail_list").html(data);
                 $(".mymenu_detail").addClass("active");
@@ -1489,6 +1517,7 @@ function fnViewDelay(mb_id,const_id){
             if (data == 1) {
                 alert("회원 정보가 없습니다.");
             } else {
+                $(".infos").hide();
                 $(".mymenu_detail .title h2").html("제출 지연 현황")
                 $(".mymenu_detail .detail_list").html(data);
                 $(".mymenu_detail").addClass("active");
@@ -1514,6 +1543,7 @@ function fnViewMessage(mb_id,const_id){
             if (data == 1) {
                 alert("회원 정보가 없습니다.");
             } else {
+                $(".infos").hide();
                 $(".mymenu_detail .title h2").html("업무연락서")
                 $(".mymenu_detail .detail_list").html(data);
                 $(".mymenu_detail").addClass("active");
@@ -1538,7 +1568,6 @@ function fnWriteMessage(msg_id){
         method:"post",
         data:{const_id:const_id,msg_id:msg_id}
     }).done(function(data) {
-        console.log(data);
         if(data==1){
             alert("현장정보가 없습니다.");
         }else if(data==2){
@@ -1549,6 +1578,59 @@ function fnWriteMessage(msg_id){
             $(".etc_view").addClass("active");
             $("html,body").attr("style", "height:100vh;overflow:hidden;");
         }
+    });
+}
+
+function fnWriteMessage2(msg_id){
+    var const_id = "";
+    if(msg_id=="") {
+        const_id = $("#cons_id").val();
+        if (const_id == "") {
+            alert("현장을 선택해 주세요.");
+            $("#cons_id").focus();
+            return false;
+        }
+    }
+    $.ajax({
+        url:g5_url+"/page/mypage/message_preview.php",
+        method:"post",
+        data:{const_id:const_id,msg_id:msg_id}
+    }).done(function(data) {
+        $(".etc_view").html(data)
+        $(".etc_view_bg").addClass("active");
+        $(".etc_view").addClass("active");
+        $("html,body").attr("style", "height:100vh;overflow:hidden;");
+    });
+}
+
+function fnPmPreview(type,constid){
+    if(constid==""){
+        alert("현장이 선택되지 않았습니다.");
+        return false;
+    }
+    var link = g5_url+"/page/manager/";
+    switch (type){
+        case 1:
+            link += "delay_save_preview.php";
+            break;
+        case 2:
+            link += "eval_save_preview.php";
+            break;
+        case 3:
+            link += "eval2_save_preview.php";
+            break;
+    }
+    console.log(link);
+    $.ajax({
+        url:link,
+        method:"post",
+        data:{constids:constid}
+    }).done(function(data){
+        console.log(data);
+        $(".etc_view").html(data)
+        $(".etc_view_bg").addClass("active");
+        $(".etc_view").addClass("active");
+        $("html,body").attr("style", "height:100vh;overflow:hidden;");
     });
 }
 
@@ -1566,7 +1648,6 @@ function fn_join(id,mb_id){
         data:{mb_id:mb_id,id:id},
         dataType:"json"
     }).done(function(data){
-        console.log(data);
         alert(data.msg);
     });
 }
@@ -1652,8 +1733,58 @@ function memberPayment(amount,payment_type,order_type,mb_name,mb_hp,mb_email,mb_
             location.href=g5_url+'/page/mypage/member_payment?amount='+amount+"&merchant_uid="+response.merchant_uid+'&payment_type='+payment_type+'&order_type='+order_type;
         } else {
             alert('결제실패 : ' + response.error_msg);
-            //결제 실패시 임시저장 삭제(임시자장 일경우)
+            //결제 실패시 임시저장 삭제(임시저장 일경우)
             fnPayment();
         }
     })
+}
+
+function fnLogout(){
+    if(confirm("로그아웃을 하시겠습니까?")) {
+        location.href = g5_bbs_url + '/logout';
+    }
+}
+
+function fnMsgSave(msg_id) {
+    if(confirm("해당 업무연락서를 저장 하시겟습니까?")){
+        window.open(g5_url+'/page/mypage/my_msg_save?msg_id='+msg_id,"saveMsg",'width=800,height=942,resizable=no,menubar=no,toolbar=no,top=0,left=0, scrollbars=yes');
+    }
+}
+
+function fnSavePm(type){
+    /*var constids = '';
+
+    $("input[id^=const_]").each(function(){
+        if($(this).prop("checked")==true){
+            if(constids==''){
+                constids = $(this).val();
+            }else{
+                constids += ","+$(this).val();
+            }
+        }
+    });
+
+    if(constids==""){
+        alert("저장할 현장을 선택해 주세요.");
+        return false;
+    }*/
+
+    var link = g5_url+'/page/manager/';
+    switch (type){
+        case "1":
+            link += 'pm_delay_save';
+            break;
+        case "2":
+            link += 'pm_eval_save';
+            break;
+        case "3":
+            link += 'pm_eval2_save';
+            break;
+    }
+
+    //link += "?constids="+constids
+
+    if(confirm("해당 화면을 엑셀 파일로 저장 하시겠습니까?")){
+        window.open(link, 'save');
+    }
 }

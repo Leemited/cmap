@@ -3,6 +3,7 @@ include_once ("../../common.php");
 
 //기존 스케쥴 삭제
 $sql = "delete from `cmap_myschedule` where construct_id = '{$constid}' and mb_id = '{$member["mb_id"]}'";
+
 sql_query($sql);
 
 $pk_ids = implode("``",$pk_id);
@@ -13,13 +14,17 @@ $test_dates = implode("``",$test_date);
 for($i=0;$i<count($pk_id_active);$i++){
     if($pk_id_active[$i]==1) {
         $activeid[] = $pk_id[$i];
+        $activeinstarts[] = $start_date[$i];
+        $activeinends[] = $end_date[$i];
+        $activeintests[] = $test_date[$i];
         $a++;
     }
 }
+
 for($i=0;$i<count($activeid);$i++){
-    $starts[$activeid[$i]] = $start_date[$i];
-    $ends[$activeid[$i]] = $end_date[$i];
-    $tests[$activeid[$i]] = $test_date[$i];
+    $starts[$activeid[$i]] = $activeinstarts[$i];
+    $ends[$activeid[$i]] = $activeinends[$i];
+    $tests[$activeid[$i]] = $activeintests[$i];
 }
 
 //계약상 착공일 등록
@@ -100,9 +105,6 @@ while($me_code = sql_fetch_array($ress)) {
         if ($row["submit_date_type"] == 1) { //입주예정일
             $nowdate = date("Y-m-d", strtotime($date, strtotime($date4)));
         }
-        /*if ($row["submit_date_type"] == 2) { //시험예정일
-            $nowdate = date("Y-m-d", strtotime($date, strtotime($date2));
-        }*/
         if ($row["submit_date_type"] == 3) { // 준공일
             $nowdate = date("Y-m-d", strtotime($date, strtotime($date3)));
         }
@@ -201,6 +203,7 @@ while ($row = sql_fetch_array($res)) {
             } else {
                 $date = "+" . $row2["submit_date"]. " day";
             }
+
             if ($row2["submit_date_type"] == 0) {
                 $nowdate = date("Y-m-d", strtotime($date, strtotime($starts[$row["pk_id"]])));
             }
@@ -277,6 +280,8 @@ while ($row = sql_fetch_array($res)) {
               status = 0,
               schedule_type = 2
             ";
+
+            //echo $sql."//".$starts[$row["pk_id"]]."//".$date."<br>";
 
             sql_query($sql);
             //echo $sql . "<br>";

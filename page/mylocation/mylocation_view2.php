@@ -2,6 +2,8 @@
 include_once ("../../common.php");
 $sub = "sub";
 $bbody = "board";
+$menu_id = "depth_desc_construct";
+$mypage = true;
 include_once (G5_PATH."/head.php");
 
 $sql = "select * from `cmap_my_construct` where id = '{$constid}'";
@@ -25,7 +27,7 @@ if($view["mb_id"]!=$member["mb_id"]) {
         <header class="top">
             <h2>현장관리</h2>
             <div class="logout">
-                <a href="<?php echo G5_BBS_URL;?>/logout"><span></span>로그아웃</a>
+                <a href="javascript:fnLogout();"><span></span>로그아웃</a>
             </div>
         </header>
         <div class="mylocation">
@@ -39,17 +41,67 @@ if($view["mb_id"]!=$member["mb_id"]) {
             <div class="myloc">
                 <h3><i></i> 공종현황</h3>
                 <div class="myloc_btns">
-                    <?php if($chk==true){?>
-                    <input type="button" value="초대하기" onclick="fnConstInvite();" class="basic_btn02">
+                    <?php if($member["mb_level"]==5){?>
+                        <input type="button" value="목록" onclick="location.href=g5_url+'/page/manager/pm_construct'" class="basic_btn02">
+                    <?php }else{?>
+                        <input type="button" value="목록" onclick="location.href=g5_url+'/page/mylocation/mylocation'" class="basic_btn02">
+                    <?php }?>
+                    <?php if($chk!=false && $member["mb_level"]<5){?>
+                        <input type="button" value="초대하기" onclick="fnConstInvite('<?php echo $constid;?>');" class="basic_btn02">
+                        <!--<input type="button" value="공유하기" onclick="fnConstShare('<?php /*echo $id;*/?>');" class="basic_btn02">-->
                         <?php if($member["mb_id"]==$view["mb_id"]){?>
-                    <input type="button" value="수정" onclick="fnConstEdit('2','<?php echo $constid;?>');" class="basic_btn03">
+                            <input type="button" value="수정" onclick="fnConstEdit('2','<?php echo $constid;?>');" class="basic_btn03">
                         <?php }?>
-                    <input type="button" value="복사" onclick="fnConstCopy();" class="basic_btn02">
-                    <input type="button" value="복구" onclick="fnConstRestore();" class="basic_btn02">
-                    <input type="button" value="저장" onclick="fnConstSave();" class="basic_btn02">
+                        <input type="button" value="복사" onclick="fnConstCopy('<?php echo $constid;?>');" class="basic_btn02">
+                        <input type="button" value="복구" onclick="fnConstRestore('<?php echo $member["mb_id"];?>','<?php echo $constid;?>');" class="basic_btn02">
+                        <input type="button" value="저장" onclick="fnConstSave('<?php echo G5_URL;?>/page/mylocation/save_mylocation_set?mb_id=<?php echo $member["mb_id"];?>&constid=<?php echo $constid;?>');" class="basic_btn02">
+                        <?php if($member["mb_id"]!=$view["mb_id"]){?>
+                            <input type="button" value="탈퇴" onclick="fnConstLeave('<?php echo $member["mb_id"]?>','<?php echo $constid;?>');" class="basic_btn02">
+                        <?php }?>
+                    <?php }else{?>
+                        <?php if($member["mb_level"]==5){
+                            if(strpos($member["mb_id"],$view["manager_mb_id"])!==false){}else{
+                                ?>
+                                <input type="button" value="PM요청" onclick="fnConstJoinPm('<?php echo $view["mb_id"];?>','<?php echo $constid;?>');" class="basic_btn02">
+                            <?php }
+                        }else if($member["mb_level"]<5){?>
+                            <input type="button" value="사용요청" onclick="fnConstJoin('<?php echo $member["mb_id"];?>','<?php echo $constid;?>');" class="basic_btn02">
+                        <?php }?>
                     <?php }?>
                 </div>
                 <div class="">
+                    <table class="write_date1">
+                        <tr>
+                            <th>계약상 착공일</th>
+                            <td>
+                                <?php echo ($view["cmap_construct_start_temp"])?$view["cmap_construct_start_temp"]:date("Y-m-d");?>
+                            </td>
+                        </tr>
+                    </table>
+                    <table class="write_date2">
+                        <tr>
+                            <th>실 착공일</th>
+                            <td>
+                                <?php echo ($view["cmap_construct_start"])?$view["cmap_construct_start"]:date("Y-m-d");?>
+                            </td>
+                        </tr>
+                    </table>
+                    <table class="write_date3">
+                        <tr>
+                            <th>준공일</th>
+                            <td>
+                                <?php echo ($view["cmap_construct_finish"])?$view["cmap_construct_finish"]:date("Y-m-d", strtotime(" +1 month"));?>
+                            </td>
+                        </tr>
+                    </table>
+                    <table class="write_date4">
+                        <tr>
+                            <th>입주예정일</th>
+                            <td>
+                                <?php echo ($view["cmap_construct_inmove"])?$view["cmap_construct_inmove"]:date("Y-m-d", strtotime(" +1 month"));?>
+                            </td>
+                        </tr>
+                    </table>
                     <table>
                         <tr>
                             <th>공종명</th>

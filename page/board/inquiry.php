@@ -1,8 +1,6 @@
 <?php
 include_once ("../../common.php");
-if($member["mb_auth"]==false){
-    alert("무료 이용기간이 만료 되었거나,\\r맴버쉽 기간이 만료 되었습니다. \\n맴버쉽 구매후 이용바랍니다.",G5_URL);
-}
+
 $bbody = "board";
 $sub = "sub";
 $mypage = true;
@@ -105,7 +103,7 @@ for ($i=0;$row=sql_fetch_array($result);$i++){
                         <li>
                             <h3 onclick="return faq_open(this);"><span class="tit_bg">Q</span><a href="#none" ><?php echo conv_content($v['fa_subject'], 1); ?></a></h3>
                             <div class="con_inner">
-                                <span class="tit_bg">A</span>
+                                <!--<span class="tit_bg">A</span>-->
                                 <?php echo conv_content($v['fa_content'], 1); ?>
                                 <!-- <div class="con_closer"><button type="button" class="closer_btn btn_b03">닫기</button></div> -->
                             </div>

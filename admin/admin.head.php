@@ -89,8 +89,9 @@ while($row = sql_fetch_array($res)){
                     <li class="accordion" data-accordion>
                         <div data-control class="list-title">게시물관리</div>
                         <div data-content class="list-item">
-                            <div><a href="<?php echo G5_URL."/admin/faq"; ?>">FAQ관리</a></div>
+                            <div><a href="<?php echo G5_URL."/admin/faq?fm_id=1"; ?>">자주묻는질문관리</a></div>
                             <div><a href="<?php echo G5_URL."/admin/inquiry"; ?>">제안관리</a></div>
+                            <!--<div><a href="<?php /*echo G5_URL."/admin/board"; */?>">게시판관리</a></div>-->
                         </div>
                     </li>
                     <li class="accordion" data-accordion>

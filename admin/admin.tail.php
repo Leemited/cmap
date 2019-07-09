@@ -39,7 +39,7 @@
             <input type="text" name="etc1name[]" id="etcname1_3" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="사례명">
             <input type="text" name="etc1[]" id="etc1_3" value="" class="text ui-widget-content ui-corner-all grid_70">-->
             <label for="files1">다운로드 1</label>
-            <input type="text" name="filenames2[]" id="filesname1" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="참고파일명">
+            <input type="text" name="filenames2[]" id="filesnames1" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="참고파일명">
             <input type="file" name="files[]" id="files1" class="text ui-widget-content ui-corner-all grid_70" >
             <div class="add_files1"></div>
             <label for="files2">다운로드 2</label>
@@ -47,9 +47,21 @@
             <input type="file" name="files[]" id="files2" class="text ui-widget-content ui-corner-all grid_70" >
             <div class="add_files2"></div>
             <label for="files3">다운로드 3</label>
-            <input type="text" name="filenames2[]" id="filesname3" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="참고파일명">
+            <input type="text" name="filenames2[]" id="filesnames3" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="참고파일명">
             <input type="file" name="files[]" id="files3" class="text ui-widget-content ui-corner-all grid_70" >
             <div class="add_files3"></div>
+            <label for="files11">감사사례 1</label>
+            <input type="text" name="filenames3[]" id="filesnames11" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="참고파일명">
+            <input type="file" name="filess[]" id="files11" class="text ui-widget-content ui-corner-all grid_70" >
+            <div class="add_files11"></div>
+            <label for="files22">감사사례 2</label>
+            <input type="text" name="filenames3[]" id="filesnames22" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="참고파일명">
+            <input type="file" name="filess[]" id="files22" class="text ui-widget-content ui-corner-all grid_70" >
+            <div class="add_files22"></div>
+            <label for="files33">감사사례 3</label>
+            <input type="text" name="filenames3[]" id="filesnames33" value="" class="text ui-widget-content ui-corner-all grid_30" placeholder="참고파일명">
+            <input type="file" name="filess[]" id="files33" class="text ui-widget-content ui-corner-all grid_70" >
+            <div class="add_files33"></div>
             <!-- Allow form submission with keyboard without duplicating the dialog button -->
             <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
         </fieldset>
@@ -249,7 +261,25 @@
                 }else{
                     $("#"+data.id+" #files2").html('');
                 }
-                //console.log(data.sql);
+
+                if(data.filename3){
+                    var addfile = data.filename3.split("``");
+                    var addfilename = data.file_names3.split("``");
+                    var basicname = "감사사례";
+                    for(var i = 0 ; i < addfile.length; i++){
+                        if(addfile[i] != "") {
+                            if(addfilename[i] != "") {
+                                basicname = addfilename[i];
+                            }else{
+                                basicname = basicname + i;
+                            }
+                            var fileitem = '<a href="javascript:fnImage(\'' + addfile[i] + '\')" >'+basicname+'</a><br>';
+                            $("#"+data.id+" #files3").append(fileitem);
+                        }
+                    }
+                }else{
+                    $("#"+data.id+" #files3").html('');
+                }
                 dialog.dialog( "close" );
             }
         });

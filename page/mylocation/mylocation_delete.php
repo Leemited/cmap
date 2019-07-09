@@ -32,6 +32,24 @@ if($mb_id){
         $sql = "delete from `cmap_myschedule` where construct_id = '{$constid}'";
         sql_query($sql);
 
+        $sql = "delete from `cmap_my_construct_eval` where const_id = '{$constid}'";
+        sql_query($sql);
+
+        $sql = "delete from `cmap_my_construct_map` where const_id = '{$constid}'";
+        sql_query($sql);
+
+        $sql = "delete from `cmap_my_construct_eval_temp` where const_id = '{$constid}'";
+        sql_query($sql);
+
+        $sql = "delete from `cmap_my_construct_eval_temp` where const_id = '{$constid}'";
+        sql_query($sql);
+
+        $sql = "delete from `cmap_construct_invite` where const_id = '{$constid}'";
+        sql_query($sql);
+
+        /*$sql = "delete from `cmap_construct_work_msg` where const_id = '{$constid}'";
+        sql_query($sql);*/
+
         alert("삭제되었습니다.");
     } else {
         alert("정보 오류로 인해 삭제가 되지 않았습니다.");

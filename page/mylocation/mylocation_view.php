@@ -2,6 +2,8 @@
 include_once ("../../common.php");
 $sub = "sub";
 $bbody = "board";
+$menu_id = "depth_desc_construct";
+$mypage = true;
 include_once (G5_PATH."/head.php");
 
 $sql = "select * from `cmap_my_construct` where id = '{$constid}'";
@@ -17,13 +19,27 @@ if($view["mb_id"]!=$member["mb_id"]) {
     }
 }
 
+if($member["mb_level"]==5){
+    $sql = "select * from `cmap_my_pmmode_set` where mb_id = '{$member["mb_id"]}' and const_id = '{$constid}'";
+    $pmSet = sql_fetch($sql);
+
+    $mng_members = explode(",",$view["manager_mb_id"]);
+    $mmchk = false;
+    for($i = 0 ; $i<count($mng_members);$i++){
+        if($mng_members[$i]==$member["mb_id"]){
+            $mmchk = true;
+        }
+    }
+}
+
+
 ?>
 <div class="width-fixed">
     <section class="sub_sec" id="mypages">
         <header class="top">
             <h2>현장관리</h2>
             <div class="logout">
-                <a href="<?php echo G5_BBS_URL;?>/logout"><span></span>로그아웃</a>
+                <a href="javascript:fnLogout();"><span></span>로그아웃</a>
             </div>
         </header>
         <div class="mylocation">
@@ -37,8 +53,12 @@ if($view["mb_id"]!=$member["mb_id"]) {
             <div class="myloc">
                 <h3><i></i> 공사개요</h3>
                 <div class="myloc_btns">
+                    <?php if($member["mb_level"]==5){?>
+                    <input type="button" value="목록" onclick="location.href=g5_url+'/page/manager/pm_construct'" class="basic_btn02">
+                    <?php }else{?>
                     <input type="button" value="목록" onclick="location.href=g5_url+'/page/mylocation/mylocation'" class="basic_btn02">
-                    <?php if($chk!=false){?>
+                    <?php }?>
+                    <?php if($chk!=false && $member["mb_level"]<5){?>
                     <input type="button" value="초대하기" onclick="fnConstInvite('<?php echo $constid;?>');" class="basic_btn02">
                     <!--<input type="button" value="공유하기" onclick="fnConstShare('<?php /*echo $id;*/?>');" class="basic_btn02">-->
                     <?php if($member["mb_id"]==$view["mb_id"]){?>
@@ -50,8 +70,15 @@ if($view["mb_id"]!=$member["mb_id"]) {
                         <?php if($member["mb_id"]!=$view["mb_id"]){?>
                         <input type="button" value="탈퇴" onclick="fnConstLeave('<?php echo $member["mb_id"]?>','<?php echo $constid;?>');" class="basic_btn02">
                         <?php }?>
-                    <?php }else{?>
-                    <input type="button" value="사용요청" onclick="fnConstJoin();" class="basic_btn02">
+                    <?php }else{ ?>
+                        <?php if($member["mb_level"]==5){
+                            if($mmchk==false){
+                            ?>
+                        <input type="button" value="PM요청" onclick="fnConstJoinPm('<?php echo $view["mb_id"];?>','<?php echo $constid;?>');" class="basic_btn02">
+                        <?php }
+                            }else if($member["mb_level"]<5){?>
+                        <input type="button" value="사용요청" onclick="fnConstJoin('<?php echo $member["mb_id"];?>','<?php echo $constid;?>');" class="basic_btn02">
+                        <?php }?>
                     <?php }?>
                 </div>
                 <div class="info_construct1">
@@ -115,7 +142,7 @@ if($view["mb_id"]!=$member["mb_id"]) {
                         <tr>
                             <th colspan="2">사용자정보</th>
                             <th>최종저장일</th>
-                            <th>복사대상</th>
+                            <th <?php if($member["mb_level"]==5){?>style="display:none" <?php }?>>복사대상</th>
                         </tr>
                         <tr>
                             <th>개설자</th>
@@ -128,9 +155,9 @@ if($view["mb_id"]!=$member["mb_id"]) {
                                  echo ($last_save["save_date"])?$last_save["save_date"]:"저장내역없음";
                                 ?>
                             </th>
-                            <td class="td_center">
+                            <td class="td_center" <?php if($member["mb_level"]==5){?>style="display:none" <?php }?>>
                                 <?php if($member["mb_id"]!=$view["mb_id"]){?>
-                                <input type="checkbox" name="copy[]" id="copy_<?php echo $inmb["mb_no"];?>" value="<?php echo $inmb["mb_id"];?>">
+                                <input type="checkbox" name="copy[]" id="copy_<?php echo $inmb["mb_no"];?>" value="<?php echo $inmb["mb_id"];?>" <?php if($member["mb_level"]==5){?>disabled<?php }?>>
                                 <label for="copy_<?php echo $inmb["mb_no"];?>"></label>
                                 <?php }?>
                             </td>
@@ -147,9 +174,9 @@ if($view["mb_id"]!=$member["mb_id"]) {
                                     <th>사용자<?php echo $i+1;?></th>
                                     <td><?php echo $mb["mb_name"];?></td>
                                     <th class="td_center"><?php echo ($last_save["save_date"])?$last_save["save_date"]:"저장내역없음";?></th>
-                                    <td class="td_center">
+                                    <td class="td_center" <?php if($member["mb_level"]==5){?>style="display:none" <?php }?>>
                                         <?php if($member["mb_id"]!=$mb["mb_id"]){?>
-                                        <input type="checkbox" name="copy[]" id="copy_<?php echo $mb["mb_no"];?>" value="<?php echo $mb["mb_id"];?>">
+                                        <input type="checkbox" name="copy[]" id="copy_<?php echo $mb["mb_no"];?>" value="<?php echo $mb["mb_id"];?>" <?php if($member["mb_level"]==5){?>disabled<?php }?>>
                                         <label for="copy_<?php echo $mb["mb_no"];?>"></label>
                                         <?php }?>
                                     </td>
@@ -167,9 +194,11 @@ if($view["mb_id"]!=$member["mb_id"]) {
                 </div>
                 <div class="clear"></div>
             </div>
-            <?php if($member["mb_level"]==5 && $view["manager_mb_id"]==$member["mb_id"]){?>
+            <?php if($member["mb_level"] == 5 && strpos($view["manager_mb_id"],$member["mb_id"])!==false){
+                if($mmchk==true){
+                ?>
             <div class="mb_area " >
-                <h3><i></i> 책임기술자 버전 <span>(관련법령에 따라 책임기술자가 업무를 분장하고, 기술자별 업무 처리 현황을 자동으로 업데이트 합니다.)</span></h3>
+                <h3><i></i> PROJECT 담당자 설정 <span>(PM모드에 적용 할 담당자를 지정 합니다)</span></h3>
                 <div class="info_construct5">
                     <table>
                         <tr>
@@ -190,7 +219,7 @@ if($view["mb_id"]!=$member["mb_id"]) {
                             </th>
                             <td class="td_center">
                                 <?php if($member["mb_id"]!=$view["mb_id"]){?>
-                                    <input type="checkbox" name="pm_copy[]" id="pm_copy_<?php echo $inmb["mb_no"];?>" value="<?php echo $inmb["mb_id"];?>" onclick="location.href=g5_url+'/page/mylocation/mylocation_pm_dataset?mb_id='+this.value">
+                                    <input type="checkbox" name="pm_copy[]" id="pm_copy_<?php echo $inmb["mb_no"];?>" value="<?php echo $inmb["mb_id"];?>" <?php if($pmSet["set_mb_id"]!=$mb["mb_id"]){?>onclick="fnConfrimSavePM(this.value,'<?php echo $constid;?>','<?php echo $inmb["mb_name"];?>')"<?php }?> <?php if($pmSet["set_mb_id"]==$mb["mb_id"]){?>checked disabled<?php }?>>
                                     <label for="pm_copy_<?php echo $inmb["mb_no"];?>"></label>
                                 <?php }?>
                             </td>
@@ -209,7 +238,7 @@ if($view["mb_id"]!=$member["mb_id"]) {
                                     <th class="td_center"><?php echo ($last_save["save_date"])?$last_save["save_date"]:"저장내역없음";?></th>
                                     <td class="td_center">
                                         <?php if($member["mb_id"]!=$mb["mb_id"]){?>
-                                            <input type="checkbox" name="pm_copy[]" id="pm_copy_<?php echo $mb["mb_no"];?>" value="<?php echo $mb["mb_id"];?>" onclick="location.href=g5_url+'/page/mylocation/mylocation_pm_dataset?mb_id='+this.value">
+                                            <input type="checkbox" name="pm_copy[]" id="pm_copy_<?php echo $mb["mb_no"];?>" value="<?php echo $mb["mb_id"];?>" onclick="location.href=g5_url+'/page/mylocation/mylocation_pm_dataset?mb_id='+this.value+'&const_id=<?php echo $constid;?>'" <?php if($pmSet["set_mb_id"]==$mb["mb_id"]){?>checked<?php }?>>
                                             <label for="pm_copy_<?php echo $mb["mb_no"];?>"></label>
                                         <?php }?>
                                     </td>
@@ -243,9 +272,18 @@ if($view["mb_id"]!=$member["mb_id"]) {
                 </div>-->
             </div>
             <?php }?>
+            <?php }?>
         </div>
     </section>
 </div>
+<script>
+    function fnConfrimSavePM(mb_id,constid,mbname){
+        if(confirm("담당자를" + mbname + '로 변경합니다. ')) {
+            location.href = g5_url + '/page/mylocation/mylocation_pm_dataset?mb_id=' + mb_id + '&const_id='+ constid;
+        }
+    }
+</script>
+
 <?php
 include_once (G5_PATH."/tail.php");
 ?>

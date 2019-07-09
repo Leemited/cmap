@@ -25,7 +25,7 @@ $(function() {
 </script>
 <![endif]-->
 <?php
-//@include_once(G5_PATH."/plugin/login_dup_check.php");
+@include_once(G5_PATH."/plugin/login_dup_check.php");
 ?>
     </body>
 </html>

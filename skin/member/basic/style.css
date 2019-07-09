@@ -333,7 +333,7 @@ position:absolute;z-index:-1;top:2%;bottom:0;left:10px;right:10px;
 body{font-family: 'nsr', serif;}
 /* font-family: 'Nanum Myeongjo', serif; */
 
-.login_hd{position: relative; top: 0; left: 0; margin:5% auto; display: inline-block; width: 100%;}
+.login_hd{position: absolute; top: 50%; left: 0; margin:0 auto; display: inline-block; width: 100%;-webkit-transform: translateY(-50%);-moz-transform: translateY(-50%);-ms-transform: translateY(-50%);-o-transform: translateY(-50%);transform: translateY(-50%);}
 .login_hd .head{margin: 0 auto;position: relative;
 display: table;
 width: 820px;}

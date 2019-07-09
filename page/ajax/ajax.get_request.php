@@ -15,6 +15,10 @@ if($const_id){
 $sql = "select *,i.id as invite_id,c.id as const_id from `cmap_construct_invite` as i left join `cmap_my_construct` as c on i.const_id = c.id where {$where}";
 $res = sql_query($sql);
 $num = sql_num_rows($res);
+
+$sql2 = "select *,i.id as pm_invite_id,c.id as const_id from `cmap_pmmode_invite` as i left join `cmap_my_construct` as c on i.const_id = c.id where {$where}";
+$res2 = sql_query($sql2);
+$num2 = sql_num_rows($res2);
 ?>
 <table>
     <colgroup>
@@ -41,10 +45,11 @@ if($num!=0){
             }else{//상대방이 보냄
                 $mb = get_member($row["send_mb_id"]);
             }
+
 ?>
 <tr class="main_lists" id="invite_<?php echo $row["invite_id"];?>">
-    <td><?php echo $mb["mb_name"];?></td>
-    <td><?php echo $row["cmap_name"];?></td>
+    <td><?php if($mb['mb_level']==5){echo "PM ";} echo $mb["mb_name"];?></td>
+    <td> <?php if($mb['mb_level']==5){echo "[PM 요청] ";};?><?php echo $row["cmap_name"];?></td>
     <td>
         <?php if($mb_id==$row["send_mb_id"] || ($row["msg_type"]==1 && $mb_id==$row["send_mb_id"])){?>
             승인대기중
@@ -56,7 +61,9 @@ if($num!=0){
 <?php
     }
 ?>
-<?php }else{?>
+
+
+    <?php }else{?>
     <tr><td colspan="3" class="td_center">승인요청 및 요청이력이 없습니다.</td></tr>
 <?php }?>
 </table>

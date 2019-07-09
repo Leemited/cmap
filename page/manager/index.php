@@ -2,8 +2,13 @@
 include_once ("../../common.php");
 $sub = "sub";
 $bbody = "board";
-$mypage = false;
-$menu_id = "";
+$mypage = true;
+$menu_id = "depth_desc_pmmode";
+$test = "mng";
+if(!$is_member){
+    goto_url(G5_BBS_URL."/login?url=".G5_URL."/page/mylocation/mylocation");
+}
+
 if($member["mb_level"]<5){
     alert("권한이 없습니다.", G5_URL);
 }
@@ -11,20 +16,113 @@ if($member["mb_level"]<5){
 include_once (G5_PATH."/_head.php");
 include_once(G5_PLUGIN_PATH.'/jquery-ui/datepicker.php');
 
-$total=sql_fetch("select count(*) as cnt from `cmap_my_construct` where manager_mb_id='{$member["mb_id"]}' {$where} {$where1}");
-if(!$page)
-    $page=1;
-$total=$total['cnt'];
-$rows=15;
-$start=($page-1)*$rows;
-$total_page=ceil($total/$rows);
+$today = date("Y-m-d");
 
-$sql = "select * from `cmap_my_construct` where manager_mb_id='{$member["mb_id"]}'  {$where} {$where1} order by id desc limit {$start},{$rows}";
+if($sfl==1){
+    $where .= " and date_format(cmap_construct_finish,'%Y-%m-%d') >= '{$todays}'";
+}
+
+if($stx){
+    $where .= " and (cmap_name like '%{$stx}%' or cmap_name_service like '%{$stx}%')";
+}
+
+$sql = "select * from `cmap_my_construct` where instr(manager_mb_id,'{$member["mb_id"]}')!=0 and status = 0  {$where} order by id desc";
 $res = sql_query($sql);
 $c = 0;
 while($row = sql_fetch_array($res)){
     $worklist[$c] = $row;
-    $worklist[$c]['num']=$total-($start)-$c;
+    $sql = "select * from `cmap_my_pmmode_set` where mb_id='{$member["mb_id"]}' and const_id = '{$row["id"]}'";
+    $ss = sql_fetch($sql);
+    if($ss!=null){
+        //등록자 설정
+        $activesql_pm = "select * from `cmap_my_construct_map` where mb_id ='{$ss["set_mb_id"]}' and const_id = '{$row["id"]}'";
+        $activechk_pm = sql_fetch($activesql_pm);
+        $map_pk_id_pm = explode("``",$activechk_pm["pk_ids"]);
+        $map_pk_actives_pm = explode("``",$activechk_pm["pk_actives"]);
+        $map_pk_actives_date_pm = explode("``",$activechk_pm["pk_actives_date"]);
+
+        $delaysql_pm = "select * from `cmap_myschedule` where construct_id = '{$row["id"]}' and schedule_date < '{$today}' and pk_id <> '' ";
+        $delayres_pm = sql_query($delaysql_pm);
+        $a=0;
+        $delaycount=$delaydate=$totaldates=0;
+        while($delayrow_pm = sql_fetch_array($delayres_pm)){
+            $pk_ids = explode("``",$delayrow_pm["pk_id"]);
+
+            $diff = strtotime($today) - strtotime($delayrow_pm["schedule_date"]);
+
+            $days = $diff / (60*60*24);
+
+            for($i=0;$i<count($pk_ids);$i++){
+                for($j=0;$j<count($map_pk_id_pm);$j++){
+                    if($pk_ids[$i]==$map_pk_id_pm[$j]){
+                        $sql = "select *,c.pk_id as pk_id,d.pk_id as depth4_pk_id,c.depth1_id as depth1_id, a.pk_id as depth1_pk_id,a.depth_name as depth1_name,d.depth_name as depth_name from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$pk_ids[$i]}'";
+                        $ddd = sql_fetch($sql);
+                        if(strpos($id,$ddd["pk_id"])!==false) {
+                            continue;
+                        }
+                        $id .= ','.$ddd["pk_id"];
+                        $delaycount++;
+                        $delaydate += $days;
+                        if($map_pk_actives_pm[$j]==1){
+                            $delaycount--;
+                            $delaydate -= $days;
+                        }
+                    }
+                }
+            }
+        }
+        $totaldates = round($delaydate / $delaycount,2);
+        $worklist[$c]["delaycount"] = $delaycount;
+        $worklist[$c]["delaydate"] = $delaydate;
+        $worklist[$c]["delaytotal"] = $totaldates;
+    }else{
+        //등록이 안되어 있으면 개설자 설정
+        //등록자 설정
+        $activesql_pm = "select * from `cmap_my_construct_map` where mb_id ='{$row["mb_id"]}' and const_id = '{$row["id"]}'";
+        $activechk_pm = sql_fetch($activesql_pm);
+        $map_pk_id_pm = explode("``",$activechk_pm["pk_ids"]);
+        $map_pk_actives_pm = explode("``",$activechk_pm["pk_actives"]);
+        $map_pk_actives_date_pm = explode("``",$activechk_pm["pk_actives_date"]);
+
+        $delaysql_pm = "select * from `cmap_myschedule` where construct_id = '{$row["id"]}' and schedule_date < '{$today}' and pk_id <> '' ";
+        $delayres_pm = sql_query($delaysql_pm);
+        $a=0;
+        $delaycount=$delaydate=$totaldates=0;
+        while($delayrow_pm = sql_fetch_array($delayres_pm)){
+            $pk_ids = explode("``",$delayrow_pm["pk_id"]);
+
+            $diff = strtotime($today) - strtotime($delayrow_pm["schedule_date"]);
+
+            $days = $diff / (60*60*24);
+
+            for($i=0;$i<count($pk_ids);$i++){
+                for($j=0;$j<count($map_pk_id_pm);$j++){
+                    if($pk_ids[$i]==$map_pk_id_pm[$j]){
+                        $sql = "select *,c.pk_id as pk_id,d.pk_id as depth4_pk_id,c.depth1_id as depth1_id, a.pk_id as depth1_pk_id,a.depth_name as depth1_name,d.depth_name as depth_name from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$pk_ids[$i]}'";
+                        $ddd = sql_fetch($sql);
+                        if(strpos($id,$ddd["pk_id"])!==false) {
+                            continue;
+                        }
+                        $id .= ','.$ddd["pk_id"];
+                        $delaycount++;
+                        $delaydate += $days;
+                        if($map_pk_actives_pm[$j]==1){
+                            $delaycount--;
+                            $delaydate -= $days;
+                        }
+                    }
+                }
+            }
+        }
+        $totaldates = round($delaydate / $delaycount,'2');
+        $worklist[$c]["delaycount"] = $delaycount;
+        $worklist[$c]["delaydate"] = $delaydate;
+        $worklist[$c]["delaytotal"] = $totaldates;
+    }
+    $totalDelay += $worklist[$c]["delaycount"];
+    $totalDelayDate += $worklist[$c]["delaydate"];
+    $totalDelayDatePer += $worklist[$c]["delaytotal"];
+
     $c++;
 }
 ?>
@@ -32,35 +130,7 @@ while($row = sql_fetch_array($res)){
 
 </div>
 <span class="etc_view_bg"></span>
-<div class="search" style="position: relative;" id="msg_search">
-    <form action="" method="get">
-        <select name="search_type" id="search_type" class="basic_input01 width10">
-            <option value="" <?php if($_GET["search_type"]==""){?>selected<?php }?>>전체</option>
-            <option value="0" <?php if($_GET["search_type"]=="0"){?>selected<?php }?>>수신</option>
-            <option value="1" <?php if($_GET["search_type"]=="1"){?>selected<?php }?>>발신</option>
-        </select>
-        <select name="const_id" id="cons_id" class="basic_input01" >
-            <option value="">현장 선택</option>
-            <?php for($i=0;$i<count($mycont);$i++){?>
-                <option value="<?php echo $mycont[$i]["id"];?>" <?php if($const_id==$mycont[$i]["id"]){?>selected<?php }?>><?php echo $mycont[$i]["cmap_name"];?></option>
-            <?php }?>
-        </select>
-        <select name="sfl" id="sfl" class="basic_input01 width10">
-            <option value="" <?php if($sfl==""){?>selected<?php }?>>전체</option>
-            <option value="name" <?php if($sfl=="name"){?>selected<?php }?>>작성자</option>
-            <option value="msg_subject" <?php if($sfl=="msg_subject"){?>selected<?php }?>>제목</option>
-            <option value="msg_content" <?php if($sfl=="msg_content"){?>selected<?php }?>>내용</option>
-        </select>
-        <input type="submit" class="basic_btn01" value="검색">
-    </form>
-    <div class="work_msg_btns">
-        <input type="button" class="basic_btn03" value="지구관리">
-        <input type="button" class="basic_btn02" value="새로고침">
-        <input type="button" class="basic_btn02" value="저장">
-        <input type="button" class="basic_btn02" value="업무연락서" onclick="location.href=g5_url+'/page/mypage/my_message_list'">
-    </div>
-</div>
-<div class="width-fixed board-width" style="padding:0 20px">
+<div class="width-fixed board-width" style="padding:150px 20px 0 20px">
     <header class="sub">
         <h2>PROJECT MANAGER</h2>
     </header>
@@ -70,16 +140,16 @@ while($row = sql_fetch_array($res)){
     <div class="pm_tab">
         <ul>
             <li class="active">공무행정 제출 지연 현황</li>
-            <li onclick="location.href=g5_url+'/page/manager/pm_eval'">시공평가 점수 관리</li>
-            <li onclick="location.href=g5_url+'/page/manager/pm_eval2'">건설사업관리용역 평가 점수 관리</li>
+            <li onclick="location.href=g5_url+'/page/manager/pm_eval?mngType=2'">시공평가 점수 관리</li>
+            <li onclick="location.href=g5_url+'/page/manager/pm_eval2?mngType=3'">건설사업관리용역 평가 점수 관리</li>
         </ul>
     </div>
     <div class="view" style="padding:20px 0;">
         <table class="view_table" >
             <colgroup>
-                <col width="5%">
-                <col width="*">
+                <!--<col width="5%">-->
                 <col width="10%">
+                <col width="20%">
                 <col width="10%">
                 <col width="10%">
                 <col width="10%">
@@ -89,7 +159,8 @@ while($row = sql_fetch_array($res)){
                 <col width="10%">
             </colgroup>
             <tr>
-                <th>구분</th>
+                <!--<th>구분</th>-->
+                <th>PM 보고서</th>
                 <th>현장명</th>
                 <th>담당</th>
                 <th>착공일</th>
@@ -97,87 +168,92 @@ while($row = sql_fetch_array($res)){
                 <th>기간경과율</th>
                 <th>제출지연 건수 계</th>
                 <th>제출지연 일수 계</th>
-                <th>평군지연 일수 계</th>
+                <th>평균지연 일수 계</th>
             </tr>
-            <?php for($i=0;$i<count($worklist);$i++){
-                $constmb = get_member($worklist[$i]["mb_id"]);
-                //기간경과율 계산
-                $start = new DateTime($worklist[$i]["cmap_construct_start"]);
-                $todays = new DateTime($todays);
-                $end = new DateTime($worklist[$i]["cmap_construct_finish"]);
-                $totaldays = date_diff($start,$end);
-                $nows = date_diff($start,$todays);
-                $todals = $totaldays->days;
-                $nowdays = $nows->days;
-                $dayper = $nowdays - $totals * 100;
-                if($dayper>100){
-                    $dayper = "준공";
-                }else{
-                    $dayper .= "%";
-                }
-                //제출지연건수 (PM이 선택한 사람만 가져오기)
-
-                //제출지연일수
-
-                //
-
-
-                ?>
-                <tr>
-                    <td class="td_center">
-                        <input type="checkbox" name="const_id[]" id="const_<?php echo $worklist[$i]["id"];?>">
-                        <label for="const_<?php echo $worklist[$i]["id"];?>"></label>
-                    </td>
-                    <td class="td_center" onclick="location.href=g5_url+'/page/mylocation/mylocation_view?constid=<?php echo $worklist[$i]["id"];?>'"><?php echo $worklist[$i]["cmap_name"];?></td>
-                    <td class="td_center"><?php echo $constmb["mb_name"];?></td>
-                    <td class="td_center"><?php echo $worklist[$i]["cmap_construct_start"];?></td>
-                    <td class="td_center"><?php echo $worklist[$i]["cmap_construct_finish"];?></td>
-                    <td class="td_center"><?php echo $dayper;?></td>
-                    <td class="td_center"></td>
-                    <td class="td_center"></td>
-                    <td class="td_center"></td>
-                </tr>
-                <?php
-            } ?>
-            <?php if(count($worklist)==0){?>
-                <tr>
-                    <td colspan="7" class="td_center">발신/수신된 업무연락서가 없습니다.</td>
-                </tr>
-            <?php   }?>
         </table>
-        <?php
-        if($total_page>1){
-            $start_page=1;
-            $end_page=$total_page;
-            if($total_page>5){
-                if($total_page<($page+2)){
-                    $start_page=$total_page-4;
-                    $end_page=$total_page;
-                }else if($page>3){
-                    $start_page=$page-2;
-                    $end_page=$page+2;
-                }else{
-                    $start_page=1;
-                    $end_page=5;
-                }
-            }
-            ?>
-            <div class="num_list01">
-                <ul>
-                    <?php if($page!=1){?>
-                        <li class="prev"><a href="<?php echo G5_URL."/page/manager/?page=".($page-1)."&sfl=".$sfl."&date1=".$date1."&date2=".$date2."&search_type=".$search_type."&search_text=".$search_text."&const_id=".$const_id; ?>">&lt;</a></li>
-                    <?php } ?>
-                    <?php for($i=$start_page;$i<=$end_page;$i++){ ?>
-                        <li class="<?php echo $page==$i?"active":""; ?>"><a href="<?php if($page!=$i){?><?php echo G5_URL."/page/manager/?page=".$i."&sfl=".$sfl."&date1=".$date1."&date2=".$date2."&search_type=".$search_type."&search_text=".$search_text."&const_id=".$const_id; ?><?php }else{?>#<?php }?>"><?php echo $i; ?></a></li>
-                    <?php } ?>
-                    <?php if($page<$total_page){?>
-                        <li class="next"><a href="<?php echo G5_URL."/page/manager/?page=".($page+1)."&sfl=".$sfl."&date1=".$date1."&date2=".$date2."&search_type=".$search_type."&search_text=".$search_text."&const_id=".$const_id; ?>">&gt;</a></li>
-                    <?php } ?>
-                </ul>
-            </div>
-            <?php
-        }
-        ?>
+        <div class="pm_view">
+            <table class="view_table" >
+                <colgroup>
+                    <!--<col width="5%">-->
+                    <col width="10%">
+                    <col width="20%">
+                    <col width="10%">
+                    <col width="10%">
+                    <col width="10%">
+                    <col width="10%">
+                    <col width="10%">
+                    <col width="10%">
+                    <col width="10%">
+                </colgroup>
+                <?php for($i=0;$i<count($worklist);$i++){
+                        $constmb = get_member($worklist[$i]["mb_id"]);
+                        //기간경과율 계산
+                        if(date("Y-m-d") <= $worklist[$i]["cmap_construct_start"]){
+                            $dayper = "0%";
+                        }else {
+                            $start[$i] = new DateTime($worklist[$i]["cmap_construct_start"]);
+                            $todayss[$i] = new DateTime($todays);
+                            $end[$i] = new DateTime($worklist[$i]["cmap_construct_finish"]);
+                            $totaldays = date_diff($start[$i], $end[$i]);
+                            $nows = date_diff($start[$i], $todayss[$i]);
+                            $totals = $totaldays->days;
+                            $nowdays = $nows->days;
+                            $dayper = round(($nowdays / $totals) * 100, 2);
+                            if ($dayper > 100) {
+                                $dayper = "준공";
+                            } else if ($dayper <= 99 && $dayper >= 0) {
+                                $dayper .= "%";
+                            } else {
+                                $dayper = "0%";
+                            }
+                        }
+                    ?>
+                    <tr>
+                        <!--<td class="td_center">
+                            <input type="checkbox" name="const_id[]" id="const_<?php /*echo $worklist[$i]["id"];*/?>" checked value="<?php /*echo $worklist[$i]["id"];*/?>">
+                            <label for="const_<?php /*echo $worklist[$i]["id"];*/?>"></label>
+                        </td>-->
+                        <td class="td_center">
+                            <input type="button" value="보고서" class="basic_btn02" style="padding:5px 10px;" onclick="fnPmPreview(1,'<?php echo $worklist[$i]["id"];?>')">
+                        </td>
+                        <td class="td_center" onclick="location.href=g5_url+'/page/mylocation/mylocation_view?constid=<?php echo $worklist[$i]["id"];?>'" ><?php echo $worklist[$i]["cmap_name"];?></td>
+                        <td class="td_center" style=""><?php echo $constmb["mb_name"];?></td>
+                        <td class="td_center"><?php echo $worklist[$i]["cmap_construct_start"];?></td>
+                        <td class="td_center"><?php echo $worklist[$i]["cmap_construct_finish"];?></td>
+                        <td class="td_center"><?php echo $dayper;?></td>
+                        <td class="td_center"><?php echo $worklist[$i]["delaycount"];?> 건</td>
+                        <td class="td_center"><?php echo $worklist[$i]["delaydate"];?> 일</td>
+                        <td class="td_center"><?php echo $worklist[$i]["delaytotal"];?> 일</td>
+                    </tr>
+                    <?php
+                } ?>
+                <?php if(count($worklist)==0){?>
+                    <tr>
+                        <td colspan="7" class="td_center">등록된 PM현장이 없습니다.</td>
+                    </tr>
+                <?php   }?>
+            </table>
+        </div>
+        <table class="view_table point_view">
+            <colgroup>
+                <col width="5%">
+                <col width="15%">
+                <col width="10%">
+                <col width="10%">
+                <col width="10%">
+                <col width="10%">
+                <col width="10%">
+                <col width="10%">
+                <col width="10%">
+            </colgroup>
+            <tr>
+                <td colspan="5">소계</td>
+                <td>계</td>
+                <td><?php echo $totalDelay;?> 건</td>
+                <td><?php echo $totalDelayDate;?> 일</td>
+                <td><?php echo $totalDelayDatePer;?> 일</td>
+            </tr>
+        </table>
     </div>
 </div>
 <script>

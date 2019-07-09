@@ -34,7 +34,7 @@ for ($i=0;$i<count($list);$i++) {
     <td class="td_center"><?php echo $mb["mb_name"];?></td>
     <td><div style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;width: 100%;display:inline-block;max-width:860px;"><?php echo "현장명 : ".$list[$i]["cmap_name"]." | 용역명 : ".$list[$i]["cmap_name_service"];?></div></td>
     <td class="td_center"><?php echo $insert_date;?></td>
-    <td class="td_center">
+    <td class="td_center <?php if($chk_send==null && !$chk_members){?>last2<?php }?>"  <?php if($chk_send!=null){?>colspan="2"<?php }else{if($chk_members){?>colspan="2"<?php }}?>>
         <?php if($chk_send!=null){?>
             <span>승인대기중</span>
         <?php }else{?>
@@ -42,6 +42,8 @@ for ($i=0;$i<count($list);$i++) {
                 <span>현장참여중</span>
             <?php }else{?>
                 <input type="button" value="상세보기" class="basic_btn02" style="padding:7px 10px" onclick="location.href=g5_url+'/page/mylocation/mylocation_view?constid=<?php echo $list[$i]["id"];?>'">
+    </td>
+    <td class="td_center last2">
                 <input type="button" value="사용요청" class="basic_btn02" style="padding:7px 10px" onclick="fn_join('<?php echo $list[$i]["id"];?>','<?php echo $member["mb_id"];?>')">
             <?php }?>
         <?php }?>

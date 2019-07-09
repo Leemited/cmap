@@ -1,17 +1,21 @@
 <?php
 include_once ("../../common.php");
 
-if($id){
-    $where = " and construct_id = '{$id}'";
+if($const){
+    $where = " and construct_id = '{$const}'";
 }else{
-    $sql = "select * from `cmap_my_construct` where (mb_id = '{$mb_id}' or members in ('{$mb_id}')) and status = 0 ";
+    if($member["mb_level"]==5){
+        $sql = "select * from `cmap_my_construct` where INSTR(manager_mb_id,'{$mb_id}') != 0 and status = 0 ";
+    }else {
+        $sql = "select * from `cmap_my_construct` where (mb_id = '{$mb_id}' or INSTR(members,'{$mb_id}') != 0) and status = 0 ";
+    }
     $res = sql_query($sql);
     while($row = sql_fetch_array($res)){
         $const_id[] = $row["id"];
     }
     if(count($const_id)>0) {
         $constid = implode(",", $const_id);
-        $where = " and construct_id in ('{$constid}')";
+        $where = " and construct_id in ({$constid})";
     }
 }
 
@@ -25,13 +29,19 @@ if(count($list)==0){?>
     <li id="">일정이 없습니다.</li>
 <?php }else{?>
     <?php for($i=0;$i<count($list);$i++){?>
-        <li id="schedule_id_<?php echo $list[$i]["pk_id"];?>" title="<?php echo $list[$i]["schedule_name"];?>"><?php echo $list[$i]["schedule_name"];?></li>
+        <li id="schedule_id_<?php echo $list[$i]["pk_id"];?>" title="<?php echo $list[$i]["schedule_name"];?>" alt="<?php echo $list[$i]["construct_id"];?>"><?php echo $list[$i]["schedule_name"];?></li>
     <?php } ?>
 <?php } ?>
 
 <script>
     $("li[id^=schedule_id_]").each(function(){
         $(this).click(function(){
+            var consts = $(this).attr("alt");
+            $.ajax({
+                url:g5_url+'/page/ajax/ajax.current_construct_update.php',
+                method:"post",
+                data:{const_id:consts}
+            });
             if($(this).hasClass("active")){
                 $(this).removeClass("active");
                 $("#del_id").val('');
@@ -47,7 +57,7 @@ if(count($list)==0){?>
                 $.ajax({
                     url: g5_url + "/page/ajax/ajax.get_schedule_content.php",
                     method: "post",
-                    data: {pk_id: ids}
+                    data: {pk_id: ids,const:consts}
                 }).done(function (data) {
                     $(".detail_list").show();
                     $(".detail_list .lists").html('');

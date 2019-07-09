@@ -2,6 +2,7 @@
 include_once ("../../common.php");
 $sub = "sub";
 $mypage = true;
+$menu_id = "depth_desc_construct";
 include_once (G5_PATH."/head.php");
 
 include_once(G5_PLUGIN_PATH.'/jquery-ui/datepicker.php');
@@ -47,7 +48,7 @@ while($row = sql_fetch_array($res)){
         <header class="top">
             <h2>현장관리</h2>
             <div class="logout">
-                <a href="<?php echo G5_BBS_URL;?>/logout"><span></span>로그아웃</a>
+                <a href="javascript:fnLogout();"><span></span>로그아웃</a>
             </div>
         </header>
         <div class="construct_write">
@@ -58,7 +59,7 @@ while($row = sql_fetch_array($res)){
             </div>
             <form action="<?php echo G5_URL;?>/page/mylocation/mylocation_edit2_update" method="post" name="write_step3" id="write_step3" onsubmit="fnMylocations();">
                 <input type="hidden" value="<?php echo $constid;?>" name="constid">
-                <input type="hidden" value="" name="type" id="type">
+                <input type="hidden" value="<?php echo $type;?>" name="type" id="type">
                 <div class="write_box">
                     <table class="write_date1">
                         <tr>
@@ -193,7 +194,7 @@ while($row = sql_fetch_array($res)){
             var top = $(this).scrollTop();
             if(top > 400){
                 $(".sub_table_scroll").attr("style","display:table;position:fixed;top:0;width: calc(1600px - 83px);");
-                $(".save_btns").attr("style","position:fixed;top:10px;right:10px;");
+                $(".save_btns").attr("style","position:fixed;top:120px;right:10px;");
             }else{
                 $(".sub_table_scroll").attr("style","display:none;");
                 $(".save_btns").removeAttr("style");

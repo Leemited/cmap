@@ -1,11 +1,15 @@
 <?php
 include_once ("../../common.php");
+
+if(!$is_member){
+    goto_url(G5_BBS_URL."/login.php");
+}
+
 $sub = "sub";
 $bbody = "board";
-$mypage = false;
-$menu_id = "";
-include_once (G5_PATH."/_head.php");
-include_once(G5_PLUGIN_PATH.'/jquery-ui/datepicker.php');
+$mypage = true;
+$menu_id = "depth_desc_workmsg";
+$test = "msg";
 if(isset($_GET["const_id"])){
     $const_id = $_GET["const_id"];
 }else{
@@ -15,14 +19,16 @@ if(isset($_GET["const_id"])){
 if($const_id){
     $where .= " and const_id = '{$const_id}' ";
 }
-
 if($_GET["date1"] && $_GET["date2"]){
     $where .= " and send_date between '{$_GET["date1"]}' and '{$_GET["date2"]}'";
 }else{
-    $date1 = date("Y-m-d",strtotime("- 1 Year"));
+    $date1 = date("Y-m-d", strtotime("- 1 Year"));
     $date2 = date("Y-m-d");
     $where .= " and send_date between '{$date1}' and '{$date2}'";
 }
+include_once (G5_PATH."/_head.php");
+include_once(G5_PLUGIN_PATH.'/jquery-ui/datepicker.php');
+
 
 if($search_text) {
     if ($_GET["sfl"] == "name") {
@@ -111,35 +117,8 @@ while($row = sql_fetch_array($res)){
 
 </div>
 <span class="etc_view_bg"></span>
-<div class="search" style="position: relative;" id="msg_search">
-    <form action="" method="get">
-        <select name="const_id" id="cons_id" class="basic_input01" >
-            <option value="">현장 선택</option>
-            <?php for($i=0;$i<count($mycont);$i++){?>
-                <option value="<?php echo $mycont[$i]["id"];?>" <?php if($const_id==$mycont[$i]["id"]){?>selected<?php }?>><?php echo $mycont[$i]["cmap_name"];?></option>
-            <?php }?>
-        </select>
-        <input type="text" class="datepicker basic_input01 " style="width:120px;" id="datepicker1" name="date1" value="<?php if($date1==""){echo date("Y-m-d");}else{echo $date1;}?>">
-        <input type="text" class="datepicker basic_input01 " style="width:120px;" id="datepicker2" name="date2" value="<?php if($date2==""){echo date("Y-m-d");}else{echo $date2;}?>">
-        <select name="search_type" id="search_type" class="basic_input01 width10">
-            <option value="" <?php if($_GET["search_type"]==""){?>selected<?php }?>>전체</option>
-            <option value="0" <?php if($_GET["search_type"]=="0"){?>selected<?php }?>>수신</option>
-            <option value="1" <?php if($_GET["search_type"]=="1"){?>selected<?php }?>>발신</option>
-        </select>
-        <select name="sfl" id="sfl" class="basic_input01 width10">
-            <option value="" <?php if($sfl==""){?>selected<?php }?>>전체</option>
-            <option value="name" <?php if($sfl=="name"){?>selected<?php }?>>작성자</option>
-            <option value="msg_subject" <?php if($sfl=="msg_subject"){?>selected<?php }?>>제목</option>
-            <option value="msg_content" <?php if($sfl=="msg_content"){?>selected<?php }?>>내용</option>
-        </select>
-        <input type="text" class="basic_input01 width20" id="datepicker2" name="search_text" value="<?php echo $search_text;?>" placeholder="검색어">
-        <input type="submit" class="basic_btn03" value="검색">
-    </form>
-    <div class="work_msg_btns">
-        <input type="button" class="basic_btn02" value="작성하기" onclick="fnWriteMessage('')">
-    </div>
-</div>
-<div class="width-fixed board-width" style="padding:0 20px">
+
+<div class="width-fixed board-width" style="padding-left:20px;padding-right:20px;padding-top:180px;">
     <header class="sub">
         <h2>업무연락서 관리</h2>
     </header>
@@ -157,6 +136,7 @@ while($row = sql_fetch_array($res)){
                 <col width="8%">
                 <col width="8%">
                 <col width="8%">
+                <!--<col width="8%">-->
             </colgroup>
             <tr>
                 <th>번호</th>
@@ -167,6 +147,7 @@ while($row = sql_fetch_array($res)){
                 <th>발신일</th>
                 <th>수신일</th>
                 <th>회신완료</th>
+                <!--<th>회신기한</th>-->
             </tr>
             <?php for($i=0;$i<count($worklist);$i++){
                 if($worklist[$i]["send_mb_id"]!=$member["mb_id"]){
@@ -180,6 +161,8 @@ while($row = sql_fetch_array($res)){
                     $mb2[] = get_member($rmb);
                 }
                 $msg_read_members = explode(",",$worklist[$i]["msg_read_member"]);
+                $msg_read_date = explode(",",$worklist[$i]["read_date"]);
+                $msg_read_time = explode(",",$worklist[$i]["read_time"]);
                 if(count($read_mb_id)==count($msg_read_members)){
                     if($worklist[$i]["msg_read_member"]==""){
                         $read_tchk = false;
@@ -188,6 +171,21 @@ while($row = sql_fetch_array($res)){
                     }
                 }else{
                     $read_tchk = false;
+                }
+                $msg_read_info = "";
+                for($j=0;$j<count($msg_read_members);$j++){
+                    $read_mb = get_member($msg_read_members[$j]);
+                    if($msg_read_info){$msg_read_info .= ",";}
+                    $msg_read_info .= $read_mb["mb_name"]." ".$msg_read_date[$j]." ".$msg_read_time[$j];
+                }
+                $msg_retype_members = explode(",",$worklist[$i]["msg_retype_member"]);
+                $msg_retype_date = explode(",",$worklist[$i]["msg_retype_date"]);
+                $msg_retype_time = explode(",",$worklist[$i]["msg_retype_time"]);
+                $msg_retype_info = "";
+                for($j=0;$j<count($msg_retype_members);$j++){
+                    $read_mb = get_member($msg_read_members[$j]);
+                    if($msg_retype_info){$msg_retype_info .= ",";}
+                    $msg_retype_info .= $read_mb["mb_name"]." ".$msg_retype_date[$j]." ".$msg_retype_time[$j];
                 }
                 ?>
                 <tr>
@@ -205,12 +203,13 @@ while($row = sql_fetch_array($res)){
                             <?php $a++;}?>
                         </div>
                     </td>
-                    <td onclick="fnWriteMessage('<?php echo $worklist[$i]["id"];?>')">
+                    <td onclick="fnWriteMessage2('<?php echo $worklist[$i]["id"];?>')" style="text-decoration: underline;cursor: pointer;padding:5px">
                         <?php echo ($worklist[$i]["msg_subject"])?$worklist[$i]["msg_subject"]:"제목없음";?><?php if($worklist[$i]["msg_count"]!=0){echo "_".str_pad($worklist[$i]["msg_count"],0,'',STR_PAD_LEFT);}?>
                     </td>
                     <td class="td_center" title="<?php echo $worklist[$i]["send_date"].' '.$worklist[$i]["send_time"]?>"><?php echo $worklist[$i]["send_date"];?></td>
-                    <td class="td_center" title="<?php echo $worklist[$i]["read_date"].' '.$worklist[$i]["read_time"]?>"><?php if($read_tchk==false){echo "<span style='color:red;font-weight:bold'>미확인</span>";}else{echo $worklist[$i]["read_date"];}?></td>
-                    <td class="td_center" title="<?php echo $worklist[$i]["msg_retype_date"].' '.$worklist[$i]["msg_retype_time"]?>"><?php if($worklist[$i]["msg_retype_date"]){echo $worklist[$i]["msg_retype_date"];}else{echo "<span style='color:red;font-weight:bold'>미회신</span>";}?></td>
+                    <td class="td_center" title="<?php echo $msg_read_info;?>"><?php if($read_tchk==false){echo "<span style='color:red;font-weight:bold'>미확인</span>";}else{echo array_pop(explode(",",$worklist[$i]["read_date"]));}?></td>
+                    <td class="td_center" title="<?php echo $msg_retype_info?>"><?php if($worklist[$i]["msg_retype"]==1){if($worklist[$i]["msg_retype_date"]){echo $worklist[$i]["msg_retype_date"];}else{echo "<span style='color:red;font-weight:bold'>미회신</span>";} } else{ echo "-"; }?></td>
+                    <!--<td></td>-->
                 </tr>
             <?php
                 unset($mb2);
@@ -259,7 +258,7 @@ while($row = sql_fetch_array($res)){
 <script>
     $(function(){
         <?php if($msg_id){?>
-        fnWriteMessage('<?php echo $msg_id;?>')
+        fnWriteMessage2('<?php echo $msg_id;?>')
         <?php }?>
 
         $(".datepicker").datepicker({

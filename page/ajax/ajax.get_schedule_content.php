@@ -15,7 +15,7 @@ while($row = sql_fetch_array($res)){
     $sql = "select * from `cmap_depth1` where id = '{$list[$i]["depth1_id"]}'";
     $depth1 = sql_fetch($sql);
     ?>
-    <li title="<?php echo $list[$i]["content"];?>" onclick="location.href=g5_url+'/page/view?depth1_id=<?php echo $list[$i]["depth1_id"];?>&me_id=<?php echo $depth1["me_code"];?>&depth2_id=<?php echo $list[$i]["depth2_id"];?>&pk_id=<?php echo $list[$i]["pk_id"];?>'"><?php echo $list[$i]["content"];?></li>
+    <li title="<?php echo $list[$i]["content"];?>" onclick="location.href=g5_url+'/page/view?depth1_id=<?php echo $list[$i]["depth1_id"];?>&me_id=<?php echo $depth1["me_code"];?>&depth2_id=<?php echo $list[$i]["depth2_id"];?>&pk_id=<?php echo $list[$i]["pk_id"];?>&constid=<?php echo $_REQUEST["const"];?>'"><?php echo $list[$i]["content"];?></li>
 <?php }
 if(count($list)==0){
 ?>

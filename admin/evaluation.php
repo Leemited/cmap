@@ -253,11 +253,12 @@ while($row=sql_fetch_array($res)){
                                 <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachment']){?>
                                     <?php
                                     $files = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachment']);
+                                    $filesname = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachmentname1']);
                                     if(count($files)!=0){
                                         for($q=0;$q<count($files);$q++) {
                                             if ($files[$q] != "") {
                                                 ?>
-                                                <a href="javascript:fnImage('<?php echo $files[$q]; ?>');" >파일<?php echo($q + 1); ?></a><br>
+                                                <a href="javascript:fnImage('<?php echo $files[$q]; ?>');" ><?php echo ($filesname[$q])?$filesname[$q]:"첨부파일 : ".($q + 1); ?></a><br>
                                             <?php }
                                         }
                                     }
@@ -279,11 +280,33 @@ while($row=sql_fetch_array($res)){
                                 <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachment2']){?>
                                     <?php
                                     $files = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachment2']);
+                                    $filesname2 = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachmentname2']);
                                     if(count($files)!=0){
                                         for($q=0;$q<count($files);$q++) {
                                             if ($files[$q] != "") {
                                                 ?>
-                                                <a href="javascript:fnImage('<?php echo $files[$q]; ?>');" >사례파일<?php echo($q + 1); ?></a><br>
+                                                <a href="javascript:fnImage('<?php echo $files[$q]; ?>');" >사례파일<?php echo ($filesname2[$q])?$filesname2[$q]:"첨부파일 : ".($q + 1); ?></a><br>
+                                            <?php }
+                                        }
+                                    }
+                                    ?>
+                                <?php }?>
+                            </div>
+                            <div id="files3">
+                                <?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachment3']){?>
+                                    <?php
+                                    $files = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachment3']);
+                                    $filenames = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['attachmentname3']);
+                                    if(count($files)!=0){
+                                        for($q=0;$q<count($files);$q++) {
+                                            if ($files[$q] != "") {
+                                                if($filenames[$q] != ""){
+                                                    $basicname = $filenames[$q];
+                                                }else{
+                                                    $basicname = "감사사례".$i;
+                                                }
+                                                ?>
+                                                <a href="javascript:fnImage('<?php echo $files[$q]; ?>');" ><?php echo $basicname; ?></a><br>
                                             <?php }
                                         }
                                     }
@@ -1222,15 +1245,33 @@ while($row=sql_fetch_array($res)){
         $("#etc1name_1").val('');
         $("#etc1name_2").val('');
         $("#etc1name_3").val('');
-        $("#etc1_1").val('');
-        $("#etc1_2").val('');
-        $("#etc1_3").val('');
         $("#filename1").val('');
         $("#filename2").val('');
         $("#filename3").val('');
         $("#filesnames1").val('');
         $("#filesnames2").val('');
         $("#filesnames3").val('');
+        $("#filesnames11").val('');
+        $("#filesnames22").val('');
+        $("#filesnames33").val('');
+        $(".add_file1").html('');
+        $(".add_file2").html('');
+        $(".add_file3").html('');
+        $(".add_files1").html('');
+        $(".add_files2").html('');
+        $(".add_files3").html('');
+        $(".add_files11").html('');
+        $(".add_files22").html('');
+        $(".add_files33").html('');
+        $("#file1").val('');
+        $("#file2").val('');
+        $("#file3").val('');
+        $("#files1").val('');
+        $("#files2").val('');
+        $("#files3").val('');
+        $("#files11").val('');
+        $("#files22").val('');
+        $("#files33").val('');
         $("#content_id").val(id);
         $.ajax({
             url:g5_url+"/admin/get_content.php",
@@ -1243,7 +1284,6 @@ while($row=sql_fetch_array($res)){
                 alert("선택된 항목이 없습니다.");
                 return false;
             }else if(data.status==1){
-                console.log(data);
                 if(data.link0) {
                     $("#link1").val(data.link0)
                 }
@@ -1262,24 +1302,24 @@ while($row=sql_fetch_array($res)){
                 if(data.linkname2) {
                     $("#linkname3").val(data.linkname2)
                 }
-                if(data.etc1_0) {
-                    $("#etc1_1").val(data.etc1_0)
-                }
-                if(data.etc1_1) {
-                    $("#etc1_2").val(data.etc1_1)
-                }
-                if(data.etc1_2) {
-                    $("#etc1_3").val(data.etc1_2)
-                }
-                if(data.etcname1_0) {
-                    $("#etcname1_1").val(data.etcname1_0)
-                }
-                if(data.etcname1_1) {
-                    $("#etcname1_2").val(data.etcname1_1)
-                }
-                if(data.etcname1_2) {
-                    $("#etcname1_3").val(data.etcname1_2)
-                }
+                /*if(data.etc1_0) {
+                 $("#etc1_1").val(data.etc1_0)
+                 }
+                 if(data.etc1_1) {
+                 $("#etc1_2").val(data.etc1_1)
+                 }
+                 if(data.etc1_2) {
+                 $("#etc1_3").val(data.etc1_2)
+                 }
+                 if(data.etcname1_0) {
+                 $("#etcname1_1").val(data.etcname1_0)
+                 }
+                 if(data.etcname1_1) {
+                 $("#etcname1_2").val(data.etcname1_1)
+                 }
+                 if(data.etcname1_2) {
+                 $("#etcname1_3").val(data.etcname1_2)
+                 }*/
                 if(data.filename0){
                     $("#filename1").val(data.filename0);
                 }
@@ -1298,29 +1338,41 @@ while($row=sql_fetch_array($res)){
                 if(data.filesname2){
                     $("#filesnames3").val(data.filesname2);
                 }
+                if(data.filesnames0){
+                    $("#filesnames11").val(data.filesnames0);
+                }
+                if(data.filesnames1){
+                    $("#filesnames22").val(data.filesnames1);
+                }
+                if(data.filesnames2){
+                    $("#filesnames33").val(data.filesnames2);
+                }
                 if(data.file0) {
-                    $(".add_file1").html('');
-                    $(".add_file1").append("<span>" + data.file0 + "</span><input type='checkbox' name='fileDel1'> 삭제<br>");
+                    $(".add_file1").append("<span>" + data.file0 + "</span><input type='checkbox' name='fileDel1' value='1'> 삭제<br>");
                 }
                 if(data.file1) {
-                    $(".add_file2").html('');
-                    $(".add_file2").append("<span>" + data.file1 + "</span><input type='checkbox' name='fileDel2'> 삭제<br>");
+                    $(".add_file2").append("<span>" + data.file1 + "</span><input type='checkbox' name='fileDel2' value='1'> 삭제<br>");
                 }
                 if(data.file2) {
-                    $(".add_file3").html('');
-                    $(".add_file3").append("<span>" + data.file2 + "</span><input type='checkbox' name='fileDel3'> 삭제<br>");
+                    $(".add_file3").append("<span>" + data.file2 + "</span><input type='checkbox' name='fileDel3' value='1'> 삭제<br>");
                 }
                 if(data.files0) {
-                    $(".add_files1").html('');
-                    $(".add_files1").append("<span>" + data.files0 + "</span><input type='checkbox' name='fileDel4'> 삭제<br>");
+                    $(".add_files1").append("<span>" + data.files0 + "</span><input type='checkbox' name='fileDel4' value='1'> 삭제<br>");
                 }
                 if(data.files1) {
-                    $(".add_files2").html('');
-                    $(".add_files2").append("<span>" + data.files1 + "</span><input type='checkbox' name='fileDel5'> 삭제<br>");
+                    $(".add_files2").append("<span>" + data.files1 + "</span><input type='checkbox' name='fileDel5' value='1'> 삭제<br>");
                 }
                 if(data.files2) {
-                    $(".add_files3").html('');
-                    $(".add_files3").append("<span>" + data.files2 + "</span><input type='checkbox' name='fileDel6'> 삭제<br>");
+                    $(".add_files3").append("<span>" + data.files2 + "</span><input type='checkbox' name='fileDel6' value='1'> 삭제<br>");
+                }
+                if(data.filess0) {
+                    $(".add_files11").append("<span>" + data.filess0 + "</span><input type='checkbox' name='fileDel7' value='1'> 삭제<br>");
+                }
+                if(data.filess1) {
+                    $(".add_files22").append("<span>" + data.filess1 + "</span><input type='checkbox' name='fileDel8' value='1'> 삭제<br>");
+                }
+                if(data.filess2) {
+                    $(".add_files33").append("<span>" + data.filess2 + "</span><input type='checkbox' name='fileDel9' value='1'> 삭제<br>");
                 }
                 dialog.dialog("open","modal",true);
             }else if(data.status==2){

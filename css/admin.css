@@ -137,6 +137,8 @@ li.accordion ul li.accordion .list-item div a{
 .admin_content .edit_content table td.etc input[type=button]{display:inline-block;position: absolute;right:0;top:18px}
 .admin_content .edit_content table td.etc a{padding:6px 10px;color:#fff;background-color:#333;-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px;margin:3px;display: inline-block;height:26px;line-height: normal}
 
+.admin_content .edit_content table.faq_table td{background-color:#fff;border:1px solid #ddd;padding:5px;}
+
 .admin_content .edit_content.menu_list table td input{background-color:#FFF;border:1px solid #ddd;}
 .admin_content .edit_content.menu_list table td.sub_menu_class {
     padding-left: 25px;
@@ -216,3 +218,9 @@ li.accordion ul li.accordion .list-item div a{
 .admin_content .edit_content table.image_table{width:100%;}
 .admin_content .edit_content table.image_table th{background-color: #283f79;color: #fff;font-size: 16px;font-weight: bold;padding: 5px 0;}
 .admin_content .edit_content table.image_table td{background-color: #eee;padding: 10px;position: relative;border: 2px solid #fff;font-size:16px;}
+
+.num_list01{text-align: center;margin-top:40px;}
+.num_list01 ul{margin:0 auto;position:relative;}
+.num_list01 li{width:30px;height:30px;border:1px solid #ddd;text-align: center;line-height:2.4;display:inline-block;}
+.num_list01 li.active,.num_list01 li:hover{color:#fff;border:1px solid #0e2080;background-color:#0e2080;}
+.num_list01 li.active a,.num_list01 li:hover a{color:#fff}

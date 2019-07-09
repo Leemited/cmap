@@ -13,6 +13,12 @@ if(!$pk_id){
     return false;
 }
 
+if($member["mb_level"]>=5){
+    $result["msg"]="7";
+    echo json_encode($result);
+    return false;
+}
+
 $sql = "select * from `cmap_my_construct_map` where const_id = '{$const_id}' and mb_id ='{$member["mb_id"]}'";
 $map = sql_fetch($sql);
 

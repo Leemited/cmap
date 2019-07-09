@@ -2,11 +2,26 @@
 include_once ("../common.php");
 $sub="sub";
 if($member["mb_auth"]==false){
-    alert("무료 이용기간이 만료 되었거나,\\r맴버쉽 기간이 만료 되었습니다. \\n맴버쉽 구매후 이용바랍니다.",G5_URL);
+    if($member["mb_level"]>1){
+        alert("무료 이용기간이 만료 되었거나,\\r맴버쉽 기간이 만료 되었습니다. \\n맴버쉽 구매후 이용바랍니다.",G5_URL);
+    }
 }
 //평가 항목 가저오기
 if($is_member && $mycont && $current_const["const_id"]!=0){
-    $evaldata = sql_fetch("select * from `cmap_my_construct_eval` where mb_id='{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'");
+    if($member["mb_level"]==5){
+        $sql = "select * from `cmap_my_pmmode_set` where mb_id='{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'";
+        $ss = sql_fetch($sql);
+        if($ss!=null) {
+            $evaldata = sql_fetch("select * from `cmap_my_construct_eval` where mb_id='{$ss["set_mb_id"]}' and const_id = '{$current_const["const_id"]}'");
+        }else{
+            $sql = "select * from `cmap_my_construct` where id = '{$const_id}'";
+            $ss2 = sql_fetch($sql);
+            $evaldata = sql_fetch("select * from `cmap_my_construct_eval` where mb_id='{$ss2["mb_id"]}' and const_id = '{$current_const["const_id"]}'");
+        }
+    }else {
+        $evaldata = sql_fetch("select * from `cmap_my_construct_eval` where mb_id='{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'");
+    }
+
     $pk_ids = explode("``",$evaldata["pk_ids1"]);
     $pk_scores = explode("``",$evaldata["pk_score1"]);
 
@@ -54,11 +69,18 @@ if($depth1_id){
 
 
 //메모 불러오기
-$sql = "select * from `cmap_mymemo` where me_id = '{$me_id}' and mb_id = '{$member["mb_id"]}' {$where} order by id desc";
+$sql = "select * from `cmap_mymemo` where me_id = '{$me_id}' and mb_id = '{$member["mb_id"]}' {$where} {$where2}  group by InsertDate order by InsertTime asc";
 $res = sql_query($sql);
 $num = sql_num_rows($res);
+$a = 0;
 while($row = sql_fetch_array($res)){
-    $memo[] = $row;
+    $memo[$a] = $row;
+    $sql = "select * from `cmap_mymemo` where InsertDate = '{$row['InsertDate']}' and mb_id = '{$member["mb_id"]}' and me_id = '{$me_id}' order by InsertTime asc";
+    $memores = sql_query($sql);
+    while($memorow = sql_fetch_array($memores)) {
+        $memo[$a]["incontent"][] = $memorow;
+    }
+    $a++;
 }
 
 
@@ -187,7 +209,7 @@ $myconstruction = false;
             <?php }?>
             <tr class="memo">
                 <td style="position: relative">
-                    <form action="<?php echo G5_URL;?>/page/memo_update.php" method="post" >
+                    <form action="<?php echo G5_URL;?>/page/memo_update" method="post" >
                         <input type="hidden" name="return_url" value="view2">
                         <input type="hidden" name="type" value="in">
                         <input type="hidden" name="me_id" value="<?php echo $me_id;?>">
@@ -201,37 +223,76 @@ $myconstruction = false;
                         </div>
                     </form>
                     <div class="memo_area" style="width:100%;height:300px;padding:5px;">
-                        <ul>
-                            <?php for($a = 0; $a<count($memo);$a++){?>
-                                <li title="<?php echo $memo[$a]["memo_content"];?>"><?php echo nl2br($memo[$a]["memo_content"]);?> <i class="fa fa-close" onclick="location.href=g5_url+'/page/memo_update?type=del&return_url=view&me_id=<?php echo $me_id;?>&mb_id=<?php echo $member["mb_id"];?>&depth1_id=<?php echo $depth1_id;?>&depth2_id=<?php echo $depth2_id;?>&id=<?php echo $memo[$a]["id"];?>'"></i></li>
-                            <?php }?>
-                        </ul>
+                        <?php for($a = 0; $a<count($memo);$a++){?>
+                            <div class="memo_item">
+                                <div class="top">
+                                    <span><?php echo ($a+1).". ";?><?php echo $memo[$a]["InsertDate"];?></span>
+                                    <i class="fa fa-close" onclick="fnMemoDel('<?php echo $me_id;?>','<?php echo $member["mb_id"];?>','<?php echo $depth1_id;?>','<?php echo $depth2_id;?>','<?php echo $memo[$a]["InsertDate"];?>')"></i>
+                                </div>
+                                <div class="bottom">
+                                    <?php for($b=0;$b<count($memo[$a]["incontent"]);$b++){?>
+                                        <ul>
+                                            <li title="<?php echo $memo[$a]["incontent"][$b]["memo_content"];?>"><span><?php echo $hanlist[$b].". " ;?></span><?php echo nl2br($memo[$a]["incontent"][$b]["memo_content"]);?> </li>
+                                        </ul>
+                                    <?php }?>
+                                </div>
+                            </div>
+                        <?php }?>
                     </div>
                 </td>
             </tr>
         </table>
         </div>
         <div class="right">
-        <table class="view_table" >
-            <tr>
-                <!--th>직업선택</th-->
-                <th colspan="2">평가항목</th>
-                <th rowspan="2">배점</th>
-                <th colspan="4">평가등급</th>
-                <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
-                <th rowspan="2">점수</th>
-                <?php }?>
-                <th rowspan="2">평가방법</th>
-            </tr>
-            <tr>
-                <th>중분류(배점)</th>
-                <th>세부분류 (평가방법 미리보기)</th>
-                <th style="width:14%">우수 ( X 1.0)</th>
-                <th style="width:14%">보통 ( X 0.8)</th>
-                <th style="width:14%">미흡 ( X 0.6)</th>
-                <th style="width:14%">불량 ( X 0.4)</th>
-            </tr>
-            <tr></tr>
+            <table class="view_table table_head">
+                <colgroup>
+                    <col width="8%">
+                    <col width="24%">
+                    <col width="3%">
+                    <col width="224px">
+                    <col width="224px">
+                    <col width="224px">
+                    <col width="224px">
+                    <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
+                        <col width="3%">
+                    <?php }?>
+                    <col width="6%">
+                </colgroup>
+                <tr>
+                    <!--th>직업선택</th-->
+                    <th colspan="2" >평가항목</th>
+                    <th rowspan="2" >배점</th>
+                    <th colspan="4" >평가등급</th>
+                    <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
+                        <th rowspan="2" >점수</th>
+                    <?php }?>
+                    <th rowspan="2" >평가방법</th>
+                </tr>
+                <tr>
+                    <th >중분류(배점)</th>
+                    <th >세부분류 (평가방법 미리보기)</th>
+                    <th >우수 ( X 1.0)</th>
+                    <th >보통 ( X 0.8)</th>
+                    <th >미흡 ( X 0.6)</th>
+                    <th >불량 ( X 0.4)</th>
+                </tr>
+                <tr></tr>
+            </table>
+            <div class="view_in_content view2">
+                <table class="view_table" >
+                <colgroup>
+                    <col width="8%">
+                    <col width="24%">
+                    <col width="3%">
+                    <col width="224px">
+                    <col width="224px">
+                    <col width="224px">
+                    <col width="224px">
+                    <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
+                    <col width="3%">
+                    <?php }?>
+                    <col width="6%">
+                </colgroup>
             <?php
             $depth_last = 1;
             for($i=0;$i<count($list);$i++){
@@ -239,18 +300,18 @@ $myconstruction = false;
             <tr class="first">
                 <?php for($j=0;$j<count($list[$i]['depth2']);$j++) {
                     ?>
-                <td class="depth1" rowspan="<?php echo $list[$i]['depth2'][$j]['cnt'];?>">
+                <td class="depth1" rowspan="<?php echo $list[$i]['depth2'][$j]['cnt'];?>" >
                     <strong><?php echo $list[$i]['depth2'][$j]['depth_name'];?></strong>
                 </td>
                     <?php for($k=0;$k<count($list[$i]['depth2'][$j]['depth3']);$k++) {
                     ?>
-                    <td class="depth2" rowspan="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['cnt'];?>" >
+                    <td class="depth2" rowspan="<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['cnt'];?>" style="text-align: left">
                         <strong><?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth_name'];?></strong>
                     </td>
                         <?php for ($l=0;$l<count($list[$i]['depth2'][$j]['depth3'][$k]['depth4']);$l++) {
                             $total += (float)$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth_name'];
                             ?>
-                        <td class="depth3" style="text-align: center;background-color:#e4f8f9" rowspan="<?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['cnt']>1){echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['cnt'];}?>" >
+                        <td class="depth3 " style="text-align: center;background-color:#e4f8f9" rowspan="<?php if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['cnt']>1){echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['cnt'];}?>" >
                             <!-- 배점 -->
                             <?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth_name'];?>
                         </td>
@@ -277,6 +338,13 @@ $myconstruction = false;
                                 }else{
                                     $files2 = array();
                                     $filenames2 = array();
+                                }
+                                if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["attachment3"]!=""){
+                                    $files3 = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["attachment3"]);
+                                    $filenames3 = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["attachmentname3"]);
+                                }else{
+                                    $files3 = array();
+                                    $filenames3 = array();
                                 }
                             $depth_last++;
                             $fileid = "files".$list[$i]["depth2"][$j]["depth3"][$k]["depth4"][$l]["depth5"][$m]["id"];
@@ -330,7 +398,7 @@ $myconstruction = false;
                                     }*/
                                     if($eval[$o]=="") continue;
                             ?>
-                            <td class="depth4 scores_<?php if($o!=3){echo $o;}else{echo $o+1;}?> pk_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"];?> <?php if((double)$cals == (double)$scores[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"]]){?>active<?php }?>" id="scoretd_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"];?>_<?php echo $o;?>" style="text-align: center" colspan="<?php echo $span[$o];?>" <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>onclick="fnUpdateNumber('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"];?>','<?php echo $o;?>','<?php echo $current_const["const_id"];?>','<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth_name'];?>');" <?php }?> >
+                            <td class="depth4 scores_<?php if($o!=3){echo $o;}else{echo $o+1;}?> pk_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"];?> <?php if((double)$cals == (double)$scores[$list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"]]){?>active<?php }?>" id="scoretd_<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"];?>_<?php echo $o;?>" style="text-align: center" colspan="<?php echo $span[$o];?>" <?php if($is_member && $mycont && $current_const["const_id"]!=0){ if($member["mb_level"]==3){ ?>onclick="fnUpdateNumber('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["pk_id"];?>','<?php echo $o;?>','<?php echo $current_const["const_id"];?>','<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth_name'];?>');" <?php } }?> >
                                 <!-- 항목 -->
                                 <?php
                                 echo $eval[$o];
@@ -349,25 +417,27 @@ $myconstruction = false;
                                 <?php if(!$is_member){?>
 
                                 <?php }else {?>
-                                <?php if(count($files)>=1){?>
-                                    <input type="button" value="미리보기" onclick="fnViewEtc('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>')">
-                                <?php }else {?>
                                     <!-- 참고 링크 -->
                                     <?php if(count($links)>=1){
                                         for($w=0;$w<count($links);$w++){?>
                                             <input type="button" value="링크" style="background-image:url('<?php echo G5_IMG_URL;?>/ic_links.svg');"  onclick="window.open('<?php echo $links[$w];?>','_blank')" title="<?php echo $linknames[$w];?>">
-                                    <?php }
+                                        <?php }
                                     }?>
                                     <!-- 참고 링크 -->
                                     <?php if(count($files2)>=1){
                                         for($w=0;$w<count($files2);$w++){
                                             if($files2[$w]!=""){
-                                            ?>
-                                            <input type="button" value="다운로드" style="background-image:url('<?php echo G5_IMG_URL;?>/ic_attach.svg');" onclick="location.href=g5_url+'/page/view_download?file=<?php echo $files2[$w];?>&filename=<?php echo $filenames2[$w];?>'" title="<?php echo $filenames2[$w];?>">
-                                        <?php }
-                                            }
+                                                ?>
+                                                <input type="button" value="다운로드" style="background-image:url('<?php echo G5_IMG_URL;?>/ic_attach.svg');" onclick="location.href=g5_url+'/page/view_download?file=<?php echo $files2[$w];?>&filename=<?php echo $filenames2[$w];?>'" title="<?php echo $filenames2[$w];?>">
+                                            <?php }
+                                        }
                                     }?>
-                                <?php }?>
+                                    <?php if(count($files)>=1){?>
+                                        <input type="button" value="미리보기" onclick="fnViewEtc('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>')">
+                                    <?php }?>
+                                    <?php if(count($files3)>=1){?>
+                                        <input type="button" value="미리보기" onclick="fnViewEtc2('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>')">
+                                    <?php }?>
                                 <?php }?>
                                 <?php /*if(count($files)>0 && $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["link"]){*/?><!--
                                     <input type="button" value="미리보기" onclick="fnViewEtc('<?php /*echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];*/?>')">
@@ -406,6 +476,7 @@ $myconstruction = false;
             <?php
              }?>
         </table>
+            </div>
         <div class="clear"></div>
         </div>
     </div>
@@ -453,18 +524,21 @@ $(function(){
         fnEtcClose();
     });
 
-    <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
-    $("td[id^=scoretd_]").each(function(e){
-        $(this).click(function(){
+    <?php if($is_member && $mycont && $current_const["const_id"]!=0){
+    if($member["mb_level"] == 3){
+    ?>
+    $("td[id^=scoretd_]").each(function (e) {
+        $(this).click(function () {
             var id = $(this).attr("id");
             var split_id = id.split("_");
-            if(!$(this).hasClass("active")) {
+            if (!$(this).hasClass("active")) {
                 $(this).addClass("active");
-                $("td[id^=scoretd_"+split_id[1]+"]").not($(this)).removeClass("active");
+                $("td[id^=scoretd_" + split_id[1] + "]").not($(this)).removeClass("active");
             }
         });
     });
-    <?php }?>
+    <?php }
+    } ?>
 
     window.onkeydown = function(){
         if(event.keyCode==27 && $(".etc_view").hasClass("active")){
@@ -475,6 +549,12 @@ $(function(){
     $(function(){
         $(document).tooltip();
     });
+
+    var tbheight = $(".view_in_content .view_table").height();
+    var viewheight = $(".view_in_content").height();
+    if(viewheight < tbheight){
+        $(".right .table_head").css("padding-right","5px");
+    }
 })
 
 function fnViewEtc(pk_id){
@@ -494,6 +574,25 @@ function fnViewEtc(pk_id){
         }
     });
 }
+
+function fnViewEtc2(pk_id){
+    $.ajax({
+        url:g5_url+"/page/ajax/ajax.etc2.php",
+        method:"post",
+        data:{pk_id:pk_id}
+    }).done(function(data){
+        $(".etc_view .content").html('');
+        if(!$(".etc_view").hasClass("active")){
+            $(".etc_view .content").html(data);
+            $(".etc_view").addClass("active");
+            $(".etc_view_bg").addClass("active");
+        }else{
+            $(".etc_view").removeClass("active");
+            $(".etc_view_bg").removeClass("active");
+        }
+    });
+}
+
 function fnEtcClose(){
     $(".etc_view").removeClass("active");
     $(".etc_view_bg").removeClass("active");
@@ -544,7 +643,11 @@ function setTotal(){
     })
 }
 
-
+function fnMemoDel(me_id,mb_id,depth1_id,depth2_id,InsertDate){
+    if(confirm("해당 날짜의 메모를 삭제하시겠습니까?")) {
+        location.href = g5_url + '/page/memo_update?type=del&return_url=view2&me_id=' + me_id + '&mb_id=' + mb_id + '&depth1_id=' + depth1_id + '&depth2_id=' + depth2_id + '&InsertDate=' + InsertDate;
+    }
+}
 
 </script>
 <?php

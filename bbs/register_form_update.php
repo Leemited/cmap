@@ -518,9 +518,12 @@ unset($_SESSION['ss_cert_adult']);
 
 if ($msg)
     echo '<script>alert(\''.$msg.'1231515\');</script>';
-
 if ($w == '') {
-    goto_url(G5_URL);
+    if($type=="free"){
+        goto_url(G5_URL.'/page/mylocation/mylocation_edit?type=insert');
+    }else {
+        goto_url(G5_URL);
+    }
 } else if ($w == 'u') {
     $row  = sql_fetch(" select mb_password from {$g5['member_table']} where mb_id = '{$member['mb_id']}' ");
     $tmp_password = $row['mb_password'];

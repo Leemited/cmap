@@ -6,7 +6,7 @@ $menu_id = "depth_desc_quick";
 include_once (G5_PATH."/_head.php");
 
 if(!$is_member){
-    alert("로그인이 필요합니다.",G5_BBS_URL."/login.php");
+    goto_url(G5_BBS_URL."/login.php");
 }
 /*if($is_admin){
     alert("관리자는 관리자페이지를 통해 이용 바랍니다.");
@@ -43,7 +43,7 @@ if($quickcnt>0){
         <header class="top">
             <h2>MY C.MAP</h2>
             <div class="logout">
-                <a href="<?php echo G5_BBS_URL;?>/logout"><span></span>로그아웃</a>
+                <a href="javascript:fnLogout();"><span></span>로그아웃</a>
             </div>
         </header>
         <aside class="mypage_menu">

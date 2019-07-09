@@ -60,7 +60,7 @@ switch ($leave_content){
 
 // 회원탈퇴일을 저장
 $date = date("Ymd");
-$sql = " update {$g5['member_table']} set mb_leave_date = '{$date}', mb_7 = '{$mb_7}', mb_8 = '{$mb_leave_content}' where mb_id = '{$member['mb_id']}' ";
+$sql = " update {$g5['member_table']} set mb_leave_date = '{$date}', mb_leave_title = '{$mb_7}', mb_leave_content = '{$mb_leave_content}' where mb_id = '{$member['mb_id']}' ";
 sql_query($sql);
 
 // 3.09 수정 (로그아웃)

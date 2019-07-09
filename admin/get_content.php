@@ -34,6 +34,10 @@ if($con = sql_fetch($sql)){
     for($i=0;$i<count($file2);$i++){
         $result["files{$i}"] = $file2[$i];
     }
+    $file3 = explode("``",$con["attachment3"]);
+    for($i=0;$i<count($file3);$i++){
+        $result["filess{$i}"] = $file3[$i];
+    }
     $filename1 = explode("``",$con["attachmentname1"]);
     for($i=0;$i<count($filename1);$i++){
         if($file[$i]!="") {
@@ -44,6 +48,12 @@ if($con = sql_fetch($sql)){
     for($i=0;$i<count($filename2);$i++){
         if($file2[$i]!="") {
             $result["filesname{$i}"] = $filename2[$i];
+        }
+    }
+    $filename3 = explode("``",$con["attachmentname3"]);
+    for($i=0;$i<count($filename3);$i++){
+        if($file3[$i]!="") {
+            $result["filesnames{$i}"] = $filename3[$i];
         }
     }
     $result["status"] = 1;

@@ -37,6 +37,8 @@ if($eval==null || ($eval["pk_ids1"] == "" && $eval["pk_score1"]=="")||($eval["pk
     $evals2 = implode("``",$eval2);
     $eval2score = implode("``",$evalscore2);
 
+    $eval = sql_fetch("select * from `cmap_my_construct_eval` where mb_id = '{$member["mb_id"]}' and const_id = '{$constid}'");
+
     if($eval==null) {
         $sql = "insert into `cmap_my_construct_eval` set const_id = '{$constid}' , mb_id ='{$member["mb_id"]}', pk_ids1 = '{$evals}', pk_score1 = '{$eval1score}', pk_ids2 = '{$evals2}', pk_score2 = '{$eval2score}' , pk_score1_total = '0``0``0', pk_score2_total = '0``0``0``0``0``0``0``0', pk_row_active = '0'";
     }else{
@@ -44,7 +46,6 @@ if($eval==null || ($eval["pk_ids1"] == "" && $eval["pk_score1"]=="")||($eval["pk
     }
     sql_query($sql);
 
-    $eval = sql_fetch("select * from `cmap_my_construct_eval` where mb_id = '{$member["mb_id"]}' and const_id = '{$constid}'");
 }
 
 if($page==1){
@@ -108,7 +109,7 @@ if($page==1){
 }else{
     $pk_ids = explode("``",$eval["pk_ids2"]);
     $pk_ids_score = explode("``",$eval["pk_score2"]);
-
+    $result["num"] = $num;
     switch ($num){
         case "0":
             $nums = 1;
@@ -127,6 +128,26 @@ if($page==1){
             break;
     }
 
+    if($pk_id=="22130" || $pk_id=="22135" || $pk_id=="22134"){
+        switch ($num){
+            case 0:
+                $nums = 1;
+                break;
+            case 1:
+                $nums = 0.8;
+                break;
+            case 2:
+                $nums = 0.6;
+                break;
+            case 3:
+                $nums = 0.4;
+                break;
+            case 4:
+                $nums = 0;
+                break;
+        }
+    }
+
     //계산하기
     $score = round($score_cnt * $nums,2);
 
@@ -140,6 +161,8 @@ if($page==1){
     }
 
     $result["score"] = $score;
+    $result["nums"] = $nums;
+    $result["scorecount"] = $score_cnt;
 
     for($i=0;$i<count($pk_ids);$i++){
         if($pk_ids[$i]==$pk_id){
@@ -156,6 +179,7 @@ if($page==1){
     }
 
     $sql = "update `cmap_my_construct_eval` set pk_score2 = '{$inscore}', pk_row_active = '{$pk_row_active}' where id = '{$eval["id"]}'";
+    $result["sql"] = $sql;
     if(sql_query($sql)){
         $result["msg"] = "0";
     }else{

@@ -11,7 +11,7 @@ if($is_member) {
 ?>
 
 <!-- 회원정보 입력/수정 시작 { -->
-<div class="login_hd">
+<div class="login_hd" style="margin:120px 0;position:relative;-webkit-transform: translateY(0);-moz-transform: translateY(0);-ms-transform: translateY(0);-o-transform: translateY(0);transform: translateY(0);">
     <div class="head">
         <div class="line"></div>
         <h2>회원가입</h2>
@@ -34,6 +34,7 @@ if($is_member) {
             <input type="hidden" name="agree2" value="<?php echo $agree2 ?>">
             <input type="hidden" name="cert_type" value="<?php echo $member['mb_certify']; ?>">
             <input type="hidden" name="cert_no" value="">
+            <input type="hidden" name="type" value="<?php echo $type;?>">
             <input type="hidden" name="mb_nick" value="<?php echo isset($member['mb_nick'])?get_text($member['mb_nick']):''; ?>" id="reg_mb_nick" required class="frm_input required nospace  half_input" size="10" maxlength="20" placeholder="닉네임">
             <?php if (isset($member['mb_sex'])) {  ?><input type="hidden" name="mb_sex" value="<?php echo $member['mb_sex'] ?>"><?php }  ?>
             <?php if (isset($member['mb_nick_date']) && $member['mb_nick_date'] > date("Y-m-d", G5_SERVER_TIME - ($config['cf_nick_modify'] * 86400))) { // 닉네임수정일이 지나지 않았다면  ?>

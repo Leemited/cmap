@@ -1,5 +1,8 @@
 <?php
 include_once ("../../common.php");
+if(!$is_member){
+    goto_url(G5_BBS_URL."/login.php");
+}
 $sub = "sub";
 $mypage = true;
 $menu_id = "depth_desc_edit";
@@ -30,7 +33,7 @@ add_javascript(G5_POSTCODE_JS, 0);
         <header class="top">
             <h2 onclick="location.href=g5_url+'/page/mypage/mypage'">MY C.MAP</h2>
             <div class="logout">
-                <a href="<?php echo G5_BBS_URL;?>/logout"><span></span>로그아웃</a>
+                <a href="javascript:fnLogout();"><span></span>로그아웃</a>
             </div>
         </header>
         <aside class="mypage_menu">
@@ -141,9 +144,20 @@ add_javascript(G5_POSTCODE_JS, 0);
                                     <label for="reg_mb_9" class="basic_btn02">파일 등록</label>
                                     <div style="width:60px;display:inline-block;vertical-align: middle;margin-left:20px;"><img src="<?php /*echo G5_DATA_URL;*/?>/member/<?php /*echo substr($member["mb_id"],0,2);*/?>/<?php /*echo $member["mb_9"];*/?>" alt="" style="width:100%;"></div>
 
-                                    <div class="msg">* 작업연락서에서 사용됩니다.</div>
+                                    <div class="msg">* 업무연락서에서 사용됩니다.</div>
                                 </td>
                             </tr>-->
+                            <tr>
+                                <th>CI 등록</th>
+                                <td>
+                                    <input type="text" name="file_name2" id="file_name2" class="basic_input01 width50" readonly placeholder="파일을 선택해주세요." value="">
+                                    <input type="file" name="mb_7" id="reg_mb_7" value="<?php echo $member["mb_7"];?>" class="" style="display:none;" onchange="$('#file_name2').val(this.value);">
+                                    <label for="reg_mb_7" class="basic_btn02">파일 등록</label>
+                                    <div style="width:60px;display:inline-block;vertical-align: middle;margin-left:20px;"><img src="<?php echo G5_DATA_URL;?>/member/<?php echo substr($member["mb_id"],0,2);?>/<?php echo $member["mb_7"];?>" alt="" style="width:100%;"></div>
+
+                                    <div class="msg">* 업무연락서에서 사용됩니다.</div>
+                                </td>
+                            </tr>
                             <tr>
                                 <th>직인 등록</th>
                                 <td>
@@ -152,14 +166,21 @@ add_javascript(G5_POSTCODE_JS, 0);
                                     <label for="reg_mb_8" class="basic_btn02">파일 등록</label>
                                     <div style="width:60px;display:inline-block;vertical-align: middle;margin-left:20px;"><img src="<?php echo G5_DATA_URL;?>/member/<?php echo substr($member["mb_id"],0,2);?>/<?php echo $member["mb_8"];?>" alt="" style="width:100%;"></div>
 
-                                    <div class="msg">* 작업연락서에서 사용됩니다.</div>
+                                    <div class="msg">* 업무연락서에서 사용됩니다.</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>발신표기</th>
+                                <td>
+                                    <input type="text" name="mb_9" id="reg_mb_9" class="basic_input01 width50" placeholder="발신표기명을 입력해주세요." value="<?php echo $member["mb_9"];?>">
+                                    <div class="msg">* 업무연락서에서 사용됩니다.</div>
                                 </td>
                             </tr>
                             <tr>
                                 <th>회사 주소</th>
                                 <td>
                                     <input type="text" name="mb_zip" id="reg_mb_zip" value="<?php echo $member["mb_zip1"];?>" class="basic_input01 mbtm10" readonly>
-                                    <button type="button" class="basic_btn02" onclick="win_zip('edit_form', 'mb_zip', 'mb_addr1', 'mb_addr2', 'mb_addr3', 'mb_addr_jibeon');">주소 검색</button><br>
+                                    <button type="button" class="basic_btn02" onclick="win_zip2('fregisterform', 'mb_zip', 'mb_addr1', 'mb_addr2', 'mb_addr3', 'mb_addr_jibeon');">주소 검색</button><br>
                                     <input type="text" name="mb_addr1" id="reg_mb_addr1" value="<?php echo $member["mb_addr1"];?>" class="basic_input01 width70 mbtm10" readonly><br>
                                     <input type="text" name="mb_addr2" id="reg_mb_addr2" value="<?php echo $member["mb_addr2"];?>" class="basic_input01 width70">
                                     <input type="hidden" name="mb_addr3" id="reg_mb_addr3" value="<?php echo $member["mb_addr3"];?>" class="basic_input01">

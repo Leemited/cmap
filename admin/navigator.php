@@ -211,6 +211,18 @@ if($me_code) {
                             <td><input type="text" value="<?php echo $list["depth_desc_construct"]["menu_desc"];?>" id="depth_desc_construct"></td>
                             <td class="td_center"><input type="button" value="수정" class=""  onclick="fnGuideUp2('현장관리','depth_desc_construct','<?php echo $list["depth_desc_construct"]["id"];?>');" style="display:block;position: relative;right:auto;top:auto;margin:0 auto"></td>
                         </tr>
+                        <tr>
+                            <td>PM MODE</td>
+                            <td>PM MODE</td>
+                            <td><input type="text" value="<?php echo $list["depth_desc_pmmode"]["menu_desc"];?>" id="depth_desc_pmmode"></td>
+                            <td class="td_center"><input type="button" value="수정" class=""  onclick="fnGuideUp2('PM MODE','depth_desc_pmmode','<?php echo $list["depth_desc_pmmode"]["id"];?>');" style="display:block;position: relative;right:auto;top:auto;margin:0 auto"></td>
+                        </tr>
+                        <tr>
+                            <td>업무연락서</td>
+                            <td>업무연락서</td>
+                            <td><input type="text" value="<?php echo $list["depth_desc_workmsg"]["menu_desc"];?>" id="depth_desc_workmsg"></td>
+                            <td class="td_center"><input type="button" value="수정" class=""  onclick="fnGuideUp2('PM MODE','depth_desc_workmsg','<?php echo $list["depth_desc_workmsg"]["id"];?>');" style="display:block;position: relative;right:auto;top:auto;margin:0 auto"></td>
+                        </tr>
                     <?php }?>
                     </tbody>
                 </table>

@@ -42,7 +42,7 @@ while($row = sql_fetch_array($res)){
                 $mb = get_member($wlist[$i]["send_mb_id"]);
             }
             ?>
-            <tr class="main_lists" id="msg_<?php echo $wlist[$i]["id"]; ?>" style="cursor:pointer" onclick="location.href=g5_url+'/page/mypage/my_message_list?msg_id=<?php echo $wlist[$i]["id"];?>'">
+            <tr class="main_lists" id="msg_<?php echo $wlist[$i]["id"]; ?>" style="cursor:pointer" onclick="location.href=g5_url+'/page/mypage/my_message_list?msg_id=<?php echo $wlist[$i]["id"];?>&const_id=<?php echo $wlist[$i]["const_id"];?>'">
                 <td style="text-align: center;padding:10px;height:auto"><?php echo $msg_type;?></td>
                 <td style="text-align: center;padding:10px;height:auto"><?php echo $mb["mb_name"];?></td>
                 <td style="padding:10px;height:auto;text-align: left;"><label style="display:block;text-overflow: ellipsis;white-space: nowrap;overflow: hidden"><?php echo $workconst["cmap_name"];?>/<?php echo $wlist[$i]["msg_subject"];?></label></td>

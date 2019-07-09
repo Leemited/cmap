@@ -9,14 +9,17 @@ $test_dates = implode("``",$test_date);
 for($i=0;$i<count($pk_id_active);$i++){
     if($pk_id_active[$i]==1) {
         $activeid[] = $pk_id[$i];
+        $activestarts[] = $start_date[$i];
+        $activeends[] = $end_date[$i];
+        $activetests[] = $test_date[$i];
         $active_dates .= "``";
         $a++;
     }
 }
 for($i=0;$i<count($activeid);$i++){
-    $starts[$activeid[$i]] = $start_date[$i];
-    $ends[$activeid[$i]] = $end_date[$i];
-    $tests[$activeid[$i]] = $test_date[$i];
+    $starts[$activeid[$i]] = $activestarts[$i];
+    $ends[$activeid[$i]] = $activeends[$i];
+    $tests[$activeid[$i]] = $activetests[$i];
 }
 
 if($type != "save") {

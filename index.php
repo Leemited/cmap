@@ -18,14 +18,20 @@ if (G5_IS_MOBILE) {
 
 include_once(G5_PATH.'/head.php');
 
-$sql = "select * from `cmap_mainimage` order by id desc";
+$sql = "select * from `cmap_mainimage` where used = 1 order by id ";
 $res = sql_query($sql);
 while($row = sql_fetch_array($res)){
     $mainimage[] = $row;
 }
 
+$sql = "select * from `mainslide_time` where id = 1";
+$mainslide_time = sql_fetch($sql);
 ?>
-<div class="owl-carousel" id="main" style="z-index:0">
+<div class="etc_view messages">
+
+</div>
+<span class="etc_view_bg"></span>
+<div class="owl-carousel" id="main" style="z-index:0;">
     <?php if(count($mainimage)==0){?>
     <div class="item" style="background-image:url('<?php echo G5_IMG_URL;?>/main_bg.jpg');background-size: cover;background-position: center bottom;background-repeat: no-repeat;height: 100vh;width:100%;">
         <div class="text">
@@ -36,7 +42,7 @@ while($row = sql_fetch_array($res)){
     <?php }else{
         for($i=0;$i<count($mainimage);$i++){
     ?>
-    <div class="item" style="background-image:url('<?php echo G5_DATA_URL."/file/main/".$mainimage[$i]["main_image"];?>');background-size: cover;background-position: center bottom;background-repeat: no-repeat;height: 100vh;width:100%;">
+    <div class="item" style="background-image:url('<?php echo G5_DATA_URL."/file/main/".$mainimage[$i]["main_image"];?>');background-size: cover;background-position: center top;background-repeat: no-repeat;width:100%;height:100vh">
         <div class="text">
             <h2><?php echo nl2br($mainimage[$i]["main_text"]);?></h2>
             <p style="color:blue"><?php echo nl2br($mainimage[$i]["sub_text"]);?></p>
@@ -45,7 +51,54 @@ while($row = sql_fetch_array($res)){
     <?php }
     }?>
 </div>
-
+<?php if($member["mb_auth"]==false){?>
+<div class="freemember">
+    <a href="javascript:freeMember()">무료체험 5일<br><span>회원가입/현장개설</span></a>
+</div>
+<?php }?>
+    <!-- Channel Plugin Scripts -->
+    <!--script>
+        window.channelPluginSettings = {
+            "pluginKey": "af9f9598-783e-4d07-a7a5-afb03aa9c787"
+        };
+        (function() {
+            var w = window;
+            if (w.ChannelIO) {
+                return (window.console.error || window.console.log || function(){})('ChannelIO script included twice.');
+            }
+            var d = window.document;
+            var ch = function() {
+                ch.c(arguments);
+            };
+            ch.q = [];
+            ch.c = function(args) {
+                ch.q.push(args);
+            };
+            w.ChannelIO = ch;
+            function l() {
+                if (w.ChannelIOInitialized) {
+                    return;
+                }
+                w.ChannelIOInitialized = true;
+                var s = document.createElement('script');
+                s.type = 'text/javascript';
+                s.async = true;
+                s.src = 'https://cdn.channel.io/plugin/ch-plugin-web.js';
+                s.charset = 'UTF-8';
+                var x = document.getElementsByTagName('script')[0];
+                x.parentNode.insertBefore(s, x);
+            }
+            if (document.readyState === 'complete') {
+                l();
+            } else if (window.attachEvent) {
+                window.attachEvent('onload', l);
+            } else {
+                window.addEventListener('DOMContentLoaded', l, false);
+                window.addEventListener('load', l, false);
+            }
+        })();
+    </script>
+    <!-- End Channel Plugin -->
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=66b0c8ec7fbce830de7902a16ad06d12&libraries=services"></script>
 <script src="<?php echo G5_JS_URL ?>/owl.carousel.js"></script>
 <script>
@@ -55,9 +108,10 @@ while($row = sql_fetch_array($res)){
         owl.owlCarousel({
             animateOut: 'fadeOut',
             autoplay: true,
-            autoplayTimeout: 5000,
-            autoplaySpeed: 2000,
-            smartSpeed: 2000,
+            autoplayTimeout: <?php echo $mainslide_time["slide_time"];?>000,
+            autoplaySpeed: 5000,
+            smartSpeed: 5000,
+            mouseDrag:false,
             loop: true,
             dots: false,
             items: 1
@@ -71,7 +125,6 @@ while($row = sql_fetch_array($res)){
             data:{cmap_id:"<?php echo $current_const["const_id"];?>"},
             dataType:"json"
         }).done(function(data){
-            console.log(data);
             if(data.status != 1) {
                 if (data.tmn[0] && data.tmx[0]) {
                     var min = Math.floor(data.tmn[0]);
@@ -131,9 +184,16 @@ while($row = sql_fetch_array($res)){
         });
     }
 
-
+    function freeMember(){
+        <?php if($is_member){?>
+            location.href=g5_url+'/';
+        <?php }else{?>
+            location.href=g5_bbs_url+'/register.php?type=free';
+        <?php }?>
+    }
 
 </script>
+
 <?php
 include_once(G5_PATH.'/tail.php');
 ?>

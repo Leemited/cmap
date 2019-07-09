@@ -44,7 +44,7 @@ while($row = sql_fetch_array($res)){
         <header class="top">
             <h2>현장관리</h2>
             <div class="logout">
-                <a href="<?php echo G5_BBS_URL;?>/logout"><span></span>로그아웃</a>
+                <a href="javascript:fnLogout();"><span></span>로그아웃</a>
             </div>
         </header>
         <div class="construct_write">

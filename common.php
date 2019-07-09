@@ -641,11 +641,11 @@ $html_process = new html_process();
 
 if($is_member) {
     $member["mb_auth"]=true;
-    //구매 확인 | 가입후 1주일은 무료 | 이후 결제 여부 판단 | 결제가 있다면 현재 기간이 있는지 판단
+    //구매 확인 | 5일 무료 이용권 체크 | 이후 결제 여부 판단 | 결제가 있다면 현재 기간이 있는지 판단
     $todays = date("Y-m-d");
     $sql = "select count(*) as cnt from `cmap_payments` where mb_id = '{$member["mb_id"]}' and '{$todays}' BETWEEN payment_start_date and payment_end_date and order_cancel = 0";
     $chkMembeship = sql_fetch($sql);
-    if(date("Y-m-d",strtotime("+ 7 day", strtotime($member["mb_datetime"]))) < $todays){
+    if(date("Y-m-d",strtotime("+ 5 day", strtotime($member["mb_datetime"]))) < $todays){
         if($chkMembeship["cnt"]==0){
             $member["mb_auth"]=false;
         }
@@ -658,13 +658,17 @@ if($is_member) {
     $sql = "select * from `cmap_my_current_construct` where mb_id = '{$member["mb_id"]}'";
     $current_const = sql_fetch($sql);
 
-    if($member["mb_level"]==5){
+    /*if($member["mb_level"]==5){
         $constwhere = " or manager_mb_id = '{$member["mb_id"]}'";
-    }
+    }*/
 
     //내 현장 목록
     $managerconst=0;
-    $res = sql_query("select * from `cmap_my_construct` where (mb_id ='{$member["mb_id"]}' or instr(members,'{$member["mb_id"]}') != 0  {$constwhere}) and status = 0 order by id desc") ;
+    if($member["mb_level"]==5){
+        $res = sql_query("select * from `cmap_my_construct` where instr(manager_mb_id,'{$member["mb_id"]}') != 0  and status = 0 order by id desc");
+    }else {
+        $res = sql_query("select * from `cmap_my_construct` where (mb_id ='{$member["mb_id"]}' or instr(members,'{$member["mb_id"]}') != 0 ) and status = 0 order by id desc");
+    }
     while ($row = sql_fetch_array($res)) {
         $mycont[] = $row;
         $mycontid[] = $row["id"];
@@ -688,7 +692,7 @@ if($is_member) {
 
     //스케쥴 가져오기
     $sch_today = date("Y-m-d");
-    $res = sql_query("select * from `cmap_myschedule` where (mb_id = '{$member["mb_id"]}' or members in ('{$member["mb_id"]}')) and schedule_date = '{$sch_today}' {$com_where2} order by id limit 0, 6");
+    $res = sql_query("select * from `cmap_myschedule` where schedule_date = '{$sch_today}' {$com_where2}  order by id limit 0, 6");
     while ($row = sql_fetch_array($res)) {
         $myschedule[] = $row;
     }
@@ -705,6 +709,7 @@ if($is_member) {
         $menuorderstatus = explode("``", $setquick["quick_menu_status"]);
         for ($i = 0; $i < count($menuorder); $i++) {
             if ($menuorderstatus[$i] == 1) {
+                if($member["mb_level"]==5 && $menuordername[$i] == "현장관리"){continue;}
                 $quickmenu[] = "<li class='quickmenus " . $menuorder[$i] . "'><label>" . $menuordername[$i] . "</label><div class='img'><img src='" . G5_IMG_URL . "/ic_" . $menuorder[$i] . ".svg' alt='" . $menuorder[$i] . "'></div><div class='clear'></div></li>";
             }
         }
@@ -768,6 +773,9 @@ if($is_member) {
     }else{
         $invitewhere = "(read_mb_id = '{$member["mb_id"]}' or send_mb_id = '{$member["mb_id"]}') and msg_status = 0";
     }
+    if($member["mb_level"]==5){
+        $invitewhere .= " and msg_type = 3";
+    }
     $reqsql = "select * from `cmap_construct_invite` where {$invitewhere} ";
     $reqres = sql_query($reqsql);
     while($reqrow = sql_fetch_array($reqres)){
@@ -786,7 +794,19 @@ if($is_member) {
     if(!$com_where2){
         $delaylist = null;
     }else {
-        $activesql = "select * from `cmap_my_construct_map` where mb_id ='{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'";
+        if($member["mb_level"]==5){
+            $sql = "select * from `cmap_my_pmmode_set` where mb_id='{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'";
+            $ss = sql_fetch($sql);
+            if($ss!=null){
+                $activesql = "select * from `cmap_my_construct_map` where mb_id ='{$ss["set_mb_id"]}' and const_id = '{$current_const["const_id"]}'";
+            }else{
+                $sql = "select * from `cmap_my_construct` where id = '{$current_const["const_id"]}'";
+                $ss2 = sql_fetch($sql);
+                $activesql = "select * from `cmap_my_construct_map` where mb_id ='{$ss2["mb_id"]}' and const_id = '{$current_const["const_id"]}'";
+            }
+        }else {
+            $activesql = "select * from `cmap_my_construct_map` where mb_id ='{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'";
+        }
         $activechk = sql_fetch($activesql);
         $map_pk_id = explode("``",$activechk["pk_ids"]);
         $map_pk_actives = explode("``",$activechk["pk_actives"]);
@@ -794,7 +814,6 @@ if($is_member) {
 
         $delaysql = "select * from `cmap_myschedule` where construct_id = '{$current_const["const_id"]}' and schedule_date < '{$delay_now}' and pk_id <> '' order by schedule_date desc";
         $delayres = sql_query($delaysql);
-        $a=0;
         while($delayrow = sql_fetch_array($delayres)){
             $pk_ids = explode("``",$delayrow["pk_id"]);
 
@@ -806,56 +825,75 @@ if($is_member) {
                     if($pk_ids[$i]==$map_pk_id[$j]){
                         if($map_pk_actives[$j]==0){
                             $sql = "select *,c.pk_id as pk_id,d.pk_id as depth4_pk_id,c.depth1_id as depth1_id, a.pk_id as depth1_pk_id,a.depth_name as depth1_name,d.depth_name as depth_name from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$pk_ids[$i]}'";
-                            $ddd = sql_fetch($sql);
-                            if(strpos($id,$ddd["pk_id"])!==false) {
+                            $dd = sql_fetch($sql);
+                            if(strpos($ssid,$dd["pk_id"])!==false) {
                                 continue;
                             }
-                            $id .= ','.$ddd["pk_id"];
-                            $delaylist[$pk_ids[$i]] = $ddd;
+                            $ssid .= ','.$dd["pk_id"];
+                            $delaylist[$pk_ids[$i]] = $dd;
                             $delaylist[$pk_ids[$i]]["delay_date"] = "-".$days;
                             $delaylist[$pk_ids[$i]]["schedule_date"] = $delayrow["schedule_date"];
-                            $delayhead[$ddd["depth1_pk_id"]] = true;
-                            $delayhead2[$ddd["me_code"]] = true;
+                            $delayhead[$dd["depth1_pk_id"]] = true;
+                            $delayhead2[$dd["me_code"]] = true;
                         }
                     }
                 }
             }
         }
     }
-    //평가
-    $maineval = sql_fetch("select * from `cmap_my_construct_eval` where const_id = '{$current_const["const_id"]}' and mb_id ='{$member["mb_id"]}'");
-    if($maineval==null || ($maineval["pk_ids1"] == "" && $maineval["pk_score1"]=="")||($maineval["pk_ids2"] == "" && $maineval["pk_score2"]=="")){
-        //현장 평가 상태 등록
-        //시공평가의 pk_ids 가져오기 가변값이 아니라 오류 생길 수 있음
-        $sql = "select *,a.pk_id as pk_id from `cmap_content` as a left join `cmap_depth1` as b on a.depth1_id = b.id where b.me_id = 60 and b.me_code = 6064 order by a.id";
-        $eval1res = sql_query($sql);
-        while($eval1row = sql_fetch_array($eval1res)){
-            $eval1[] = $eval1row["pk_id"];
-            $evalscore[] = "0";
-        }
-        $evals = implode("``",$eval1);
-        $eval1score = implode("``",$evalscore);
-
-        //용역평가의 pk_ids 가져오기
-        $sql = "select *,a.pk_id as pk_id from `cmap_content` as a left join `cmap_depth1` as b on a.depth1_id = b.id where b.me_id = 60 and b.me_code = 60129 order by a.id";
-        $eval2res = sql_query($sql);
-        while($eval2row = sql_fetch_array($eval2res)){
-            $eval2[] = $eval2row["pk_id"];
-            $evalscore2[] = "0";
-        }
-        $evals2 = implode("``",$eval2);
-        $eval2score = implode("``",$evalscore2);
-
-        if($maineval==null) {
-            $sql = "insert into `cmap_my_construct_eval` set const_id = '{$current_const["const_id"]}' , mb_id ='{$member["mb_id"]}', pk_ids1 = '{$evals}', pk_score1 = '{$eval1score}', pk_ids2 = '{$evals2}', pk_score2 = '{$eval2score}' , pk_score1_total = '0``0``0', pk_score2_total = '0``0``0``0``0``0``0``0'";
-        }else{
-            $sql = "update `cmap_my_construct_eval` set pk_ids1 = '{$evals}', pk_score1 = '{$eval1score}', pk_ids2 = '{$evals2}', pk_score2 = '{$eval2score}' , pk_score1_total = '0``0``0', pk_score2_total = '0``0``0``0``0``0``0``0' where mb_id = '{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'";
-        }
-        sql_query($sql);
-
-        $maineval = sql_fetch("select * from `cmap_my_construct_eval` where mb_id = '{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'");
+    if(count($delaylist)>0){
+        $maindelaylists = array_values($delaylist);
+        $maindelaylists = arr_sort($maindelaylists, "delay_date", "asc");
     }
 
+    //평가
+    if($current_const["const_id"]) {
+        if ($member["mb_level"] == 5) {
+            $sql = "select * from `cmap_my_pmmode_set` where mb_id='{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'";
+            $ss = sql_fetch($sql);
+            if ($ss != null) {
+                $maineval = sql_fetch("select * from `cmap_my_construct_eval` where const_id = '{$current_const["const_id"]}' and mb_id ='{$ss["set_mb_id"]}'");
+            } else {
+                $sql = "select * from `cmap_my_construct` where id = '{$current_const["const_id"]}'";
+                $ss2 = sql_fetch($sql);
+                $maineval = sql_fetch("select * from `cmap_my_construct_eval` where const_id = '{$current_const["const_id"]}' and mb_id ='{$ss2["mb_id"]}'");
+            }
+        } else {
+            $maineval = sql_fetch("select * from `cmap_my_construct_eval` where const_id = '{$current_const["const_id"]}' and mb_id ='{$member["mb_id"]}'");
+        }
+        if ($maineval == null || ($maineval["pk_ids1"] == "" && $maineval["pk_score1"] == "") || ($maineval["pk_ids2"] == "" && $maineval["pk_score2"] == "")) {
+            //현장 평가 상태 등록
+            //시공평가의 pk_ids 가져오기 가변값이 아니라 오류 생길 수 있음
+            $sql = "select *,a.pk_id as pk_id from `cmap_content` as a left join `cmap_depth1` as b on a.depth1_id = b.id where b.me_id = 60 and b.me_code = 6064 order by a.id";
+            $eval1res = sql_query($sql);
+            while ($eval1row = sql_fetch_array($eval1res)) {
+                $eval1[] = $eval1row["pk_id"];
+                $evalscore[] = "0";
+            }
+            $evals = implode("``", $eval1);
+            $eval1score = implode("``", $evalscore);
+
+            //용역평가의 pk_ids 가져오기
+            $sql = "select *,a.pk_id as pk_id from `cmap_content` as a left join `cmap_depth1` as b on a.depth1_id = b.id where b.me_id = 60 and b.me_code = 60129 order by a.id";
+            $eval2res = sql_query($sql);
+            while ($eval2row = sql_fetch_array($eval2res)) {
+                $eval2[] = $eval2row["pk_id"];
+                $evalscore2[] = "0";
+            }
+            $evals2 = implode("``", $eval2);
+            $eval2score = implode("``", $evalscore2);
+
+            $maineval = sql_fetch("select * from `cmap_my_construct_eval` where mb_id = '{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'");
+            if ($maineval == null) {
+                $sql = "insert into `cmap_my_construct_eval` set const_id = '{$current_const["const_id"]}' , mb_id ='{$member["mb_id"]}', pk_ids1 = '{$evals}', pk_score1 = '{$eval1score}', pk_ids2 = '{$evals2}', pk_score2 = '{$eval2score}' , pk_score1_total = '0``0``0', pk_score2_total = '0``0``0``0``0``0``0``0'";
+            } else {
+                $sql = "update `cmap_my_construct_eval` set pk_ids1 = '{$evals}', pk_score1 = '{$eval1score}', pk_ids2 = '{$evals2}', pk_score2 = '{$eval2score}' , pk_score1_total = '0``0``0', pk_score2_total = '0``0``0``0``0``0``0``0' where mb_id = '{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'";
+            }
+            echo $sql;
+            sql_query($sql);
+
+        }
+    }
     //시공 토탈
     $main_evals1 = explode("``",$maineval["pk_score1_total"]);
     for($i=0;$i<count($main_evals1);$i++){
@@ -1102,13 +1140,15 @@ if($is_member) {
     }
 
 }
-
 //navigator
 $navisql = "select * from `cmap_menu` where menu_status = 0 and menu_depth = 0 order by menu_order ";
 $navires = sql_query($navisql);
 while($navirow=sql_fetch_array($navires)){
     $menulist[] = $navirow;
 }
+
+
+$hanlist = array("가","나","다","라","마","바","사","아","자","차","타","카","파","하","거","너","더","러","머","버","서","어","저","처","터","커","퍼","허");
 
 ?>
 

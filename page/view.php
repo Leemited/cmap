@@ -2,16 +2,30 @@
 include_once ("../common.php");
 $sub="sub";
 if($member["mb_auth"]==false){
-    alert("무료 이용기간이 만료 되었거나,\\r맴버쉽 기간이 만료 되었습니다. \\n맴버쉽 구매후 이용바랍니다.",G5_URL);
+    if($member["mb_level"]>1){
+        alert("무료 이용기간이 만료 되었거나,\\r맴버쉽 기간이 만료 되었습니다. \\n맴버쉽 구매후 이용바랍니다.",G5_URL);
+    }
 }
+
 /*if(!$is_member){
     alert("로그인후 이용 가능합니다.", G5_BBS_URL."/login");
 }*/
 
 //내 현황 가져오기
-$sql = "select * from `cmap_my_construct_map` where const_id = '{$current_const["const_id"]}' and mb_id ='{$member["mb_id"]}'";
+if($member["mb_level"]==5){
+    $sql = "select * from `cmap_my_pmmode_set` where mb_id='{$member["mb_id"]}' and const_id = '{$const_id}'";
+    $ss = sql_fetch($sql);
+    if($ss!=null) {
+        $sql = "select * from `cmap_my_construct_map` where const_id = '{$current_const["const_id"]}' and mb_id ='{$ss["set_mb_id"]}'";
+    }else{
+        $sql = "select * from `cmap_my_construct` where id = '{$current_const["const_id"]}'";
+        $ss2 = sql_fetch($sql);
+        $sql = "select * from `cmap_my_construct_map` where const_id = '{$current_const["const_id"]}' and mb_id ='{$ss2["mb_id"]}'";
+    }
+}else{
+    $sql = "select * from `cmap_my_construct_map` where const_id = '{$current_const["const_id"]}' and mb_id ='{$member["mb_id"]}'";
+}
 $delayitem = sql_fetch($sql);
-
 
 $vpk_ids = explode("``",$delayitem["pk_ids"]);
 $vpk_active = explode("``",$delayitem["pk_actives"]);
@@ -92,14 +106,19 @@ if($depth2_id){
 }
 
 //메모 불러오기
-$sql = "select * from `cmap_mymemo` where me_id = '{$me_id}' and mb_id = '{$member["mb_id"]}' {$where} {$where2} order by id desc";
+$sql = "select * from `cmap_mymemo` where me_id = '{$me_id}' and mb_id = '{$member["mb_id"]}' {$where} {$where2}  group by InsertDate order by InsertTime asc";
 $res = sql_query($sql);
 $num = sql_num_rows($res);
+$a = 0;
 while($row = sql_fetch_array($res)){
-    $memo[] = $row;
+    $memo[$a] = $row;
+    $sql = "select * from `cmap_mymemo` where InsertDate = '{$row['InsertDate']}' and mb_id = '{$member["mb_id"]}' and me_id = '{$me_id}' order by InsertTime asc";
+    $memores = sql_query($sql);
+    while($memorow = sql_fetch_array($memores)) {
+        $memo[$a]["incontent"][] = $memorow;
+    }
+    $a++;
 }
-
-
 
 //해당 대메뉴에 대한 서브 메뉴
 $menu_id = substr($me_id,0,2);
@@ -209,7 +228,9 @@ $myconstruction = false;
 
 </div>-->
 <?php }?>
+
 <div class="full-width">
+
     <div class="view">
         <div class="left">
             <div class="title">
@@ -229,7 +250,7 @@ $myconstruction = false;
                 <?php }?>
                 <tr class="memo">
                     <td style="position: relative">
-                        <form action="<?php echo G5_URL;?>/page/memo_update.php" method="post" >
+                        <form action="<?php echo G5_URL;?>/page/memo_update" method="post" >
                             <input type="hidden" name="return_url" value="view">
                             <input type="hidden" name="type" value="in">
                             <input type="hidden" name="me_id" value="<?php echo $me_id;?>">
@@ -243,18 +264,29 @@ $myconstruction = false;
                         </div>
                         </form>
                         <div class="memo_area" style="width:100%;height:300px;padding:5px;">
-                            <ul>
-                                <?php for($a = 0; $a<count($memo);$a++){?>
-                                    <li title="<?php echo $memo[$a]["memo_content"];?>"><?php echo nl2br($memo[$a]["memo_content"]);?> <i class="fa fa-close" onclick="location.href=g5_url+'/page/memo_update?type=del&return_url=view&me_id=<?php echo $me_id;?>&mb_id=<?php echo $member["mb_id"];?>&depth1_id=<?php echo $depth1_id;?>&depth2_id=<?php echo $depth2_id;?>&id=<?php echo $memo[$a]["id"];?>'"></i></li>
-                                <?php }?>
-                            </ul>
+                            <?php for($a = 0; $a<count($memo);$a++){?>
+                                <div class="memo_item">
+                                    <div class="top">
+                                        <span><?php echo ($a+1).". ";?><?php echo $memo[$a]["InsertDate"];?></span>
+                                        <i class="fa fa-close" onclick="fnMemoDel('<?php echo $me_id;?>','<?php echo $member["mb_id"];?>','<?php echo $depth1_id;?>','<?php echo $depth2_id;?>','<?php echo $memo[$a]["InsertDate"];?>')"></i>
+                                    </div>
+                                    <div class="bottom">
+                                    <?php for($b=0;$b<count($memo[$a]["incontent"]);$b++){?>
+                                        <ul>
+                                            <li title="<?php echo $memo[$a]["incontent"][$b]["memo_content"];?>"><span><?php echo $hanlist[$b].". " ;?></span><?php echo nl2br($memo[$a]["incontent"][$b]["memo_content"]);?> </li>
+                                        </ul>
+                                    <?php }?>
+                                    </div>
+                                </div>
+                            <?php }?>
                         </div>
                     </td>
                 </tr>
             </table>
         </div>
         <div class="right">
-            <table class="view_table_scroll" >
+            <table class="view_table table_head" >
+                <?php if($depth5num > 0) { ?>
                 <tr>
                     <!--th>직업선택</th-->
                     <th style="width:12%;">구분</th>
@@ -267,25 +299,64 @@ $myconstruction = false;
                         <th style="width:6%;">지연일</th>
                     <?php }?>
                 </tr>
+                <?php }else {?>
+                    <?php if($num4 > 0 && $num3 > 0){?>
+                    <tr>
+                        <th style="width:10%">구분</th>
+                        <th style="width:12%">항목</th>
+                        <th style="width:*">주요확인내용</th>
+                        <th style="width:10%">참고</th>
+                        <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
+                            <th style="width:5%;">확인</th>
+                            <th style="width:10%;">확인일</th>
+                        <?php }?>
+
+                    </tr>
+                    <?php }?>
+                    <?php if($num3 > 0 && (!$num4 || $num4 == 0)){?>
+                        <tr>
+                            <th style="width:12%;">공정단계별</th>
+                            <th style="width:auto;">주요검사항목</th>
+                            <th style="width:6%;">참고</th>
+                            <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
+                                <th style="width:5%;">확인</th>
+                                <th style="width:10%;">확인일</th>
+                            <?php }?>
+                        </tr>
+                        <tr></tr>
+                    <?php }?>
+                <?php }?>
             </table>
-        <table class="view_table" >
+            <div class="view_in_content">
+            <table class="view_table" >
             <?php
             if($depth5num > 0) {
             ?>
-            <thead>
+            <!--<thead>
             <tr>
-                <!--th>직업선택</th-->
+                <!--th>직업선택</th--
                 <th style="width:12%;">구분</th>
                 <th style="width:12%;">항목</th>
                 <th style="width:auto;">주요확인내용</th>
                 <th style="width:120px;">참고</th>
-                <?php if($is_member && $mycont  && $current_const["const_id"]!=0){?>
+                <?php /*if($is_member && $mycont  && $current_const["const_id"]!=0){*/?>
                     <th style="width:5%;">확인</th>
-                    <th style="width:10%;"><?php if(substr($me_id,0,2)==50){?>확인일<?php }else{?>제출일<?php }?></th>
+                    <th style="width:10%;"><?php /*if(substr($me_id,0,2)==50){*/?>확인일<?php /*}else{*/?>제출일<?php /*}*/?></th>
                     <th style="width:6%;">지연일</th>
-                <?php }?>
+                <?php /*}*/?>
             </tr>
-            </thead>
+            </thead>-->
+                <colgroup>
+                    <col width="12%">
+                    <col width="12%">
+                    <col width="*">
+                    <col width="120px">
+                    <?php if($is_member && $mycont  && $current_const["const_id"]!=0){?>
+                    <col width="5%">
+                    <col width="10%">
+                    <col width="6%">
+                    <?php }?>
+                </colgroup>
             <tbody>
             <tr></tr>
             <?php
@@ -331,6 +402,14 @@ $myconstruction = false;
                                     $filenames2 = array();
                                 }
 
+                                if($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["attachment3"]!="") {
+                                    $files3 = explode("``", $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["attachment3"]);
+                                    $filenames3 = explode("``", $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]["attachmentname3"]);
+                                }else{
+                                    $files3 = array();
+                                    $filenames3 = array();
+                                }
+
                                 /*switch ($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['submit_date_type'])
                                 {
                                     case 0 :
@@ -363,25 +442,28 @@ $myconstruction = false;
                             <td class="etc" id="">
                                 <?php if(!$is_member){?>
                                 <?php }else{ ?>
-                                <?php if(count($files)>=1){?>
-                                    <input type="button" value="미리보기" onclick="fnViewEtc('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>')">
-                                <?php }else {?>
                                     <!-- 참고 링크 -->
                                     <?php if(count($links)>=1){
                                         for($w=0;$w<count($links);$w++){?>
-                                            <input type="button" value="링크" style="background-image:url('<?php echo G5_IMG_URL;?>/ic_links.svg');"  onclick="window.open('<?php echo $links[$w];?>','_blank')" title="<?php echo $linknames[$w];?>">
-                                    <?php }
+                                            <input type="button" value="링크" class="view-link" onclick="window.open('<?php echo $links[$w];?>','_blank')" title="<?php echo $linknames[$w];?>">
+                                        <?php }
                                     }?>
-                                    <!-- 참고 링크 -->
+
+                                    <!-- 다운로드 -->
                                     <?php if(count($files2)>=1){
                                         for($w=0;$w<count($files2);$w++){
                                             if($files2[$w]!=""){
-                                            ?>
-                                            <input type="button" value="다운로드" style="background-image:url('<?php echo G5_IMG_URL;?>/ic_attach.svg');" onclick="location.href=g5_url+'/page/view_download?file=<?php echo $files2[$w];?>&filename=<?php echo $filenames2[$w];?>'" title="<?php echo $filenames2[$w];?>">
-                                        <?php }
-                                            }
+                                                ?>
+                                                <input type="button" value="다운로드" class="view-download" onclick="location.href=g5_url+'/page/view_download?file=<?php echo $files2[$w];?>&filename=<?php echo $filenames2[$w];?>'" title="<?php echo $filenames2[$w];?>">
+                                            <?php }
+                                        }
                                     }?>
-                                <?php }?>
+                                    <?php if(count($files)>=1){?>
+                                    <input type="button" value="미리보기" onclick="fnViewEtc('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>')">
+                                    <?php }?>
+                                    <?php if(count($files3)>=1){?>
+                                    <input type="button" value="미리보기" class="view-etc2" onclick="fnViewEtc2('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['depth5'][$m]['pk_id'];?>')" >
+                                    <?php }?>
                                 <?php }?>
                             </td>
                             <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
@@ -438,19 +520,29 @@ $myconstruction = false;
                 ?>
                 <?php if($num4 > 0 && $num3 > 0){
                     ?>
-            <thead>
+            <!--<thead>
                 <tr>
                     <th style="width:10%">구분</th>
                     <th style="width:12%">항목</th>
                     <th style="width:*">주요확인내용</th>
                     <th style="width:10%">참고</th>
-                    <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
+                    <?php /*if($is_member && $mycont && $current_const["const_id"]!=0){*/?>
                         <th style="width:5%;">확인</th>
                         <th style="width:10%;">확인일</th>
-                    <?php }?>
+                    <?php /*}*/?>
 
                 </tr>
-            </thead>
+            </thead>-->
+            <colgroup>
+                <col width="10%">
+                <col width="12%">
+                <col width="*">
+                <col width="10%">
+                <?php if($is_member && $mycont  && $current_const["const_id"]!=0){?>
+                    <col width="5%">
+                    <col width="10%">
+                <?php }?>
+            </colgroup>
             <tbody>
             <tr></tr>
             <?php
@@ -489,6 +581,8 @@ $myconstruction = false;
                         $files2 = array();
                         $filenames2 = array();
                     }
+
+
                     /*switch ($list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['submit_date_type'])
                     {
                         case 0 :
@@ -515,24 +609,24 @@ $myconstruction = false;
                 <td class="etc">
                     <?php if(!$is_member){?>
                     <?php }else{ ?>
+                        <!-- 참고 링크 -->
+                        <?php if(count($links)>=1){
+                            for($w=0;$w<count($links);$w++){?>
+                                <input type="button" value="링크" style="background-image:url('<?php echo G5_IMG_URL;?>/ic_links.svg');"  onclick="window.open('<?php echo $links[$w];?>','_blank')" title="<?php echo $linknames[$w];?>">
+                            <?php }
+                        }?>
+
+                        <!-- 참고 링크 -->
+                        <?php if(count($files2)>=1){
+                            for($w=0;$w<count($files2);$w++){
+                                if($files2[$w]!=""){
+                                    ?>
+                                    <input type="button" value="다운로드" style="background-image:url('<?php echo G5_IMG_URL;?>/ic_attach.svg');" onclick="location.href=g5_url+'/page/view_download?file=<?php echo $files2[$w];?>&filename=<?php echo $filenames2[$w];?>'" title="<?php echo $filenames2[$w];?>">
+                                <?php }
+                            }
+                        }?>
                         <?php if(count($files)>=1){?>
                             <input type="button" value="미리보기" onclick="fnViewEtc('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['depth4'][$l]['pk_id'];?>')">
-                        <?php }else {?>
-                            <!-- 참고 링크 -->
-                            <?php if(count($links)>=1){
-                                for($w=0;$w<count($links);$w++){?>
-                                    <input type="button" value="링크" style="background-image:url('<?php echo G5_IMG_URL;?>/ic_links.svg');"  onclick="window.open('<?php echo $links[$w];?>','_blank')" title="<?php echo $linknames[$w];?>">
-                                <?php }
-                            }?>
-                            <!-- 참고 링크 -->
-                            <?php if(count($files2)>=1){
-                                for($w=0;$w<count($files2);$w++){
-                                    if($files2[$w]!=""){
-                                        ?>
-                                        <input type="button" value="다운로드" style="background-image:url('<?php echo G5_IMG_URL;?>/ic_attach.svg');" onclick="location.href=g5_url+'/page/view_download?file=<?php echo $files2[$w];?>&filename=<?php echo $filenames2[$w];?>'" title="<?php echo $filenames2[$w];?>">
-                                    <?php }
-                                }
-                            }?>
                         <?php }?>
                     <?php }?>
                 </td>
@@ -561,16 +655,25 @@ $myconstruction = false;
                 <?php }
                 if($num3 > 0 && (!$num4 || $num4 == 0)){
                     ?>
-                    <tr>
+                    <!--<tr>
                         <th style="width:12%;">공정단계별</th>
                         <th style="width:auto;">주요검사항목</th>
                         <th style="width:6%;">참고</th>
-                        <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
+                        <?php /*if($is_member && $mycont && $current_const["const_id"]!=0){*/?>
                             <th style="width:5%;">확인</th>
                             <th style="width:10%;">확인일</th>
-                        <?php }?>
+                        <?php /*}*/?>
                     </tr>
-                    <tr></tr>
+                    <tr></tr>-->
+                    <colgroup>
+                        <col width="12%">
+                        <col width="*">
+                        <col width="6%">
+                        <?php if($is_member && $mycont  && $current_const["const_id"]!=0){?>
+                            <col width="5%">
+                            <col width="10%">
+                        <?php }?>
+                    </colgroup>
                     <?php
                     $depth_last = 1;
                     for ($i = 0; $i < count($list); $i++) {
@@ -614,24 +717,23 @@ $myconstruction = false;
                                 <td class="etc" >
                                     <?php if(!$is_member){?>
                                     <?php }else{ ?>
+                                        <!-- 참고 링크 -->
+                                        <?php if(count($links)>=1){
+                                            for($w=0;$w<count($links);$w++){?>
+                                                <input type="button" value="링크" style="background-image:url('<?php echo G5_IMG_URL;?>/ic_links.svg');"  onclick="window.open('<?php echo $links[$w];?>','_blank')" title="<?php echo $linknames[$w];?>">
+                                            <?php }
+                                        }?>
+                                        <!-- 다운로드 -->
+                                        <?php if(count($files2)>=1){
+                                            for($w=0;$w<count($files2);$w++){
+                                                if($files2[$w]!=""){
+                                                    ?>
+                                                    <input type="button" value="다운로드" style="background-image:url('<?php echo G5_IMG_URL;?>/ic_attach.svg');" onclick="location.href=g5_url+'/page/view_download?file=<?php echo $files2[$w];?>&filename=<?php echo $filenames2[$w];?>'" title="<?php echo $filenames2[$w];?>">
+                                                <?php }
+                                            }
+                                        }?>
                                         <?php if(count($files)>=1){?>
                                             <input type="button" value="미리보기" onclick="fnViewEtc('<?php echo $list[$i]['depth2'][$j]['depth3'][$k]['pk_id'];?>')">
-                                        <?php }else {?>
-                                            <!-- 참고 링크 -->
-                                            <?php if(count($links)>=1){
-                                                for($w=0;$w<count($links);$w++){?>
-                                                    <input type="button" value="링크" style="background-image:url('<?php echo G5_IMG_URL;?>/ic_links.svg');"  onclick="window.open('<?php echo $links[$w];?>','_blank')" title="<?php echo $linknames[$w];?>">
-                                                <?php }
-                                            }?>
-                                            <!-- 참고 링크 -->
-                                            <?php if(count($files2)>=1){
-                                                for($w=0;$w<count($files2);$w++){
-                                                    if($files2[$w]!=""){
-                                                        ?>
-                                                        <input type="button" value="다운로드" style="background-image:url('<?php echo G5_IMG_URL;?>/ic_attach.svg');" onclick="location.href=g5_url+'/page/view_download?file=<?php echo $files2[$w];?>&filename=<?php echo $filenames2[$w];?>'" title="<?php echo $filenames2[$w];?>">
-                                                    <?php }
-                                                }
-                                            }?>
                                         <?php }?>
                                     <?php }?>
                                 </td>
@@ -657,6 +759,7 @@ $myconstruction = false;
                 <?php }?>
             <?php } ?>
         </table>
+            </div>
         </div>
         <div class="clear"></div>
     </div>
@@ -687,9 +790,9 @@ $(function(){
         if(top > 160){
             if($(".view_table").height()>960 || $(".menu_table").height() > 960) {
                 $(".title").hide();
-                $(".left").attr("style", "position:fixed;top:3px");
+                $(".left").attr("style", "position:fixed;top:123px");
                 $(".right").attr("style", "margin-left:220px;");
-                $(".view_table_scroll").attr("style", "display:table;position: fixed;top: 0;");
+                $(".view_table_scroll").attr("style", "display:table;position: fixed;top: 120px;");
                 $(".view_table thead").attr("style", "opacity:0");
             }
         }else{
@@ -715,6 +818,63 @@ $(function(){
     $(function(){
         $(document).tooltip();
     });
+
+    $(".depth3").hover(function(){
+        $(this).nextAll().addClass("hover");
+    },function(){
+        $(this).nextAll().removeClass("hover");
+    });
+
+    $(".depth3").next().hover(function(){
+        $(this).prev().addClass("hover");
+        $(this).nextAll().addClass("hover");
+    },function(){
+        $(this).prev().removeClass("hover");
+        $(this).nextAll().removeClass("hover");
+    });
+
+    $(".depth3").next().next().hover(function(){
+        $(this).prev().addClass("hover");
+        $(this).prev().prev().addClass("hover");
+        $(this).nextAll().addClass("hover");
+    },function(){
+        $(this).prev().removeClass("hover");
+        $(this).prev().prev().removeClass("hover");
+        $(this).nextAll().removeClass("hover");
+    });
+
+    $(".depth3").next().next().next().hover(function(){
+        $(this).prev().addClass("hover");
+        $(this).prev().prev().addClass("hover");
+        $(this).prev().prev().prev().addClass("hover");
+        $(this).nextAll().addClass("hover");
+    },function(){
+        $(this).prev().removeClass("hover");
+        $(this).prev().prev().removeClass("hover");
+        $(this).prev().prev().prev().removeClass("hover");
+        $(this).nextAll().removeClass("hover");
+    });
+
+    $(".depth3").next().next().next().next().hover(function(){
+        $(this).prev().addClass("hover");
+        $(this).prev().prev().addClass("hover");
+        $(this).prev().prev().prev().addClass("hover");
+        $(this).prev().prev().prev().prev().addClass("hover");
+        $(this).nextAll().addClass("hover");
+    },function(){
+        $(this).prev().removeClass("hover");
+        $(this).prev().prev().removeClass("hover");
+        $(this).prev().prev().prev().removeClass("hover");
+        $(this).prev().prev().prev().prev().removeClass("hover");
+        $(this).nextAll().removeClass("hover");
+    });
+
+
+    var tbheight = $(".view_in_content .view_table").height();
+    var viewheight = $(".view_in_content").height();
+    if(viewheight < tbheight){
+        $(".right .table_head").css("padding-right","5px");
+    }
 });
 
 function fnViewEtc(pk_id){
@@ -734,6 +894,25 @@ function fnViewEtc(pk_id){
         }
     });
 }
+
+function fnViewEtc2(pk_id){
+    $.ajax({
+        url:g5_url+"/page/ajax/ajax.etc2.php",
+        method:"post",
+        data:{pk_id:pk_id}
+    }).done(function(data){
+        $(".etc_view .content").html('');
+        if(!$(".etc_view").hasClass("active")){
+            $(".etc_view .content").html(data);
+            $(".etc_view").addClass("active");
+            $(".etc_view_bg").addClass("active");
+        }else{
+            $(".etc_view").removeClass("active");
+            $(".etc_view_bg").removeClass("active");
+        }
+    });
+}
+
 function fnCheckDelay(pk_id,const_id){
     $.ajax({
         url:g5_url+'/page/ajax/ajax.my_delay_check.php',
@@ -752,15 +931,17 @@ function fnCheckDelay(pk_id,const_id){
             alert("이미 제출/확인 된 항목입니다.");
         }else if(data.msg=="5"){
             alert("알 수 없는 오류입니다.\n관리자에게 문의 바랍니다.");
-        }else {
-            location.reload();
-            /*$("#date_"+pk_id).html(data.insert_date);
-            $(".depth_name_"+pk_id).toggleClass("red_td");
-            if(data.insert_date) {
-                $("#delay" + pk_id).html("-");
-            }else{
-                $("#delay" + pk_id).html("");
-            }*/
+        }else if(data.msg=="7") {
+            alert("PM은 현장정보를 수정할수 없습니다.");
+        }else{
+                location.reload();
+                /*$("#date_"+pk_id).html(data.insert_date);
+                 $(".depth_name_"+pk_id).toggleClass("red_td");
+                 if(data.insert_date) {
+                 $("#delay" + pk_id).html("-");
+                 }else{
+                 $("#delay" + pk_id).html("");
+                 }*/
         }
     });
 }
@@ -783,11 +964,19 @@ function fnCheckDelay2(pk_id,const_id){
             alert("이미 제출/확인 된 항목입니다.");
         }else if(data.msg=="5"){
             alert("알 수 없는 오류입니다.\n관리자에게 문의 바랍니다.");
+        }else if(data.msg=="7") {
+            alert("PM은 현장정보를 수정할수 없습니다.");
         }else {
             //location.reload();
             $("#date_"+pk_id).html(data.insert_date);
         }
     });
+}
+
+function fnMemoDel(me_id,mb_id,depth1_id,depth2_id,InsertDate){
+    if(confirm("해당 날짜의 메모를 삭제하시겠습니까?")) {
+        location.href = g5_url + '/page/memo_update?type=del&return_url=view&me_id=' + me_id + '&mb_id=' + mb_id + '&depth1_id=' + depth1_id + '&depth2_id=' + depth2_id + '&InsertDate=' + InsertDate;
+    }
 }
 </script>
 <?php

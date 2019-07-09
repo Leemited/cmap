@@ -104,7 +104,7 @@ if(count($mynavi)==0){
         <header class="top">
             <h2>MY C.MAP</h2>
             <div class="logout">
-                <a href="<?php echo G5_BBS_URL;?>/logout"><span></span>로그아웃</a>
+                <a href="javascript:fnLogout();"><span></span>로그아웃</a>
             </div>
         </header>
         <aside class="mypage_menu">

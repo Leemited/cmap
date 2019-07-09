@@ -5,14 +5,19 @@ if(!$is_member){
     goto_url(G5_BBS_URL."/login?url=".G5_URL."/page/mylocation/mylocation");
 }
 
+if($member["mb_level"] == 5){
+    goto_url(G5_URL."/page/manager/pm_construct");
+}
+$menu_id = "depth_desc_construct";
+$mypage = true;
 $sub = "sub";
 $bbody = "board";
-include_once (G5_PATH."/head.php");
+include_once (G5_PATH."/_head.php");
 
 $sql ="select *,count(id) as cnt from `cmap_my_construct_temp` where mb_id = '{$member["mb_id"]}' and status = 0 order by id desc limit 0, 1";
 $chkTemp = sql_fetch($sql);
 if($chkTemp["cnt"] > 0 && $chk == false){
-    echo "<script>fnConstRe('".$chkTemp["id"]."', '".G5_URL."/page/mylocation/mylocation_step1?constid=".$chkTemp["id"]."')</script>";
+    echo "<script>fnConstRe('".$chkTemp["id"]."', '".G5_URL."/page/mylocation/mylocation_edit?constid=".$chkTemp["id"]."&type=insert')</script>";
     //confirm("등록 중이던 현장이 있습니다. 계속 등록하시겠습니까?",G5_URL.'/page/mylocation/mylocation_step1?id='.$chkTemp["id"],'./mylocation?chk=false');
 }
 
@@ -36,7 +41,7 @@ while($row = sql_fetch_array($res)){
         <header class="top">
             <h2>현장관리</h2>
             <div class="logout">
-                <a href="<?php echo G5_BBS_URL;?>/logout"><span></span>로그아웃</a>
+                <a href="javascript:fnLogout();"><span></span>로그아웃</a>
             </div>
         </header>
         <div class="mylocation">
@@ -48,6 +53,33 @@ while($row = sql_fetch_array($res)){
                         <input type="button" value="현장개설" onclick="fnConstConfirm();" class="basic_btn03">
                     </div>
                 </div>
+
+                <div class="search_loc">
+                    <h3><i></i> 검색된 현장</h3>
+                    <!--<div class="myloc_btns">
+                        <input type="button" value="현장개설" onclick="fnConstConfirm();" class="basic_btn03">
+                    </div>-->
+                    <table>
+                        <colgroup>
+
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th style="width:10%">등록자</th>
+                            <th style="width: 60%">건설현장</th>
+                            <th style="width:10%">등록일</th>
+                            <th style="width:200px"  colspan="2">EDIT</th>
+                        </tr>
+                        </thead>
+                        <tbody class="seach_list">
+                        <tr >
+                            <td colspan="4" class="td_center">
+                                검색해 주세요.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <h3><i></i> 사용중인 현장</h3>
                 <div class="myloc_btns">
 
@@ -58,7 +90,7 @@ while($row = sql_fetch_array($res)){
                         <th style="width:10%">등록자</th>
                         <th>건설현장</th>
                         <th style="width:10%">등록일</th>
-                        <th style="width:250px;">EDIT</th>
+                        <th style="width:250px;" colspan="2">EDIT</th>
                     </tr>
                     <?php if(count($mycons)==0){?>
                     <tr>
@@ -84,8 +116,10 @@ while($row = sql_fetch_array($res)){
                                 <td class="td_center"><?php echo $mb["mb_name"];?></td>
                                 <td><?php echo $mycons[$i]["cmap_name"];?></td>
                                 <td class="td_center"><?php echo $insert_date;?></td>
-                                <td class="td_center">
+                                <td class="td_center last">
                                     <input type="button" value="상세보기" class="basic_btn02 width30" style="padding:7px 0" onclick="location.href=g5_url+'/page/mylocation/mylocation_view?constid=<?php echo $mycons[$i]["id"];?>';">
+                                </td>
+                                <td class="td_center last">
                                     <?php if($type=="개설현장"){?>
                                     <input type="button" value="삭제하기" class="basic_btn02 width30 <?php if($type=="사용현장"){?>disabled<?php }?>"  style="padding:7px 0" <?php if($type=="사용현장"){?>disabled<?php }?> onclick="fnDelete('/page/mylocation/mylocation_delete?constid=<?php echo $mycons[$i]["id"];?>','<?php echo $mycons[$i]["id"];?>')">
                                     <?php }?>
@@ -96,32 +130,7 @@ while($row = sql_fetch_array($res)){
                 </table>
             </div>
 
-            <div class="search_loc">
-                <h3><i></i> 검색된 현장</h3>
-                <div class="myloc_btns">
-                    <input type="button" value="현장개설" onclick="fnConstConfirm();" class="basic_btn03">
-                </div>
-                <table>
-                    <colgroup>
 
-                    </colgroup>
-                    <thead>
-                    <tr>
-                        <th style="width:10%">등록자</th>
-                        <th >건설현장</th>
-                        <th style="width:10%">등록일</th>
-                        <th style="width:200px">EDIT</th>
-                    </tr>
-                    </thead>
-                    <tbody class="seach_list">
-                    <tr >
-                        <td colspan="4" class="td_center">
-                            검색해 주세요.
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
         </div>
     </section>
 </div>
@@ -188,5 +197,5 @@ while($row = sql_fetch_array($res)){
     }
 </script>
 <?php
-include_once (G5_PATH."/tail.php");
+include_once (G5_PATH."/_tail.php");
 ?>

@@ -323,6 +323,27 @@ if($menu_code!="3035" && $menu_code!="30") {
                                             ?>
                                         <?php }?>
                                     </div>
+                                    <div id="files3">
+                                        <?php if($list[$i]['depth2'][$j]['depth3'][$k]['attachment3']){?>
+                                            <?php
+                                            $files = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['attachment3']);
+                                            $filenames = explode("``",$list[$i]['depth2'][$j]['depth3'][$k]['attachmentname3']);
+                                            if(count($files)!=0){
+                                                for($q=0;$q<count($files);$q++) {
+                                                    if ($files[$q] != "") {
+                                                        if($filenames[$q] != ""){
+                                                            $basicname = $filenames[$q];
+                                                        }else{
+                                                            $basicname = "감사사례".$i;
+                                                        }
+                                                        ?>
+                                                        <a href="javascript:fnImage('<?php echo $files[$q]; ?>');" ><?php echo $basicname; ?></a><br>
+                                                    <?php }
+                                                }
+                                            }
+                                            ?>
+                                        <?php }?>
+                                    </div>
                                     <!-- -->
 
                                     <input type="button" value="수정" onclick="depth5ConAdd('<?php echo $list[$i]["depth2"][$j]["depth3"][$k]["pk_id"]; ?>');">
@@ -1496,27 +1517,33 @@ function depth5ConAdd(id){
     $("#etc1name_1").val('');
     $("#etc1name_2").val('');
     $("#etc1name_3").val('');
-    $("#etc1_1").val('');
-    $("#etc1_2").val('');
-    $("#etc1_3").val('');
     $("#filename1").val('');
     $("#filename2").val('');
     $("#filename3").val('');
     $("#filesnames1").val('');
     $("#filesnames2").val('');
     $("#filesnames3").val('');
+    $("#filesnames11").val('');
+    $("#filesnames22").val('');
+    $("#filesnames33").val('');
     $(".add_file1").html('');
     $(".add_file2").html('');
     $(".add_file3").html('');
     $(".add_files1").html('');
     $(".add_files2").html('');
     $(".add_files3").html('');
+    $(".add_files11").html('');
+    $(".add_files22").html('');
+    $(".add_files33").html('');
     $("#file1").val('');
     $("#file2").val('');
     $("#file3").val('');
     $("#files1").val('');
     $("#files2").val('');
     $("#files3").val('');
+    $("#files11").val('');
+    $("#files22").val('');
+    $("#files33").val('');
     $("#content_id").val(id);
     $.ajax({
         url:g5_url+"/admin/get_content.php",
@@ -1583,6 +1610,15 @@ function depth5ConAdd(id){
             if(data.filesname2){
                 $("#filesnames3").val(data.filesname2);
             }
+            if(data.filesnames0){
+                $("#filesnames11").val(data.filesnames0);
+            }
+            if(data.filesnames1){
+                $("#filesnames22").val(data.filesnames1);
+            }
+            if(data.filesnames2){
+                $("#filesnames33").val(data.filesnames2);
+            }
             if(data.file0) {
                 $(".add_file1").append("<span>" + data.file0 + "</span><input type='checkbox' name='fileDel1' value='1'> 삭제<br>");
             }
@@ -1600,6 +1636,15 @@ function depth5ConAdd(id){
             }
             if(data.files2) {
                 $(".add_files3").append("<span>" + data.files2 + "</span><input type='checkbox' name='fileDel6' value='1'> 삭제<br>");
+            }
+            if(data.filess0) {
+                $(".add_files11").append("<span>" + data.filess0 + "</span><input type='checkbox' name='fileDel7' value='1'> 삭제<br>");
+            }
+            if(data.filess1) {
+                $(".add_files22").append("<span>" + data.filess1 + "</span><input type='checkbox' name='fileDel8' value='1'> 삭제<br>");
+            }
+            if(data.filess2) {
+                $(".add_files33").append("<span>" + data.filess2 + "</span><input type='checkbox' name='fileDel9' value='1'> 삭제<br>");
             }
             dialog.dialog("open","modal",true);
         }else if(data.status==2){

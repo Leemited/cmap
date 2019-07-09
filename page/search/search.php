@@ -93,7 +93,10 @@ while($row = sql_fetch_array($res)){
     $total++;
 }
 
-$sql = "select * from `cmap_depth4` as c , `cmap_menu` as m where (select me_id from `cmap_depth1` as d where c.depth1_id = d.id) = m.menu_code and m.menu_status = 0 and INSTR(`depth_name`,'{$search_text}') > 0 order by m.menu_order ";
+$sql = "select * from `cmap_depth4` as c left join `cmap_depth3` as b on c.depth3_id = b.id left join `cmap_menu` as m on m.menu_code <> '' where (select me_id from `cmap_depth1` as d where c.depth1_id = d.id) = m.menu_code and m.menu_status = 0 and (INSTR(c.depth_name,'{$search_text}') > 0 or INSTR(b.depth_name,'{$search_text}') > 0)  order by m.menu_order ";
+/*
+$sql = "select * from `cmap_depth1` where INSTR(depth_name,'{$search_text}') > 0 and menu_status = 0 UNION select * from `cmap_depth2` where INSTR(depth_name,'{$search_text}') > 0 and menu_status = 0  UNION select * from `cmap_depth3` where INSTR(depth_name,'{$search_text}') > 0 UNION select * from `cmap_depth4` where INSTR(depth_name,'{$search_text}') > 0 UNION select * from `cmap_content` where INSTR(content,'{$search_text}') > 0 ";*/
+
 $res = sql_query($sql);
 while($row = sql_fetch_array($res)){
     if($row["depth3_id"]){
@@ -192,16 +195,19 @@ while($row = sql_fetch_array($res)){
                         continue;
                     }
 
-                    //if($content[$tabmenu[$i]["menu_name"]][$j]["content"]=="") continue;
-
                     $link = "me_id=".$content[$tabmenu[$i]["menu_name"]][$j]["me_code"];
                     $link .= "&depth1_id=".$content[$tabmenu[$i]["menu_name"]][$j]["depth1_id"];
                     $link .= "&depth2_id=".$content[$tabmenu[$i]["menu_name"]][$j]["depth2_id"];
                     $link .= "&pk_id=".$content[$tabmenu[$i]["menu_name"]][$j]["pk_id"];
+                    if(strpos($content[$tabmenu[$i]["menu_name"]][$j]["content"],'``')!==false){
+                        $sub_content = str_replace("``"," | ",$content[$tabmenu[$i]["menu_name"]][$j]["content"]);
+                    }else{
+                        $sub_content = $content[$tabmenu[$i]["menu_name"]][$j]["content"];
+                    }
                     ?>
-                    <div class="item" onclick="location.href=g5_url+'/page/view<?php if($tabmenu[$i]["menu_code"]==""){echo "2";}?>?<?php echo $link;?>'">
+                    <div class="item" onclick="location.href=g5_url+'/page/view<?php if($content[$tabmenu[$i]["menu_name"]][$j]["me_code"]=="6064"){echo "2";}else if($content[$tabmenu[$i]["menu_name"]][$j]["me_code"]=="60129"){echo "3";}?>?<?php echo $link;?>'">
                         <h2><?php echo $content[$tabmenu[$i]["menu_name"]][$j]["navis"];?></h2>
-                        <p><?php echo $content[$tabmenu[$i]["menu_name"]][$j]["content"];?></p>
+                        <p><?php echo $sub_content;?></p>
                     </div>
                 <?php }
                 if(count($content[$tabmenu[$i]["menu_name"]])==0){ ?>

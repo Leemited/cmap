@@ -6,7 +6,7 @@ add_stylesheet('<link rel="stylesheet" href="'.$member_skin_url.'/style.css">', 
 ?>
 
 <!-- 회원가입약관 동의 시작 { -->
-<div class="login_hd">
+<div class="login_hd" style="margin:120px 0;">
     <div class="head">
         <div class="line"></div>
         <h2>회원가입</h2>
@@ -26,7 +26,7 @@ add_stylesheet('<link rel="stylesheet" href="'.$member_skin_url.'/style.css">', 
 		?>
 
 		<form  name="fregister" id="fregister" action="<?php echo $register_action_url ?>" onsubmit="return fregister_submit(this);" method="POST" autocomplete="off">
-
+            <input type="hidden" name="type" value="<?php echo $type;?>">
 		<!--<p>회원가입약관 및 개인정보처리방침안내의 내용에 동의하셔야 회원가입 하실 수 있습니다.</p>-->
         <section id="fregister_term">
             <h2>개인정보 수집 및 이용 동의 </h2>
