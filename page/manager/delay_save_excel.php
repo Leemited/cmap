@@ -9,109 +9,117 @@ header( "Content-Description: PHP4 Generated Data" );
 
 $today = date("Y-m-d");
 
-$sql = "select * from `cmap_my_construct` where id in ({$constids}) order by id desc";
-$res = sql_query($sql);
-$c = 0;
-while($row = sql_fetch_array($res)){
-    $worklist[$c] = $row;
-    $sql = "select * from `cmap_my_pmmode_set` where mb_id='{$member["mb_id"]}' and const_id = '{$row["id"]}'";
-    $ss = sql_fetch($sql);
-    if($ss!=null){
-        //등록자 설정
-        $activesql_pm = "select * from `cmap_my_construct_map` where mb_id ='{$ss["set_mb_id"]}' and const_id = '{$row["id"]}'";
-        $activechk_pm = sql_fetch($activesql_pm);
-        $map_pk_id_pm = explode("``",$activechk_pm["pk_ids"]);
-        $map_pk_actives_pm = explode("``",$activechk_pm["pk_actives"]);
-        $map_pk_actives_date_pm = explode("``",$activechk_pm["pk_actives_date"]);
+//$sql = "select * from `cmap_my_construct` where id in ({$constids}) order by id desc";
+//$res = sql_query($sql);
+$sql = "select * from `cmap_my_pmmode_set` where mb_id='{$member["mb_id"]}' and const_id = '{$constids}'";
+$ss = sql_fetch($sql);
+if($ss!=null){
+    //등록자 설정
+    $activesql_pm = "select * from `cmap_my_construct_map` where mb_id ='{$ss["set_mb_id"]}' and const_id = '{$constids}'";
+    $activechk_pm = sql_fetch($activesql_pm);
+    $map_pk_id_pm = explode("``",$activechk_pm["pk_ids"]);
+    $map_pk_actives_pm = explode("``",$activechk_pm["pk_actives"]);
+    $map_pk_actives_date_pm = explode("``",$activechk_pm["pk_actives_date"]);
 
-        $delaysql_pm = "select * from `cmap_myschedule` where construct_id = '{$row["id"]}' and schedule_date < '{$today}' and pk_id <> '' order by depth4_pk_id asc ";
-        $delayres_pm = sql_query($delaysql_pm);
-        $a=0;
-        $delaycount[$c]=$delaydate=$totaldates=0;
-        while($delayrow_pm = sql_fetch_array($delayres_pm)){
-            $sch_name = explode("|",$delayrow_pm["schedule_name"]);
-            $worklist[$c]['subs'][$delayrow_pm["depth4_pk_id"]]["depth1_name"]= trim($sch_name[0]);
-            $worklist[$c]['subs'][$delayrow_pm["depth4_pk_id"]]["depth4_name"]=trim(array_pop(explode("|",$delayrow_pm["schedule_name"])));
-            $worklist[$c]['subs'][$delayrow_pm["depth4_pk_id"]]["depth4_pk_id"]=$delayrow_pm["depth4_pk_id"];
-            $pk_ids = explode("``",$delayrow_pm["pk_id"]);
+    $delaysql_pm = "select * from `cmap_myschedule` where construct_id = '{$constids}' and schedule_date < '{$today}' and pk_id <> '' order by depth4_pk_id asc ";
+    $delayres_pm = sql_query($delaysql_pm);
+    $a = 0;
+    while($delayrow_pm = sql_fetch_array($delayres_pm)){ // A. 스케쥴이 지난 일정중
 
-            $diff = strtotime($today) - strtotime($delayrow_pm["schedule_date"]);
+        $pk_ids = explode("``",$delayrow_pm["pk_id"]);
 
-            $days = $diff / (60*60*24);
-            for($i=0;$i<count($pk_ids);$i++){
-                for($j=0;$j<count($map_pk_id_pm);$j++){
-                    if($pk_ids[$i]==$map_pk_id_pm[$j]) {
-                        if($map_pk_actives_pm[$j]==0) {
-                            $sql = "select c.content,c.depth4_id,b.id,b.pk_id,c.pk_id as pkid from `cmap_content` as c left join `cmap_depth4` as b on c.depth4_id = b.id where c.pk_id = '{$pk_ids[$i]}'";
-                            $ddd = sql_fetch($sql);
-                            $worklist[$c]['subs'][$delayrow_pm["depth4_pk_id"]]["contents_cnt"]++;
-                            $worklist[$c]["allTotal"] = $a++;
-                            $worklist[$c]['subs'][$delayrow_pm["depth4_pk_id"]]["content"][$ddd["pkid"]] = $ddd;
-                            $worklist[$c]['subs'][$delayrow_pm["depth4_pk_id"]]["content"][$ddd["pkid"]]["delaydate"] = $days;
-                            $worklist[$c]["totalDate"] += $days;
-                        }
+        $diff = strtotime($today) - strtotime($delayrow_pm["schedule_date"]);
+
+        $days = $diff / (60*60*24);
+
+        for($i=0;$i<count($pk_ids);$i++){
+            for($j=0;$j<count($map_pk_id_pm);$j++){
+                if($pk_ids[$i]==$map_pk_id_pm[$j]) {
+                    if($map_pk_actives_pm[$j]==0) {// B. 미제출
+                        $sql = "select * from `cmap_content` where pk_id = '{$pk_ids[$i]}'";
+                        $pk_con = sql_fetch($sql);
+                        $worklistpm[$a] = $pk_con;
+                        $worklistpm[$a]["delays"] = $days;
+                        $delaydate += $days;
+                        $a++;
                     }
                 }
             }
         }
-        $totaldates = round($delaydate / $delaycount[$c],2);
-        $worklist[$c]["delaycount"] = $delaycount[$c];
-        $worklist[$c]["delaydate"] = $delaydate;
-        $worklist[$c]["delaytotal"] = $totaldates;
-    }else{
-        //등록이 안되어 있으면 개설자 설정
-        //등록자 설정
-        $activesql_pm = "select * from `cmap_my_construct_map` where mb_id ='{$row["mb_id"]}' and const_id = '{$row["id"]}'";
-        $activechk_pm = sql_fetch($activesql_pm);
-        $map_pk_id_pm = explode("``",$activechk_pm["pk_ids"]);
-        $map_pk_actives_pm = explode("``",$activechk_pm["pk_actives"]);
-        $map_pk_actives_date_pm = explode("``",$activechk_pm["pk_actives_date"]);
-
-        $delaysql_pm = "select * from `cmap_myschedule` where construct_id = '{$row["id"]}' and schedule_date < '{$today}' and pk_id <> '' order by depth4_pk_id asc ";
-        $delayres_pm = sql_query($delaysql_pm);
-        $a=0;
-        $delaycount=$delaydate=$totaldates=0;
-        while($delayrow_pm = sql_fetch_array($delayres_pm)){
-            $sch_name = explode("|",$delayrow_pm["schedule_name"]);
-            $worklist[$c]['subs'][$delayrow_pm["depth4_pk_id"]]["depth1_name"]= trim($sch_name[0]);
-            $worklist[$c]['subs'][$delayrow_pm["depth4_pk_id"]]["depth4_name"]=trim(array_pop(explode("|",$delayrow_pm["schedule_name"])));
-            $worklist[$c]['subs'][$delayrow_pm["depth4_pk_id"]]["depth4_pk_id"]=$delayrow_pm["depth4_pk_id"];
-            $pk_ids = explode("``",$delayrow_pm["pk_id"]);
-
-            $diff = strtotime($today) - strtotime($delayrow_pm["schedule_date"]);
-
-            $days = $diff / (60*60*24);
-
-            for($i=0;$i<count($pk_ids);$i++){
-                for($j=0;$j<count($map_pk_id_pm);$j++){
-                    if($pk_ids[$i]==$map_pk_id_pm[$j]) {
-                        if($map_pk_actives_pm[$j]==0) {
-                            $sql = "select c.content,c.depth4_id,b.id,b.pk_id from `cmap_content` as c left join `cmap_depth4` as b on c.depth4_id = b.id where c.pk_id = '{$pk_ids[$i]}'";
-                            $ddd = sql_fetch($sql);
-                            $worklist[$c]['subs'][$delayrow_pm["depth4_pk_id"]]["contents_cnt"]++;
-                            $worklist[$c]['subs'][$delayrow_pm["depth4_pk_id"]]["content"][$ddd["pkid"]] = $ddd;
-                            $worklist[$c]['subs'][$delayrow_pm["depth4_pk_id"]]["content"][$ddd["pkid"]]["delaydate"] = $days;
-                        }
-                    }
-                }
-            }
-
-            $delaycount[$c] += $worklist[$c]['subs'][$delayrow_pm["depth4_pk_id"]]["contents_cnt"];
-        }
-        $totaldates = round($delaydate / $delaycount[$c],'2');
-        $worklist[$c]["delaycount"] = $delaycount[$c];
-        $worklist[$c]["delaydate"] = $delaydate;
-        $worklist[$c]["delaytotal"] = $totaldates;
     }
-    $totalDelay += $worklist[$c]["delaycount"];
-    $totalDelayDate += $worklist[$c]["delaydate"];
-    $totalDelayDatePer += $worklist[$c]["delaytotal"];
 
-    $c++;
+}else{
+    $sql = "select * from `cmap_my_construct` where id = '{$constids}'";
+    $low = sql_fetch($sql);
+    //등록자 설정
+    $activesql_pm = "select * from `cmap_my_construct_map` where mb_id ='{$low["mb_id"]}' and const_id = '{$constids}'";
+    $activechk_pm = sql_fetch($activesql_pm);
+    $map_pk_id_pm = explode("``",$activechk_pm["pk_ids"]);
+    $map_pk_actives_pm = explode("``",$activechk_pm["pk_actives"]);
+    $map_pk_actives_date_pm = explode("``",$activechk_pm["pk_actives_date"]);
+
+    $delaysql_pm = "select * from `cmap_myschedule` where construct_id = '{$constids}' and schedule_date < '{$today}' and pk_id <> '' order by depth4_pk_id asc ";
+    $delayres_pm = sql_query($delaysql_pm);
+    $a=0;
+    $delaycount[$c]=$delaydate=$totaldates=0;
+    while($delayrow_pm = sql_fetch_array($delayres_pm)){
+        $pk_ids = explode("``",$delayrow_pm["pk_id"]);
+
+        $diff = strtotime($today) - strtotime($delayrow_pm["schedule_date"]);
+
+        $days = $diff / (60*60*24);
+        for($i=0;$i<count($pk_ids);$i++){
+            for($j=0;$j<count($map_pk_id_pm);$j++){
+                if($pk_ids[$i]==$map_pk_id_pm[$j]) {
+                    if($map_pk_actives_pm[$j]==0) {
+                        $sql = "select * from `cmap_content` where pk_id = '{$pk_ids[$i]}'";
+                        $pk_con = sql_fetch($sql);
+                        $worklistpm[$a] = $pk_con;
+                        $worklistpm[$a]["delays"] = $days;
+                        $delaydate += $days;
+                        $a++;
+                    }
+                }
+            }
+        }
+    }
 }
 
+for($i=0;$i<count($worklistpm);$i++){
+    $sql = "select *,b.menu_name as menu_name from `cmap_depth1` as a left join `cmap_menu` as b on a.me_code = b.menu_code where a.id = '{$worklistpm[$i]["depth1_id"]}'  ";
+    $res = sql_query($sql);
+    while($row = sql_fetch_array($res)){
+        $worklists[$row["menu_code"]]["menu_name"] = $row["menu_name"];
+        $worklists[$row["menu_code"]]["menu_code"] = $row["menu_code"];
+        $worklists[$row["menu_code"]]["depth1_pk"][$row["pk_id"]] = $row["pk_id"];
+        $worklists[$row["menu_code"]][$row["pk_id"]]["depth1_name"] = $row["depth_name"];
+        $worklists[$row["menu_code"]][$row["pk_id"]]["depth1_pk_id"] = $row["pk_id"];
+    }
+    $sql = "select a.pk_id as pk_ids,d.depth_name,d.pk_id,d.id as id,m.menu_code from `cmap_depth4` as d left join `cmap_depth1` as a on d.depth1_id = a.id left join `cmap_menu` as m on m.menu_code = a.me_code where d.id = '{$worklistpm[$i]["depth4_id"]}'";
+    $res2 = sql_query($sql);
+    while($row2 = sql_fetch_array($res2)){
+        $worklists[$row2["menu_code"]][$row2["pk_ids"]][$row2["pk_id"]]["depth4_name"] = $row2["depth_name"];
+        $worklists[$row2["menu_code"]][$row2["pk_ids"]][$row2["pk_id"]]["depth4_pk_id"] = $row2["pk_id"];
+        $worklists[$row2["menu_code"]][$row2["pk_ids"]]["depth2_pk"][$row2["pk_id"]] = $row2["pk_id"];
+        $delaycateCount[$row2["pk_id"]] = "chkcount";
+        $worklists[$row2["menu_code"]][$row2["pk_ids"]]["menu_rows"]++;
+    }
+
+    $sql = "select m.menu_code,a.pk_id as pk_ids, e.pk_id as pk_idss, d.pk_id, d.content from `cmap_content` as d left join `cmap_depth4` as e on d.depth4_id = e.id left join `cmap_depth1` as a on d.depth1_id = a.id left join `cmap_menu` as m on m.menu_code = a.me_code where d.pk_id = '{$worklistpm[$i]["pk_id"]}'";
+    $res3 = sql_query($sql);
+    while($row3 = sql_fetch_array($res3)){
+        $worklists[$row3["menu_code"]][$row3["pk_ids"]][$row3["pk_idss"]][$row3["pk_id"]]["content"] = $row3["content"];
+        $worklists[$row3["menu_code"]][$row3["pk_ids"]][$row3["pk_idss"]][$row3["pk_id"]]["delaydate"] = $worklistpm[$i]["delays"];
+        $worklists[$row3["menu_code"]][$row3["pk_ids"]][$row3["pk_idss"]]["content_pk_id"]= $row3["pk_id"];
+        $worklists[$row3["menu_code"]][$row3["pk_ids"]][$row3["pk_idss"]]["content_pk"][$row3["pk_id"]]= $row3["pk_id"];
+        $worklists[$row3["menu_code"]][$row3["pk_ids"]]["depth2_pk"]["count"]++;
+        $worklists[$row3["menu_code"]]["menu_rows"]++;
+    }
+}
+
+$const = sql_fetch("select * from `cmap_my_construct` where id = '{$constids}'");
+
 ?>
-<div style="width:21cm;padding:1cm;">
 <table style="width:100%;">
     <tr>
         <th colspan="5" style="font-weight:bold;text-align:center;font-size:15pt;border-bottom:1px solid #000">제출지연현황</th>
@@ -124,39 +132,28 @@ while($row = sql_fetch_array($res)){
         <td colspan="2" style="text-align: right"><?php echo date('Y-m-d');?></td>
     </tr>
 </table>
-<table style="width:100%;border-top:2px solid #000;border-left:2px solid #000;border-bottom: 5px solid #000; border-right: 5px solid #000;border-spacing: 0;margin-bottom:20px;">
+<table style="width:100%;border-top:1px solid #000;border-left:1px solid #000;border-bottom: 1px solid #000; border-right: 1px solid #000;border-spacing: 0;margin-bottom:20px;">
     <tr>
-        <th style="border:0.25pt solid #000;background-color:#002060;color:#fff;">구분</th>
-        <th style="border:0.25pt solid #000;background-color:#002060;color:#fff;">현장명</th>
-        <th style="border:0.25pt solid #000;background-color:#002060;color:#fff;">지연서류</th>
-        <th style="border:0.25pt solid #000;background-color:#002060;color:#fff;">지연항목</th>
-        <th style="border:0.25pt solid #000;background-color:#002060;color:#fff;">지연일</th>
+        <th style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;">구분</th>
+        <th style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;">현장명</th>
+        <th style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;">지연항목</th>
+        <th style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;">지연서류</th>
+        <th style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;">지연일</th>
     </tr>
-    <?php for($i=0;$i<count($worklist);$i++){
-        $total_list0 += count($worklist[$i]["subs"]);
-        if($worklist[$i]["allTotal"]==0){
-            $total = $worklist[$i]["allTotal"];
-            $total_list1 += $worklist[$i]["allTotal"];
-        }else{
-            $total = $worklist[$i]["allTotal"] + 1;
-            $total_list1 += $worklist[$i]["allTotal"]+1;
-        }
-        $total_list2 += $worklist[$i]["totalDate"];
-        ?>
-        <tr>
-            <td style="border:0.25pt solid #000;color:#000;text-align: center;padding:2pt;"><?php echo ($i+1);?></td>
-            <td style="border:0.25pt solid #000;color:#000;padding:2pt;"><?php echo $worklist[$i]["cmap_name"];?></td>
-            <td style="border:0.25pt solid #000;color:#000;text-align: right;padding:2pt;"><?php echo number_format(count($worklist[$i]["subs"]));?></td>
-            <td style="border:0.25pt solid #000;color:#000;text-align: right;padding:2pt;"><?php echo number_format($total);?></td>
-            <td style="border:0.25pt solid #000;color:#000;text-align: right;padding:2pt;"><?php echo number_format($worklist[$i]["totalDate"]);?></td>
-        </tr>
-    <?php }?>
+
     <tr>
-        <td style="border:0.25pt solid #000;background-color:#002060;color:#fff;text-align: center">소계</td>
-        <td style="border:0.25pt solid #000;background-color:#002060;color:#fff;text-align: center">계</td>
-        <td style="border:0.25pt solid #000;background-color:#002060;color:#fff;text-align: center"><?php echo number_format($total_list0);?> 건</td>
-        <td style="border:0.25pt solid #000;background-color:#002060;color:#fff;text-align: center"><?php echo number_format($total_list1);?> 일</td>
-        <td style="border:0.25pt solid #000;background-color:#002060;color:#fff;text-align: center"><?php echo number_format($total_list2);?> 일</td>
+        <td style="padding:5px;border-right:0.25pt solid #000;color:#000;text-align: center;">-</td>
+        <td style="padding:5px;border-right:0.25pt solid #000;color:#000;"><?php echo $const["cmap_name"];?></td>
+        <td style="padding:5px;border-right:0.25pt solid #000;color:#000;text-align: center;"><?php echo number_format(count($delaycateCount));?> 건</td>
+        <td style="padding:5px;border-right:0.25pt solid #000;color:#000;text-align: center;"><?php echo number_format(count($worklistpm));?> 건</td>
+        <td style="padding:5px;color:#000;text-align: center;"><?php echo number_format($delaydate);?> 일</td>
+    </tr>
+    <tr>
+        <td style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;text-align: center">소계</td>
+        <td style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;text-align: center">계</td>
+        <td style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;text-align: center"><?php echo number_format(count($delaycateCount));?> 건</td>
+        <td style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;text-align: center"><?php echo number_format(count($worklistpm));?> 건</td>
+        <td style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;text-align: center"><?php echo number_format($delaydate);?> 일</td>
     </tr>
 </table>
 <table style="width:100%;">
@@ -167,7 +164,7 @@ while($row = sql_fetch_array($res)){
         <th colspan="5" style="font-size:12pt;font-weight:bold;text-align: left">□ 제출지연 세부내역</th>
     </tr>
 </table>
-<table style="width:100%;border-top:2px solid #000;border-left:2px solid #000;border-bottom: 5px solid #000; border-right: 5px solid #000;border-spacing: 0;margin-bottom:20px;">
+<table style="width:100%;border-top:1px solid #000;border-left:1px solid #000;border-bottom: 1px solid #000; border-right: 1px solid #000;border-spacing: 0;margin-bottom:20px;">
     <colgroup>
         <col width="15%">
         <col width="25%">
@@ -176,58 +173,38 @@ while($row = sql_fetch_array($res)){
         <col width="10%">
     </colgroup>
     <tr>
-        <th style="border:0.25pt solid #000;background-color:#002060;color:#fff;">구분</th>
-        <th style="border:0.25pt solid #000;background-color:#002060;color:#fff;">현장명</th>
-        <th style="border:0.25pt solid #000;background-color:#002060;color:#fff;">지연서류</th>
-        <th style="border:0.25pt solid #000;background-color:#002060;color:#fff;">지연항목</th>
-        <th style="border:0.25pt solid #000;background-color:#002060;color:#fff;">지연일</th>
+        <th style="border:0.25pt solid #fff;background-color:#002060;color:#fff;padding:5px;">공정</th>
+        <th style="border:0.25pt solid #fff;background-color:#002060;color:#fff;padding:5px;">세부공정</th>
+        <th style="border:0.25pt solid #fff;background-color:#002060;color:#fff;padding:5px;">지연서류</th>
+        <th style="border:0.25pt solid #fff;background-color:#002060;color:#fff;padding:5px;">지연항목</th>
+        <th style="border:0.25pt solid #fff;background-color:#002060;color:#fff;padding:5px;">지연일</th>
     </tr>
     <?php
-    $cb = 0;
-    $ca = 0;
-    for($i=0;$i<count($worklist);$i++){
-        $worklist2 = array_values($worklist[$i]['subs']);
+    $worklists = array_values($worklists);
+    for($i=0;$i<count($worklists);$i++){
+        $worklists2 = array_values($worklists[$i]["depth1_pk"]);
         ?>
         <tr>
-            <td style="border:0.25pt solid #000;color:#000;text-align: center" rowspan="<?php echo ($worklist[$i]["allTotal"]+2);?>"><?php echo ($i+1);?></td>
-            <td style="border:0.25pt solid #000;color:#000;" <?php if(($worklist[$i]["allTotal"]+1)>1){?>rowspan="<?php echo ($worklist[$i]["allTotal"]+1);?>" <?php }?>><?php echo $worklist[$i]["cmap_name"];?></td>
-        <?php
-        for($j=0;$j<count($worklist2);$j++){
-            $worklist3 = array_values($worklist2[$j]["content"]);
-            $cb++;
-        ?>
-            <td style="border:0.25pt solid #000;color:#000;text-align: center" <?php if(count($worklist2[$j]["content"])>1){?>rowspan="<?php echo count($worklist2[$j]["content"]);?>" <?php }?>><?php echo $worklist2[$j]["depth1_name"];?><?php echo " | ". $worklist2[$j]["depth4_name"];?></td>
-            <?php for($d=0;$d<count($worklist3);$d++){
-                $delays3[$i]+=$worklist3[$d]["delaydate"];
-                $ca++;
+        <td style="padding:5px;border-right:0.25pt solid #000;border-bottom:0.25pt solid #000;color:#000;text-align: center" rowspan="<?php echo $worklists[$i]["menu_rows"];?>"><?php echo $worklists[$i]["menu_name"];?></td>
+        <?php for($j=0;$j<count($worklists[$i]["depth1_pk"]);$j++){
+            $pk_idss = $worklists2[$j];
+            $worklists3 = array_values($worklists[$i][$pk_idss]["depth2_pk"]);
+            ?>
+            <td style="padding:5px;border-right:0.25pt solid #000;border-bottom:0.25pt solid #000;color:#000;text-align: center" rowspan="<?php echo $worklists[$i][$pk_idss]["menu_rows"];?>"><?php echo $worklists[$i][$pk_idss]["depth1_name"];?></td>
+            <?php for($k=0;$k<count($worklists[$i][$pk_idss]["depth2_pk"]);$k++){
+                $pk_idss2 = $worklists3[$k];
+                $worklists4 = array_values($worklists[$i][$pk_idss][$pk_idss2]["content_pk"]);
+                if($worklists[$i][$pk_idss][$pk_idss2]["depth4_name"]==""){continue;}
                 ?>
-                <td style="border:0.25pt solid #000;color:#000;text-align: center"><?php echo $worklist3[$d]["content"];?></td>
-                <td style="border:0.25pt solid #000;color:#000;text-align: center"><?php echo $worklist3[$d]["delaydate"];?></td>
-                </tr>
+                <td style="padding:5px;border-right:0.25pt solid #000;border-bottom:0.25pt solid #000;color:#000;text-align: center"  rowspan="<?php echo count($worklists[$i][$pk_idss][$pk_idss2]["content_pk"]);?>"><?php echo $worklists[$i][$pk_idss][$pk_idss2]["depth4_name"];?></td>
+                <?php for($l=0;$l<count($worklists[$i][$pk_idss][$pk_idss2]["content_pk"]);$l++){
+                    $pk_idss3 = $worklists4[$l];
+                    ?>
+                    <td style="padding:5px;border-right:0.25pt solid #000;border-bottom:0.25pt solid #000;color:#000;text-align: center" ><?php echo $worklists[$i][$pk_idss][$pk_idss2][$pk_idss3]["content"];?></td>
+                    <td style="padding:5px;border-bottom:0.25pt solid #000;color:#000;text-align: center" >- <?php echo $worklists[$i][$pk_idss][$pk_idss2][$pk_idss3]["delaydate"];?></td>
+                    </tr>
+                <?php }?>
             <?php }?>
-            </tr>
-            <?php if($j==count($worklist2)-1){?>
-            <tr>
-                <td style="border:0.25pt solid #000;color:#000;text-align: center;background-color:#eee;">제출지연현황</td>
-                <td style="border:0.25pt solid #000;color:#000;text-align: center;background-color:#eee;"><?php echo number_format($cb);?> 건</td>
-                <td style="border:0.25pt solid #000;color:#000;text-align: center;background-color:#eee;"><?php echo number_format($ca);?> 건</td>
-                <td style="border:0.25pt solid #000;color:#000;text-align: center;background-color:#eee;"><?php echo number_format($delays3[$i]);?> 일</td>
-            </tr>
-            <?php }?>
-        <?php } ?>
-
-        <?php if(count($worklist2)==0){?>
-            <td style="border:0.25pt solid #000;color:#000;text-align:center">-</td>
-            <td style="border:0.25pt solid #000;color:#000;text-align:center">-</td>
-            <td style="border:0.25pt solid #000;color:#000;text-align:center">0</td>
-        </tr>
-        <tr>
-            <td style="border:0.25pt solid #000;color:#000;text-align: center;background-color:#eee;">제출지연 현황</td>
-            <td style="border:0.25pt solid #000;color:#000;text-align: center;background-color:#eee;">0 건</td>
-            <td style="border:0.25pt solid #000;color:#000;text-align: center;background-color:#eee;">0 건</td>
-            <td style="border:0.25pt solid #000;color:#000;text-align: center;background-color:#eee;">0 일</td>
-        </tr>
-        <?php } ?>
+        <?php }?>
     <?php } ?>
 </table>
-</div>

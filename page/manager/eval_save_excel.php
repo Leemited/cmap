@@ -1,10 +1,10 @@
 <?php
 include_once ("../../common.php");
 
-
 $me_id="6064";
 
 $const = sql_fetch("select * from `cmap_my_construct` where id = '{$constids}'");
+
 
 //평가 항목 가저오기
 $sql = "select * from `cmap_my_pmmode_set` where mb_id='{$member["mb_id"]}' and const_id = '{$constids}'";
@@ -263,7 +263,7 @@ $alls4 = $alltotal4 / $alltot;
 
 header( "Content-type: application/vnd.ms-excel" );
 header( "Content-type: application/vnd.ms-excel; charset=utf-8");
-header( "Content-Disposition: attachment; filename = ".$const["cmap_name"]."건설사업관리시공 평가표".date('Ymdhis').".xls" );
+header( "Content-Disposition: attachment; filename = \"".$const["cmap_name"]."건설사업관리시공 평가표".date('Ymdhis').".xls\"" );
 header( "Content-Description: PHP4 Generated Data" );
 ?>
 <div class="message">

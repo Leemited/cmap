@@ -1,8 +1,8 @@
 <?php
 include_once ("../../common.php");
-if($member["mb_auth"]==false){
+/*if($member["mb_auth"]==false){
     alert("무료 이용기간이 만료 되었거나,\\r맴버쉽 기간이 만료 되었습니다. \\n맴버쉽 구매후 이용바랍니다.",G5_URL);
-}
+}*/
 $sub = "sub";
 $bbody = "board";
 $mypage = false;
@@ -33,6 +33,7 @@ if($const_id){
     $where .= " and const_id in ({$inconst})";
 }
 
+
 $total=sql_fetch("select count(*) as cnt from `weather` where 1 {$where} GROUP by insert_date desc");
 if(!$page)
     $page=1;
@@ -42,7 +43,6 @@ $start=($page-1)*$rows;
 $total_page=ceil($total/$rows);
 
 $sql = "select *,MIN(TMN)as TMN , MAX(TMX)as TMX from `weather` where 1  {$where} group by insert_date order by insert_date desc limit {$start}, {$rows};";
-echo $sql;
 $res = sql_query($sql);
 $c = 0;
 while($row = sql_fetch_array($res)){
@@ -100,7 +100,7 @@ while($row = sql_fetch_array($res)){
                 </colgroup>
                 <tr>
                     <th>일자</th>
-                    <th>지역<th>
+                    <th>지역</th>
                     <th>현장</th>
                     <th>수신자</th>
                     <th>내용</th>

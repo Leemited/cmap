@@ -11,6 +11,7 @@ if($chkm["mb_id"]==$member["mb_id"]){
 }
 
 $sql = "select count(*) as cnt from `cmap_construct_invite` where const_id = '{$pm_constid}' and read_mb_id = '{$mb_id}' and msg_status = 0";
+$result["sql1"] = $sql;
 $chkmem = sql_fetch($sql);
 
 if($chkmem["cnt"]>0){
@@ -18,6 +19,8 @@ if($chkmem["cnt"]>0){
     echo json_encode($result);
     return;
 }
+
+
 
 $sql = "insert into `cmap_construct_invite` set const_id = '{$pm_constid}', send_mb_id = '{$member["mb_id"]}', read_mb_id = '{$mb_id}', send_insertdate = now(), msg_type = 3 ";
 if(sql_query($sql)){

@@ -111,7 +111,9 @@ if ($w == '' || $w == 'u') {
 
     // 휴대폰 필수입력일 경우 휴대폰번호 유효성 체크
     if (($config['cf_use_hp'] || $config['cf_cert_hp']) && $config['cf_req_hp']) {
-        if ($msg = valid_mb_hp($mb_hp))     alert($msg, "", true, true);
+        if($mb_level>6) {
+            if ($msg = valid_mb_hp($mb_hp)) alert($msg, "", true, true);
+        }
     }
 
     if ($w=='') {
@@ -221,7 +223,7 @@ if ($w == '') {
                      mb_today_login = '".G5_TIME_YMDHIS."',
                      mb_datetime = '".G5_TIME_YMDHIS."',
                      mb_ip = '{$_SERVER['REMOTE_ADDR']}',
-                     mb_level = '{$config['cf_register_level']}',
+                     mb_level = '{$mb_level}',
                      mb_recommend = '{$mb_recommend}',
                      mb_login_ip = '{$_SERVER['REMOTE_ADDR']}',
                      mb_mailling = '{$mb_mailling}',
@@ -517,7 +519,7 @@ unset($_SESSION['ss_cert_birth']);
 unset($_SESSION['ss_cert_adult']);
 
 if ($msg)
-    echo '<script>alert(\''.$msg.'1231515\');</script>';
+    echo '<script>alert(\''.$msg.'\');</script>';
 if ($w == '') {
     if($type=="free"){
         goto_url(G5_URL.'/page/mylocation/mylocation_edit?type=insert');

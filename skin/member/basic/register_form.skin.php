@@ -34,6 +34,7 @@ if($is_member) {
             <input type="hidden" name="agree2" value="<?php echo $agree2 ?>">
             <input type="hidden" name="cert_type" value="<?php echo $member['mb_certify']; ?>">
             <input type="hidden" name="cert_no" value="">
+            <input type="hidden" name="mb_level" id="mb_level" value="">
             <input type="hidden" name="type" value="<?php echo $type;?>">
             <input type="hidden" name="mb_nick" value="<?php echo isset($member['mb_nick'])?get_text($member['mb_nick']):''; ?>" id="reg_mb_nick" required class="frm_input required nospace  half_input" size="10" maxlength="20" placeholder="닉네임">
             <?php if (isset($member['mb_sex'])) {  ?><input type="hidden" name="mb_sex" value="<?php echo $member['mb_sex'] ?>"><?php }  ?>
@@ -45,6 +46,10 @@ if($is_member) {
                 <div>
                     <h2><i></i>개인정보 입력</h2>
                     <ul>
+                        <li class="sel_mb_type">
+                            <input type="radio" name="mb_type" id="mb_type1" value="0" <?php if($mmember["mb_type"]==0 || !$is_member){?>checked<?php }?>><label for="mb_type1"> 개인</label>
+                            <input type="radio" name="mb_type" id="mb_type2" value="1" <?php if($mmember["mb_type"]==1){?>checked<?php }?>><label for="mb_type2"> 기업</label>
+                        </li>
                         <li>
                             <label for="reg_mb_id" class="sound_only">아이디<strong>필수</strong></label>
                             <input type="text" name="mb_id" value="<?php echo $member['mb_id'] ?>" id="reg_mb_id" <?php echo $required ?> <?php echo $readonly ?> class="frm_input half_input <?php echo $required ?> <?php echo $readonly ?>" minlength="3" maxlength="20" placeholder="아이디" onchange="$('#reg_mb_nick').val(this.value)">
@@ -113,7 +118,7 @@ if($is_member) {
                             </li>
                         <?php }  ?>
 
-                        <li>
+                        <li class="hp_crets">
                             <?php /*if ($config['cf_use_tel']) {  */?><!--
 
                         <label for="reg_mb_tel" class="sound_only">전화번호<?php /*if ($config['cf_req_tel']) { */?><strong>필수</strong><?php /*} */?></label>
@@ -159,26 +164,28 @@ if($is_member) {
                                 <label for="reg_mb_sms" class="frm_label"><span></span>SMS를 통해 C.MAP의 다양한 정보를 받아보겠습니다.</label>
                             </div>
                         </li>
-                        <li>
+                        <li class="company_regi">
                             <label for="reg_mb_password_re" class="sound_only">회사명</label>
                             <input type="text" name="mb_1" id="reg_mb_1" class="frm_input half_input  " placeholder="회사명">
                         </li>
-                        <li>
+                        <li class="company_regi">
                             <label for="reg_mb_password_re" class="sound_only">직책</label>
                             <input type="text" name="mb_4" id="reg_mb_4" class="frm_input half_input  " placeholder="직책">
                         </li>
-                        <li>
+                        <li class="company_regi">
                             <label for="reg_mb_password_re" class="sound_only">대표자</label>
                             <input type="text" name="mb_2" id="reg_mb_2" class="frm_input half_input  " placeholder="대표자">
                         </li>
-                        <li>
+                        <li class="company_regi">
                             <label for="reg_mb_password_re" class="sound_only">사업자번호</label>
-                            <input type="text" name="mb_3[]" id="reg_mb_3_1" value="<?php echo $mb3[0];?>" class="frm_input half_input left_input" placeholder="사업자번호"><span class="lab left_input"> - </span>
-                            <input type="text" name="mb_3[]" id="reg_mb_3_2" value="<?php echo $mb3[0];?>" class="frm_input half_input left_input" placeholder="사업자번호"><span class="lab left_input"> - </span>
-                            <input type="text" name="mb_3[]" id="reg_mb_3_3" value="<?php echo $mb3[0];?>" class="frm_input half_input left_input" placeholder="사업자번호">
+                            <input type="hidden" name="company_auth" id="company_auth" value="<?php if($w==''){?>N<?php }else{?>Y<?php }?>">
+                            <input type="text" name="mb_3[]" id="reg_mb_3_1" value="<?php echo $mb3[0];?>" class="frm_input half_input left_input" style="width:22%" placeholder="사업자번호"><span class="lab left_input"> - </span>
+                            <input type="text" name="mb_3[]" id="reg_mb_3_2" value="<?php echo $mb3[0];?>" class="frm_input half_input left_input" style="width:22%" placeholder="사업자번호"><span class="lab left_input"> - </span>
+                            <input type="text" name="mb_3[]" id="reg_mb_3_3" value="<?php echo $mb3[0];?>" class="frm_input half_input left_input" style="width:22%" placeholder="사업자번호">
+                            <button type="button" class="btn_frmline" style="width:22%;" onclick="fnCompanyChk();">사업자 확인</button>
                         </li>
 
-                        <li>
+                        <li class="company_regi">
                             <label for="reg_mb_password_re" class="sound_only">회사전화번호</label>
                             <select name="mb_tel[]" id="mb_tel1" class="frm_input left_input" >
                                 <option value="010" <?php echo get_selected($tel[0],"010");?>>010</option>
@@ -350,6 +357,60 @@ if($is_member) {
                     return;
                 });
                 <?php } ?>
+                <?php if($is_member){?>
+
+                <?php }?>
+                $("input[name=mb_type]").click(function(){
+                    //console.log($(this).val());
+                    //console.log($("input[name=mb_type]:checked").val());
+                    if($(this).val()==0){
+                        $(".company_regi").hide();
+                        $(".hp_crets").show();
+                        $("#mb_level").val(2);
+                        $("#company_auth").val("N");
+                        $("#reg_mb_hp").attr("required",true);
+                        $("#reg_mb_hp").addClass("required");
+                        $("#reg_mb_1").removeAttr("required");
+                        $("#reg_mb_1").removeClass("required");
+                        $("#reg_mb_2").removeAttr("required");
+                        $("#reg_mb_2").removeClass("required");
+                        $("#reg_mb_4").removeAttr("required");
+                        $("#reg_mb_4").removeClass("required");
+                        $("#mb_tel2").removeAttr("required");
+                        $("#mb_tel2").removeClass("required");
+                        $("#mb_tel3").removeAttr("required");
+                        $("#mb_tel3").removeClass("required");
+                        $("#reg_mb_3_1").removeAttr("required");
+                        $("#reg_mb_3_1").removeClass("required");
+                        $("#reg_mb_3_2").removeAttr("required");
+                        $("#reg_mb_3_2").removeClass("required");
+                        $("#reg_mb_3_3").removeAttr("required");
+                        $("#reg_mb_3_3").removeClass("required");
+                    }else{
+                        $(".company_regi").show();
+                        $(".hp_crets").hide();
+                        $("#mb_level").val(6);
+                        $("#mb_level").val(6);
+                        $("#reg_mb_hp").removeAttr("required");
+                        $("#reg_mb_hp").removeClass("required");
+                        $("#reg_mb_1").attr("required",true);
+                        $("#reg_mb_1").addClass("required");
+                        $("#reg_mb_2").attr("required",true);
+                        $("#reg_mb_2").addClass("required");
+                        $("#reg_mb_4").attr("required",true);
+                        $("#reg_mb_4").addClass("required");
+                        $("#mb_tel2").attr("required",true);
+                        $("#mb_tel2").addClass("required");
+                        $("#mb_tel3").attr("required",true);
+                        $("#mb_tel3").addClass("required");
+                        $("#reg_mb_3_1").attr("required",true);
+                        $("#reg_mb_3_1").addClass("required");
+                        $("#reg_mb_3_2").attr("required",true);
+                        $("#reg_mb_3_2").addClass("required");
+                        $("#reg_mb_3_3").attr("required",true);
+                        $("#reg_mb_3_3").addClass("required");
+                    }
+                });
             });
 
             // submit 최종 폼체크
@@ -401,15 +462,6 @@ if($is_member) {
                         f.mb_name.focus();
                         return false;
                     }
-
-                    /*
-                     var pattern = /([^가-힣\x20])/i;
-                     if (pattern.test(f.mb_name.value)) {
-                     alert("이름은 한글로 입력하십시오.");
-                     f.mb_name.select();
-                     return false;
-                     }
-                     */
                 }
 
                 <?php if($w == '' && $config['cf_cert_use'] && $config['cf_cert_req']) { ?>
@@ -444,14 +496,52 @@ if($is_member) {
 
                 <?php if (($config['cf_use_hp'] || $config['cf_cert_hp']) && $config['cf_req_hp']) {  ?>
                 // 휴대폰번호 체크
-                var msg = reg_mb_hp_check();
-                msg  = msg.replace(/(\n|\r\n)/g, "");
-                if (msg) {
-                    alert(msg);
-                    $("#mb_hp2").focus();
-                    return false;
+                if($("input[name=mb_type]:checked").val()==0) {
+                    var msg = reg_mb_hp_check();
+                    msg = msg.replace(/(\n|\r\n)/g, "");
+                    if (msg) {
+                        alert(msg);
+                        $("#mb_hp2").focus();
+                        return false;
+                    }
                 }
                 <?php } ?>
+
+                if($("input[name=mb_type]:checked").val()==1){
+                    if($("#reg_mb_1").val()==""){
+                        alert("회사명을 입력해주세요.");
+                        return false;
+                    }
+                    
+                    if($("#reg_mb_4").val()==""){
+                        alert("직책을 입력해주세요.");
+                        return false;
+                    }
+
+                    if($("#reg_mb_2").val()==""){
+                        alert("대표자명을 입력해주세요.");
+                        return false;
+                    }
+
+                    if($("#reg_mb_3_1").val() == "" || $("#reg_mb_3_2").val() == "" || $("#reg_mb_3_2").val() == ""){
+                        alert("사업자 번호를 입력해주세요.");
+                        return false;
+                    }
+
+                    if($("#company_auth").val()=="N"){
+                        alert("사업자 인증이 필요합니다.");
+                        return false;
+                    }
+
+                    if($("#mb_tel2").val()==""){
+                        alert("회사번호를 입력해주세요.");
+                        return false;
+                    }
+                    if($("#mb_tel3").val()==""){
+                        alert("회사번호를 입력해주세요.");
+                        return false;
+                    }
+                }
 
                 if (typeof f.mb_icon != "undefined") {
                     if (f.mb_icon.value) {
@@ -524,6 +614,29 @@ if($is_member) {
                 $("#mb_hp1").val(hps[0]);
                 $("#mb_hp2").val(hps[1]);
                 $("#mb_hp3").val(hps[2]);
+            }
+
+            function fnCompanyChk(){
+                var com_num = $("#reg_mb_3_1").val()+$("#reg_mb_3_2").val()+$("#reg_mb_3_3").val();
+                $.ajax({
+                    url:g5_url+'/page/ajax/ajax.register_company_chk.php',
+                    method:"post",
+                    data:{com_num:com_num,com1:$("#reg_mb_3_1").val(),com2:$("#reg_mb_3_2").val(),com3:$("#reg_mb_3_3").val()},
+                    dataType:'json'
+                }).done(function(data){
+                    console.log(data);
+                    if(data.message){
+                        alert(data.message);
+                    }else{
+                        if(data.state=="normal"){
+                            alert("사업자 인증이 완료 되었습니다.");
+                            $("#company_auth").val("Y");
+                        }else{
+                            alert("현재 운영 중이 아닌 사업자 입니다.");
+                            $("#company_auth").val("N");
+                        }
+                    }
+                })
             }
         </script>
     </div>

@@ -6,41 +6,6 @@ if($member["mb_auth"]==false){
         alert("무료 이용기간이 만료 되었거나,\\r맴버쉽 기간이 만료 되었습니다. \\n맴버쉽 구매후 이용바랍니다.",G5_URL);
     }
 }
-//평가 항목 가저오기
-if($is_member && $mycont && $current_const["const_id"]!=0){
-    if($member["mb_level"]==5){
-        $sql = "select * from `cmap_my_pmmode_set` where mb_id='{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'";
-        $ss = sql_fetch($sql);
-        if($ss!=null) {
-            $evaldata = sql_fetch("select * from `cmap_my_construct_eval` where mb_id='{$ss["set_mb_id"]}' and const_id = '{$current_const["const_id"]}'");
-        }else{
-            $sql = "select * from `cmap_my_construct` where id = '{$const_id}'";
-            $ss2 = sql_fetch($sql);
-            $evaldata = sql_fetch("select * from `cmap_my_construct_eval` where mb_id='{$ss2["mb_id"]}' and const_id = '{$current_const["const_id"]}'");
-        }
-    }else {
-        $evaldata = sql_fetch("select * from `cmap_my_construct_eval` where mb_id='{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'");
-    }
-
-    $pk_ids = explode("``",$evaldata["pk_ids1"]);
-    $pk_scores = explode("``",$evaldata["pk_score1"]);
-
-    for($i=0;$i<count($pk_ids);$i++){
-        $scores[$pk_ids[$i]] = $pk_scores[$i];
-    }
-
-    switch ($depth1_id){
-        case "334":
-            $step = 1;
-            break;
-        case "335":
-            $step = 2;
-            break;
-        case "336":
-            $step = 3;
-            break;
-    }
-}
 
 if(strlen($me_id)==2){
     $sql = "select * from `cmap_depth1` where SUBSTRING(me_code,1,2) like '%{$me_id}%' order by me_code asc limit 0,1 ";
@@ -180,6 +145,40 @@ while ($row = sql_fetch_array($res)) {
 
 include_once (G5_PATH."/_head.php");
 
+//평가 항목 가저오기
+if($is_member && $mycont && $current_const["const_id"]!=0){
+    if($member["mb_level"]==5){
+        $sql = "select * from `cmap_my_pmmode_set` where mb_id='{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'";
+        $ss = sql_fetch($sql);
+        if($ss!=null) {
+            $evaldata = sql_fetch("select * from `cmap_my_construct_eval` where mb_id='{$ss["set_mb_id"]}' and const_id = '{$current_const["const_id"]}'");
+        }else{
+            $sql = "select * from `cmap_my_construct` where id = '{$current_const["const_id"]}'";
+            $ss2 = sql_fetch($sql);
+            $evaldata = sql_fetch("select * from `cmap_my_construct_eval` where mb_id='{$ss2["mb_id"]}' and const_id = '{$current_const["const_id"]}'");
+        }
+    }else {
+        $evaldata = sql_fetch("select * from `cmap_my_construct_eval` where mb_id='{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'");
+    }
+    $pk_ids = explode("``",$evaldata["pk_ids1"]);
+    $pk_scores = explode("``",$evaldata["pk_score1"]);
+
+    for($i=0;$i<count($pk_ids);$i++){
+        $scores[$pk_ids[$i]] = $pk_scores[$i];
+    }
+
+    switch ($depth1_id){
+        case "334":
+            $step = 1;
+            break;
+        case "335":
+            $step = 2;
+            break;
+        case "336":
+            $step = 3;
+            break;
+    }
+}
 $myconstruction = false;
 
 ?>
@@ -222,7 +221,7 @@ $myconstruction = false;
                             <textarea name="memo_content" id="memo_content" style="font-size:14px;background-color:transparent;border:1px solid #ddd;color:#000;padding:5px;width:100%;text-align: left;height:50px;" placeholder="메모를 입력해주세요."></textarea>
                         </div>
                     </form>
-                    <div class="memo_area" style="width:100%;height:300px;padding:5px;">
+                    <div class="memo_area" >
                         <?php for($a = 0; $a<count($memo);$a++){?>
                             <div class="memo_item">
                                 <div class="top">
@@ -502,7 +501,7 @@ $myconstruction = false;
 <script src="<?php echo G5_JS_URL ?>/jquery-ui-1.9.2.custom.js"></script>
 <script>
 $(function(){
-    setTotal();
+    setTotal('<?php echo $current_const["const_id"];?>');
     /*var tbl_width = $(".menu_table").width();
     tbl_width = tbl_width + 24;
     $(".view_table").attr("style","width:calc(100% - "+tbl_width+"px)");*/
@@ -597,49 +596,66 @@ function fnEtcClose(){
     $(".etc_view").removeClass("active");
     $(".etc_view_bg").removeClass("active");
 }
-
+var chkUpdate = false;
 function fnUpdateNumber(pk_id,num,constid,score_cnt){
-    $.ajax({
-        url:g5_url+'/page/ajax/ajax.my_construct_eval.php',
-        method:"post",
-        data:{pk_id:pk_id,num:num,constid:constid,score_cnt:score_cnt,page:1},
-        dataType:"json"
-    }).done(function(data){
-        console.log(data);
-        if(data.msg=="1"){
-            alert("선택된 현장이 없습니다.");
-            return false;
-        }else if(data.msg=="2"){
-            alert("선택된 항목이 없습니다.");
-            return false;
-        }else if(data.msg=="3"){
-            alert("점수 기록에 실패 하였습니다.");
-            return false;
-        }else if(data.msg=="4"){
-            alert("평가 디비가 없습니다.");
-            return false;
-        }else{
-            $(".score_"+pk_id).text(data.score);
-            setTotal();
-        }
-    });
+    if(chkUpdate==false) {
+        chkUpdate=true;
+        $.ajax({
+            url:g5_url+'/page/ajax/ajax.my_construct_eval.php',
+            method:"post",
+            data:{pk_id:pk_id,num:num,constid:constid,score_cnt:score_cnt,page:1},
+            dataType:"json",
+            beforeSend: function () {
+                if ($(".div_ajax_load_image").length > 0) {
+                    $(".div_ajax_load_image").show();
+                } else {
+                    $("body").append("<div class='div_ajax_load_image' ><div class='ring'></div><div class='text'><p class='textAni'>점수계산중</p></div></div>");
+                }
+            }
+        }).done(function(data){
+            console.log(data);
+            if(data.msg=="1"){
+                alert("선택된 현장이 없습니다.");
+                return false;
+            }else if(data.msg=="2"){
+                alert("선택된 항목이 없습니다.");
+                return false;
+            }else if(data.msg=="3"){
+                alert("점수 기록에 실패 하였습니다.");
+                return false;
+            }else if(data.msg=="4"){
+                alert("평가 디비가 없습니다.");
+                return false;
+            }else{
+                $("#scoretd_"+pk_id+'_'+num).addClass("active");
+                $("td[id^=scoretd_"+pk_id+"]").not($("#scoretd_"+pk_id+'_'+num)).removeClass("active");
+                $(".score_"+pk_id).text(data.score);
+                setTotal(constid);
+                $(".div_ajax_load_image").hide();
+                chkUpdate = false;
+            }
+        });
+    }else{
+        alert("점수 반영중입니다.");
+        return false;
+    }
 }
 
-function setTotal(){
+function setTotal(constid){
     var score = 0;
     $("td[class^=score]").each(function(){
         score += Number($(this).text());
     });
-    console.log(score);
+
     score = score.toFixed(2);
     $(".alltotal").text(score);
 
     $.ajax({
         url:g5_url+'/page/ajax/ajax.my_construct_eval_total.php',
         method:"post",
-        data:{step:"<?php echo $step;?>",page:1,constid:"<?php echo $current_const["const_id"];?>",total:score}
+        data:{step:"<?php echo $step;?>",page:1,constid:constid,total:score}
     }).done(function(data){
-        //console.log(data);
+        console.log(data);
     })
 }
 

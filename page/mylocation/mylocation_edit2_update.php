@@ -85,13 +85,14 @@ sql_query($sql);
 
 // 실착공일 및 준공일 기준 건설행정 스케쥴 등록
 // 건설 행정 목록 불러오기
-$sql = "select *,m.id as id from `cmap_menu` as c left join `cmap_depth1` as m on c.menu_code = m.me_code where SUBSTR(c.menu_code,1,2) = 10 and c.menu_code != 10 and c.menu_status = 0 order by c.menu_order";
+$sql = "select m.id as id from `cmap_menu` as c left join `cmap_depth1` as m on c.menu_code = m.me_code where SUBSTR(c.menu_code,1,2) = 10 and c.menu_code != 10 and c.menu_status = 0 order by c.menu_order";
 $ress = sql_query($sql);
 while($me_code = sql_fetch_array($ress)) {
-    $sql = "select *,c.pk_id as pk_id,c.depth1_id as depth1_id,c.depth2_id as depth2_id,c.depth3_id as depth3_id,c.depth4_id as depth4_id,b.pk_id as depth4_pk_id from `cmap_content` as c left join `cmap_depth4` as b on c.depth4_id = b.id where c.submit_date_type != -1 and c.depth1_id = '{$me_code["id"]}' order by c.depth1_id desc, c.depth2_id desc, c.depth3_id desc, c.depth4_id desc, c.submit_date_type asc";
+    $sql = "select c.submit_date_type,c.submit_date,c.content,c.pk_id as pk_id,c.depth1_id as depth1_id,c.depth2_id as depth2_id,c.depth3_id as depth3_id,c.depth4_id as depth4_id,b.pk_id as depth4_pk_id from `cmap_content` as c left join `cmap_depth4` as b on c.depth4_id = b.id where c.submit_date_type != -1 and c.depth1_id = '{$me_code["id"]}' order by c.depth1_id desc, c.depth2_id desc, c.depth3_id desc, c.depth4_id desc, c.submit_date_type asc";
     $res = sql_query($sql);
+
     while ($row = sql_fetch_array($res)) {
-        if($row["submit_date_type"]== 1 || $row["submit_date_type"] == 2) continue;
+        if($row["submit_date_type"] == 2) continue;
 
         if (strpos($row["submit_date"], "-") !== false) {
             $date = $row["submit_date"]." day ";
@@ -160,7 +161,7 @@ while($me_code = sql_fetch_array($ress)) {
         $schedule_date = date("Y-m-d", strtotime($nowdate));
         $sql = "insert into `cmap_myschedule` set 
                                   `mb_id` = '{$member["mb_id"]}',
-                                  `schedule_name` = '{$row["content"]}',
+                                  `schedule_name` = '".str_replace("'","\'",$row["content"])."',
                                   `schedule_date` = '{$schedule_date}',
                                   `insert_date` = now(),
                                   `update_date` = now(),
@@ -171,6 +172,7 @@ while($me_code = sql_fetch_array($ress)) {
                                   schedule_type = 1
                                 ";
         sql_query($sql);
+
 
         $map_pk_ids[] = $row["pk_id"];
         $map_pk_actives[] = "0";
@@ -188,16 +190,16 @@ $res = sql_query($sql);
 while ($row = sql_fetch_array($res)) {
     $schedule_name = $row["depth_name"]." | ";
 
-    $sql = "select * from `cmap_depth4` where depth1_id = '{$row["id"]}' order by id";
+    $sql = "select depth_name,id,pk_id from `cmap_depth4` where depth1_id = '{$row["id"]}' order by id";
     $ress = sql_query($sql);
     $i=0;
     while($rowss = sql_fetch_array($ress)) {
         $sch_name[$i]["title"] = $schedule_name . $rowss["depth_name"];
         //$pkids[$i]=$rowss["depth1_id"];
 
-        $sql = "select * from `cmap_content` where depth4_id = '{$rowss["id"]}' and (`submit_date_type` = 0 or `submit_date_type` = 3 or `submit_date_type` = 1 or `submit_date_type` = 2) order by id ";
+        $sql = "select submit_date,submit_date_type,pk_id,content from `cmap_content` where depth4_id = '{$rowss["id"]}' and (`submit_date_type` = 0 or `submit_date_type` = 3 or `submit_date_type` = 1 or `submit_date_type` = 2) order by id ";
         $res2 = sql_query($sql);
-        while($row2 = sql_fetch_array($res2)) {
+    while($row2 = sql_fetch_array($res2)) {
             if (strpos($row2["submit_date"], "-") !== false) {
                 $date = $row2["submit_date"]." day";
             } else {
@@ -310,12 +312,17 @@ $sql = "update `cmap_my_construct` SET
 
 if(sql_query($sql)){
     //완료후 개인설정에도 저장
-    //완료후 개인설정에도 저장
     $map_pks = implode("``",$map_pk_ids);
     $map_pkact = implode("``",$map_pk_actives);
     $map_pktime = implode("``",$map_pk_actives_date);
 
-    $sql = "update `cmap_my_construct_map` set pk_ids = '{$map_pks}',pk_actives = '{$map_pkact}', pk_actives_date = '{$map_pktime}' where  mb_id= '{$member["mb_id"]}' and const_id = '{$constid}'";
+    $sql = "select * from `cmap_my_construct_map` where mb_id= '{$member["mb_id"]}' and const_id = '{$constid}'";
+    $chkMap = sql_fetch($sql);
+    if($chkMap==null){
+        $sql = "insert into `cmap_my_construct_map` set pk_ids = '{$map_pks}',pk_actives = '{$map_pkact}', pk_actives_date = '{$map_pktime}', mb_id= '{$member["mb_id"]}', const_id = '{$constid}'";
+    }else {
+        $sql = "update `cmap_my_construct_map` set pk_ids = '{$map_pks}',pk_actives = '{$map_pkact}', pk_actives_date = '{$map_pktime}' where  mb_id= '{$member["mb_id"]}' and const_id = '{$constid}'";
+    }
     sql_query($sql);
 
     $sql = "select * from `cmap_content` where pk_id not in ('{$map_pks2}')";

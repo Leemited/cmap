@@ -1,5 +1,6 @@
 <?php
 include_once ("../../common.php");
+include_once (G5_PATH."/page/manager/manager_auth.php");
 
 if(!$is_member){
     goto_url(G5_BBS_URL."/login?url=".G5_URL."/page/mylocation/mylocation");
@@ -90,13 +91,20 @@ while($row = sql_fetch_array($res)){
                                 }else{
                                     $str_date = $dates[0];
                                 }
+                                $sql = "select * from `cmap_construct_invite` where send_mb_id = '{$member["mb_id"]}' and const_id = '{$list[$i]["id"]}'";
+                                $chkInvite = sql_fetch($sql);
+
                             ?>
                             <tr>
                                 <td><?php echo $mb["mb_id"];?></td>
                                 <td><?php echo $list[$i]["cmap_name"];?></td>
                                 <td class="td_center"><?php echo $str_date;?></td>
                                 <td class="td_center" style="width:100px;">
+                                    <?php if($chkInvite!=null){?>
+                                        요청중
+                                    <?php }else{?>
                                     <input type="button" value="PM 요청" class="basic_btn02" style="width:auto;padding:6px 10px;" onclick="fnConstJoinPm('<?php echo $list[$i]["mb_id"];?>','<?php echo $list[$i]["id"];?>');" >
+                                    <?php }?>
                                 </td>
                                 <td class="td_center" style="width:100px;">
                                     <input type="button" value="상세보기" class="basic_btn02" style="width:auto;padding:6px 10px;" onclick="location.href=g5_url+'/page/mylocation/mylocation_view?constid=<?php echo $list[$i]["id"];?>'">
@@ -118,7 +126,7 @@ while($row = sql_fetch_array($res)){
                 <div class="pm_const_list" style="position: relative">
                     <h3><i></i>Project Manager 관리지구 목록</h3>
                     <div class="myloc_btns" style="">
-                        <input type="button" value="삭제" class="basic_btn03">
+                        <input type="button" value="삭제" class="basic_btn03" onclick="pmDel()">
                     </div>
                     <table>
                         <tr>
@@ -199,7 +207,25 @@ while($row = sql_fetch_array($res)){
         });
     }
 
+    function pmDel(){
+        var chkleng = 0;
+        var constid = '';
+        $("input[id^=contruct]").each(function(){
+           if($(this).prop("checked")==true){
+               chkleng++;
+               if(constid){constid+=',';}
+               constid += $(this).val();
+           }
+        });
+        if(chkleng==0){
+            alert("삭제할 현장을 선택해 주세요.");
+            return false;
+        }
 
+        if(confirm("선택한 현장을 삭제 하시겠습니까?")){
+            location.href=g5_url+'/page/manager/pm_construct_del?constids='+constid;
+        }
+    }
 </script>
 <?php
 include_once (G5_PATH."/tail.php");

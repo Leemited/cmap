@@ -127,7 +127,7 @@ $delaylist = arr_sort($delaylist, "delay_date", "asc");
                             <td >제&nbsp;&nbsp;&nbsp;&nbsp;목 :</td>
                             <td style="position:relative;">
                                 <?php echo $msgs["msg_subject"];?>
-                                <div style="position: absolute;right:0;top:0"><input type="checkbox" name="msg_retype" id="msg_retype" value="1" <?php if($msgs["msg_retype"]==1){?>checked<?php }?>><label for="msg_retype">회신요청</label></div>
+                                <div style="position: absolute;right:0;top:0"><input type="checkbox" name="msg_retype" id="msg_retype" value="1" <?php if($msgs["msg_retype"]==1){?>checked<?php }?> disabled ><label for="msg_retype">회신요청</label></div>
                             </td>
                         </tr>
                         <?php if($msg_id && count($parent_msg) > 1){?>
@@ -146,7 +146,7 @@ $delaylist = arr_sort($delaylist, "delay_date", "asc");
                         <tr>
                             <td colspan="2" style="">
                                 <div class="read_msg_content">
-                                    <h2 style="">---&nbsp;&nbsp;아&nbsp;&nbsp;&nbsp;&nbsp;래&nbsp;&nbsp;---</h2>
+                                    <h2 style=""></h2>
                                     <p class="msg_content_detail" style="">
                                         <?php echo nl2br(str_replace(" ","&nbsp;",$msgs["msg_content"]));?>
                                     </p>
@@ -160,12 +160,14 @@ $delaylist = arr_sort($delaylist, "delay_date", "asc");
                         <tr>
                             <td colspan="2">
                                 <div class="send_info">
-                                    <p><?php echo $mb["mb_1"];?> <?php echo $mb["mb_4"];?> <?php echo $mb["mb_name"];?></p>
+                                    <h2>
+                                        <span><?php echo $mb["mb_1"];?> <?php echo $mb["mb_4"];?> <?php echo $mb["mb_name"];?></span>
                                     <?php if($msgs["msg_sign_filename"]){?>
                                         <div class="signs" style=""><img src="<?php echo G5_DATA_URL;?>/member/<?php echo substr($mb["mb_id"],0,2);?>/<?php echo $msgs["msg_sign_filename"];?>" alt="" style="width:100%;"></div>
                                     <?php }else{?>
                                         <div class="stemp">직인생략</div>
                                     <?php }?>
+                                    </h2>
                                 </div>
                             </td>
                         </tr>
@@ -188,137 +190,76 @@ $delaylist = arr_sort($delaylist, "delay_date", "asc");
                         </tr>
                     </table>
                 </div>
-                <div class="page2" style="page-break-before:always">
-                    <?php if($msgs["delay_view"]==1){?>
-                        <div class="delay_view_t">[붙 임]</div>
-                        <div class="delay_cons">
-                            <table class="delay_table">
-                                <tr>
-                                    <th><input type="checkbox" id="chk_all" checked><label for="chk_all"></label></th>
-                                    <th>지연서류</th>
-                                    <th>제출기한</th>
-                                    <th>지연일수</th>
-                                </tr>
-                                <?php
-                                for($i=0;$i<count($delaylist);$i++){
-                                    if($delaylist[$i]["pk_id"]=="1"){continue;}
-                                    if($msg_id) {
-                                        if (strpos($msgs["pk_ids"], $delaylist[$i]["pk_id"]) === false) {
-                                            continue;
-                                        }
-                                    }
-                                    if($i>25){continue;}
-                                    ?>
-                                    <tr>
-                                        <td class="td_center">
-                                            <input type="checkbox" name="pk_ids[]" id="pk_id_<?php echo $delaylist[$i]["pk_id"];?>" value="<?php echo $delaylist[$i]["pk_id"];?>" >
-                                            <label for="pk_id_<?php echo $delaylist[$i]["pk_id"];?>"></label>
-                                        </td>
-                                        <td title="<?php echo $delaylist[$i]["depth_name"];?>"><?php echo "[".$delaylist[$i]["depth1_name"]."]".cut_str($delaylist[$i]["depth_name"],20,"...");?></td>
-                                        <td class="td_center"><?php echo $delaylist[$i]["schedule_date"];?></td>
-                                        <td class="td_center"><?php echo $delaylist[$i]["delay_date"];?></td>
-                                    </tr>
-                                <?php }?>
-                                <?php if(count($delaylist)==0 || ($msg_id && $msgs["pk_ids"] == "")){?>
-                                    <tr>
-                                        <td colspan="4" class="td_center">지연 현황이 없습니다.</td>
-                                    </tr>
-                                <?php }?>
-                            </table>
-                        </div>
-                        <!--<p style="padding:10px 0 0 0;">* 개인설정 및 현황에 따라 지연현황의 차이가 있을 수 있습니다.<br>* PM일 경우 개인 설정을 업데이트하여 확인 바랍니다.</p>-->
-                    <?php }?>
-                </div>
-                <?php if(count($delaylist)>26){?>
-                <div class="page2" style="page-break-before:always">
-                    <?php if($msgs["delay_view"]==1){?>
-                        <div class="delay_view_t">[붙 임]</div>
-                        <div class="delay_cons">
-                            <table class="delay_table">
-                                <tr>
-                                    <th><input type="checkbox" id="chk_all" checked><label for="chk_all"></label></th>
-                                    <th>지연서류</th>
-                                    <th>제출기한</th>
-                                    <th>지연일수</th>
-                                </tr>
-                                <?php
-                                for($i=26;$i<count($delaylist);$i++){
-                                    if($delaylist[$i]["pk_id"]=="1"){continue;}
-                                    if($msg_id) {
-                                        if (strpos($msgs["pk_ids"], $delaylist[$i]["pk_id"]) === false) {
-                                            continue;
-                                        }
-                                    }
-                                    if($i > 50){continue;}
-                                    ?>
-                                    <tr>
-                                        <td class="td_center">
-                                            <input type="checkbox" name="pk_ids[]" id="pk_id_<?php echo $delaylist[$i]["pk_id"];?>" value="<?php echo $delaylist[$i]["pk_id"];?>" >
-                                            <label for="pk_id_<?php echo $delaylist[$i]["pk_id"];?>"></label>
-                                        </td>
-                                        <td title="<?php echo $delaylist[$i]["depth_name"];?>"><?php echo "[".$delaylist[$i]["depth1_name"]."]".cut_str($delaylist[$i]["depth_name"],20,"...");?></td>
-                                        <td class="td_center"><?php echo $delaylist[$i]["schedule_date"];?></td>
-                                        <td class="td_center"><?php echo $delaylist[$i]["delay_date"];?></td>
-                                    </tr>
-                                <?php }?>
-                                <?php if(count($delaylist)==0 || ($msg_id && $msgs["pk_ids"] == "")){?>
-                                    <tr>
-                                        <td colspan="4" class="td_center">지연 현황이 없습니다.</td>
-                                    </tr>
-                                <?php }?>
-                            </table>
-                        </div>
-                        <!--<p style="padding:10px 0 0 0;">* 개인설정 및 현황에 따라 지연현황의 차이가 있을 수 있습니다.<br>* PM일 경우 개인 설정을 업데이트하여 확인 바랍니다.</p>-->
-                    <?php }?>
-                </div>
-                <?php }?>
-                <?php if(count($delaylist)>51){?>
-                    <div class="page2" style="page-break-before:always">
-                        <?php if($msgs["delay_view"]==1){?>
-                            <div class="delay_view_t">[붙 임]</div>
-                            <div class="delay_cons">
-                                <table class="delay_table">
-                                    <tr>
-                                        <th><input type="checkbox" id="chk_all" checked><label for="chk_all"></label></th>
-                                        <th>지연서류</th>
-                                        <th>제출기한</th>
-                                        <th>지연일수</th>
-                                    </tr>
-                                    <?php
-                                    for($i=51;$i<count($delaylist);$i++){
-                                        if($delaylist[$i]["pk_id"]=="1"){continue;}
-                                        if($msg_id) {
-                                            if (strpos($msgs["pk_ids"], $delaylist[$i]["pk_id"]) === false) {
-                                                continue;
-                                            }
-                                        }
-                                        if($i > 100){continue;}
-                                        ?>
-                                        <tr>
-                                            <td class="td_center">
-                                                <input type="checkbox" name="pk_ids[]" id="pk_id_<?php echo $delaylist[$i]["pk_id"];?>" value="<?php echo $delaylist[$i]["pk_id"];?>" >
-                                                <label for="pk_id_<?php echo $delaylist[$i]["pk_id"];?>"></label>
-                                            </td>
-                                            <td title="<?php echo $delaylist[$i]["depth_name"];?>"><?php echo "[".$delaylist[$i]["depth1_name"]."]".cut_str($delaylist[$i]["depth_name"],20,"...");?></td>
-                                            <td class="td_center"><?php echo $delaylist[$i]["schedule_date"];?></td>
-                                            <td class="td_center"><?php echo $delaylist[$i]["delay_date"];?></td>
-                                        </tr>
-                                    <?php }?>
-                                    <?php if(count($delaylist)==0 || ($msg_id && $msgs["pk_ids"] == "")){?>
-                                        <tr>
-                                            <td colspan="4" class="td_center">지연 현황이 없습니다.</td>
-                                        </tr>
-                                    <?php }?>
-                                </table>
-                            </div>
-                            <!--<p style="padding:10px 0 0 0;">* 개인설정 및 현황에 따라 지연현황의 차이가 있을 수 있습니다.<br>* PM일 경우 개인 설정을 업데이트하여 확인 바랍니다.</p>-->
-                        <?php }?>
-                    </div>
-                <?php }?>
+
+
             </div>
         </div>
     </div>
 </div>
+<?php if($msgs["delay_view"]==1){
+    $pagecount = ceil(count($delaylist) / 30);
+    $last = false;
+    for($cnt = 0 ; $cnt < $pagecount ; $cnt++){
+        if($last==true){continue;}
+        if($cnt > 0) {
+            $pageNum = (30 * ($cnt+1)) + 1;
+            $pageNum2 = $pageNum + 30;
+        }else{
+            $pageNum = 0;
+            $pageNum2 = 30;
+        }
+        if (count($delaylist) <= $pageNum2){
+            $last = true;
+        }
+    ?>
+    <div class="message" id="prints" >
+        <div class="msg_content">
+            <div class="msg_write_container">
+                <div class="page2" style="page-break-before:always">
+                    <div class="delay_view_t">[붙 임] <?php echo ($cnt+1);?></div>
+                        <div class="delay_cons">
+                            <table class="delay_table">
+                                <tr>
+                                    <th><input type="checkbox" id="chk_all" checked><label for="chk_all"></label></th>
+                                    <th>지연서류</th>
+                                    <th>제출기한</th>
+                                    <th>지연일수</th>
+                                </tr>
+                                <?php
+                                for($i=$pageNum;$i<count($delaylist);$i++){
+                                    //if($delaylist[$i]["pk_id"]=="1"){continue;}
+                                    if($msg_id) {
+                                        if (strpos($msgs["pk_ids"], $delaylist[$i]["pk_id"]) === false) {
+                                            continue;
+                                        }
+                                    }
+                                    if($i>$pageNum2){continue;}
+                                    ?>
+                                    <tr>
+                                        <td class="td_center">
+                                            <?php echo $i;?>
+                                            <input type="checkbox" name="pk_ids[]" id="pk_id_<?php echo $delaylist[$i]["pk_id"];?>" value="<?php echo $delaylist[$i]["pk_id"];?>" >
+                                            <label for="pk_id_<?php echo $delaylist[$i]["pk_id"];?>"></label>
+                                        </td>
+                                        <td title="<?php echo $delaylist[$i]["depth_name"];?>"><?php echo "[".$delaylist[$i]["depth1_name"]."]".cut_str($delaylist[$i]["depth_name"],20,"...");?></td>
+                                        <td class="td_center"><?php echo $delaylist[$i]["schedule_date"];?></td>
+                                        <td class="td_center"><?php echo $delaylist[$i]["delay_date"];?></td>
+                                    </tr>
+                                <?php }?>
+                                <?php if(count($delaylist)==0 || ($msg_id && $msgs["pk_ids"] == "")){?>
+                                    <tr>
+                                        <td colspan="4" class="td_center">지연 현황이 없습니다.</td>
+                                    </tr>
+                                <?php }?>
+                            </table>
+                        </div>
+                        <!--<p style="padding:10px 0 0 0;">* 개인설정 및 현황에 따라 지연현황의 차이가 있을 수 있습니다.<br>* PM일 경우 개인 설정을 업데이트하여 확인 바랍니다.</p>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php }?>
+<?php }?>
     <!--<img src="<?php /*echo G5_IMG_URL;*/?>/workmsg.jpg" alt="" style="width: 21cm;height: 29.7cm;opacity: 0.5;position:absolute;top:0;left:0;z-index:-1">-->
 
 <!-- MeadCo Security Manager -->
@@ -345,7 +286,7 @@ $delaylist = arr_sort($delaylist, "delay_date", "asc");
             fnPrint();
         }else{
             window.print();
-            window.close();
+            //window.close();
         }
     });
 </script>

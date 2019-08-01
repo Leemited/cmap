@@ -1,5 +1,6 @@
 <?php
 include_once ("../../common.php");
+include_once (G5_PATH."/page/manager/manager_auth.php");
 $sub = "sub";
 $bbody = "board";
 $mypage = true;
@@ -19,7 +20,11 @@ include_once(G5_PLUGIN_PATH.'/jquery-ui/datepicker.php');
 $today = date("Y-m-d");
 
 if($sfl==1){
-    $where .= " and date_format(cmap_construct_finish,'%Y-%m-%d') >= '{$todays}'";
+    $where .= " and cmap_construct_finish < '{$todays}'";
+}
+
+if($sfl==2){
+    $where .= " and cmap_construct_finish > '{$todays}'";
 }
 
 if($stx){
@@ -30,6 +35,8 @@ $sql = "select * from `cmap_my_construct` where instr(manager_mb_id,'{$member["m
 $res = sql_query($sql);
 $c = 0;
 while($row = sql_fetch_array($res)){
+    $delaycount=$delaydate=$totaldates=0;
+
     $worklist[$c] = $row;
     $sql = "select * from `cmap_my_pmmode_set` where mb_id='{$member["mb_id"]}' and const_id = '{$row["id"]}'";
     $ss = sql_fetch($sql);
@@ -44,29 +51,29 @@ while($row = sql_fetch_array($res)){
         $delaysql_pm = "select * from `cmap_myschedule` where construct_id = '{$row["id"]}' and schedule_date < '{$today}' and pk_id <> '' ";
         $delayres_pm = sql_query($delaysql_pm);
         $a=0;
-        $delaycount=$delaydate=$totaldates=0;
         while($delayrow_pm = sql_fetch_array($delayres_pm)){
             $pk_ids = explode("``",$delayrow_pm["pk_id"]);
 
             $diff = strtotime($today) - strtotime($delayrow_pm["schedule_date"]);
 
             $days = $diff / (60*60*24);
-
             for($i=0;$i<count($pk_ids);$i++){
                 for($j=0;$j<count($map_pk_id_pm);$j++){
                     if($pk_ids[$i]==$map_pk_id_pm[$j]){
-                        $sql = "select *,c.pk_id as pk_id,d.pk_id as depth4_pk_id,c.depth1_id as depth1_id, a.pk_id as depth1_pk_id,a.depth_name as depth1_name,d.depth_name as depth_name from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$pk_ids[$i]}'";
-                        $ddd = sql_fetch($sql);
-                        if(strpos($id,$ddd["pk_id"])!==false) {
-                            continue;
+                        if($map_pk_actives_pm[$j]==0) {
+                            $sql = "select *,c.pk_id as pk_id,d.pk_id as depth4_pk_id,c.depth1_id as depth1_id, a.pk_id as depth1_pk_id,a.depth_name as depth1_name,d.depth_name as depth_name from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$pk_ids[$i]}'";
+                            $ddd = sql_fetch($sql);
+                            $delaycount++;
+                            $delaydate += $days;
+                            if (strpos($id, $ddd["pk_id"]) !== false) {
+                                continue;
+                            }
+                            $id .= ',' . $ddd["pk_id"];
                         }
-                        $id .= ','.$ddd["pk_id"];
-                        $delaycount++;
-                        $delaydate += $days;
-                        if($map_pk_actives_pm[$j]==1){
+                        /*if($map_pk_actives_pm[$j]==1){
                             $delaycount--;
                             $delaydate -= $days;
-                        }
+                        }*/
                     }
                 }
             }
@@ -87,7 +94,6 @@ while($row = sql_fetch_array($res)){
         $delaysql_pm = "select * from `cmap_myschedule` where construct_id = '{$row["id"]}' and schedule_date < '{$today}' and pk_id <> '' ";
         $delayres_pm = sql_query($delaysql_pm);
         $a=0;
-        $delaycount=$delaydate=$totaldates=0;
         while($delayrow_pm = sql_fetch_array($delayres_pm)){
             $pk_ids = explode("``",$delayrow_pm["pk_id"]);
 
@@ -98,18 +104,20 @@ while($row = sql_fetch_array($res)){
             for($i=0;$i<count($pk_ids);$i++){
                 for($j=0;$j<count($map_pk_id_pm);$j++){
                     if($pk_ids[$i]==$map_pk_id_pm[$j]){
-                        $sql = "select *,c.pk_id as pk_id,d.pk_id as depth4_pk_id,c.depth1_id as depth1_id, a.pk_id as depth1_pk_id,a.depth_name as depth1_name,d.depth_name as depth_name from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$pk_ids[$i]}'";
-                        $ddd = sql_fetch($sql);
-                        if(strpos($id,$ddd["pk_id"])!==false) {
-                            continue;
+                        if($map_pk_actives_pm[$j]==0) {
+                            $sql = "select *,c.pk_id as pk_id,d.pk_id as depth4_pk_id,c.depth1_id as depth1_id, a.pk_id as depth1_pk_id,a.depth_name as depth1_name,d.depth_name as depth_name from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$pk_ids[$i]}'";
+                            $ddd = sql_fetch($sql);
+                            $delaycount++;
+                            $delaydate += $days;
+                            if (strpos($id, $ddd["pk_id"]) !== false) {
+                                continue;
+                            }
+                            $id .= ',' . $ddd["pk_id"];
                         }
-                        $id .= ','.$ddd["pk_id"];
-                        $delaycount++;
-                        $delaydate += $days;
-                        if($map_pk_actives_pm[$j]==1){
+                        /*if($map_pk_actives_pm[$j]==1){
                             $delaycount--;
                             $delaydate -= $days;
-                        }
+                        }*/
                     }
                 }
             }
@@ -121,10 +129,10 @@ while($row = sql_fetch_array($res)){
     }
     $totalDelay += $worklist[$c]["delaycount"];
     $totalDelayDate += $worklist[$c]["delaydate"];
-    $totalDelayDatePer += $worklist[$c]["delaytotal"];
 
     $c++;
 }
+$totalDelayDatePer = round($totalDelayDate / $totalDelay,2) ;
 ?>
 <div class="etc_view messages">
 
@@ -221,9 +229,9 @@ while($row = sql_fetch_array($res)){
                         <td class="td_center"><?php echo $worklist[$i]["cmap_construct_start"];?></td>
                         <td class="td_center"><?php echo $worklist[$i]["cmap_construct_finish"];?></td>
                         <td class="td_center"><?php echo $dayper;?></td>
-                        <td class="td_center"><?php echo $worklist[$i]["delaycount"];?> 건</td>
-                        <td class="td_center"><?php echo $worklist[$i]["delaydate"];?> 일</td>
-                        <td class="td_center"><?php echo $worklist[$i]["delaytotal"];?> 일</td>
+                        <td class="td_center"><?php echo number_format($worklist[$i]["delaycount"]);?> 건</td>
+                        <td class="td_center"><?php echo number_format($worklist[$i]["delaydate"]);?> 일</td>
+                        <td class="td_center"><?php echo number_format($worklist[$i]["delaytotal"]);?> 일</td>
                     </tr>
                     <?php
                 } ?>

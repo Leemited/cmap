@@ -13,7 +13,7 @@ include_once ("../../common.php");
         <ul class="sel_order">
             <li onclick="memberPayment('<?php echo $amount;?>','<?php echo $payment_type;?>','card','<?php echo $member["mb_name"];?>','<?php echo $member["mb_hp"];?>','<?php echo $member["mb_email"];?>','<?php echo $member["mb_id"];?>')"><img src="<?php echo G5_IMG_URL;?>/ic_order_card.svg" alt="">카드</li>
             <li onclick="memberPayment('<?php echo $amount;?>','<?php echo $payment_type;?>','trans','<?php echo $member["mb_name"];?>','<?php echo $member["mb_hp"];?>','<?php echo $member["mb_email"];?>','<?php echo $member["mb_id"];?>')"><img src="<?php echo G5_IMG_URL;?>/ic_order_bank.svg" alt="">계좌이체</li>
-            <li onclick="memberPayment('<?php echo $amount;?>','<?php echo $payment_type;?>',' vbank','<?php echo $member["mb_name"];?>','<?php echo $member["mb_hp"];?>','<?php echo $member["mb_email"];?>','<?php echo $member["mb_id"];?>')"><img src="<?php echo G5_IMG_URL;?>/ic_order_cyber.svg" alt="">가상계좌</li>
+            <!--<li onclick="memberPayment('<?php /*echo $amount;*/?>','<?php /*echo $payment_type;*/?>',' vbank','<?php /*echo $member["mb_name"];*/?>','<?php /*echo $member["mb_hp"];*/?>','<?php /*echo $member["mb_email"];*/?>','<?php /*echo $member["mb_id"];*/?>')"><img src="<?php /*echo G5_IMG_URL;*/?>/ic_order_cyber.svg" alt="">가상계좌</li>-->
         </ul>
     </div>
 </div>

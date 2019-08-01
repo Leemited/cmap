@@ -21,6 +21,20 @@ if($view["mb_id"]!=$member["mb_id"]) {
         $chk = true;
     }
 }
+
+if($member["mb_level"]==5){
+    $sql = "select * from `cmap_my_pmmode_set` where mb_id = '{$member["mb_id"]}' and const_id = '{$constid}'";
+    $pmSet = sql_fetch($sql);
+
+    $mng_members = explode(",",$view["manager_mb_id"]);
+    $mmchk = false;
+    for($i = 0 ; $i<count($mng_members);$i++){
+        if($mng_members[$i]==$member["mb_id"]){
+            $mmchk = true;
+        }
+    }
+}
+
 ?>
 <div class="width-fixed">
     <section class="sub_sec" id="mypages">
@@ -60,7 +74,7 @@ if($view["mb_id"]!=$member["mb_id"]) {
                         <?php }?>
                     <?php }else{?>
                         <?php if($member["mb_level"]==5){
-                            if(strpos($member["mb_id"],$view["manager_mb_id"])!==false){}else{
+                            if($mmchk==false){
                                 ?>
                                 <input type="button" value="PM요청" onclick="fnConstJoinPm('<?php echo $view["mb_id"];?>','<?php echo $constid;?>');" class="basic_btn02">
                             <?php }

@@ -6,10 +6,23 @@ if(!$mb_id){
     return false;
 }
 
-$sql = "select * from `cmap_construct_work_msg` where (instr(read_mb_id,'{$member["mb_id"]}') != 0) and read_status = 0 ";
+$sql = "select * from `cmap_construct_work_msg` where (instr(read_mb_id,'{$member["mb_id"]}') != 0 or send_mb_id = '{$member["mb_id"]}') and read_status = 0 ";
 $res = sql_query($sql);
 while($row = sql_fetch_array($res)){
-    $wlist[] = $row;
+    $reads = explode(",",$row["read_mb_id"]);
+    $sends = $row["send_mb_id"];
+    $chk==true;
+    for($i=0;$i<count($reads);$i++){
+        if($reads[$i]!=$member["mb_id"]){
+            $chk==false;
+        }
+    }
+    if($member["mb_id"]==$row["send_mb_id"]){
+        $chk = true;
+    }
+    if($chk) {
+        $wlist[] = $row;
+    }
 }
 
 ?>

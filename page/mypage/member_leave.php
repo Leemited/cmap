@@ -3,6 +3,11 @@ include_once ("../../common.php");
 if(!$is_member){
     goto_url(G5_BBS_URL."/login.php");
 }
+
+if($member["parent_mb_id"]){
+    alert("부계정 아이디는 탈퇴 불가능합니다.",G5_URL.'/page/mypage/mypage');
+}
+
 $sub="sub";
 $mypage=true;
 $menu_id = "depth_desc_leave";
@@ -23,9 +28,11 @@ include_once (G5_PATH."/_head.php");
             </div>
             <div class="mbottom">
                 <ul class="mmenu">
+                    <?php if($member["mb_level"]!=5){?>
                     <li onclick="location.href=g5_url+'/page/mypage/mypage'"><i></i>홈페이지 설정</li>
                     <li onclick="location.href=g5_url+'/page/mypage/quickmenu'"><i></i>퀵메뉴 설정</li>
                     <li onclick="location.href=g5_url+'/page/mypage/navigator'"><i></i>네비게이터 설정</li>
+                    <?php }?>
                     <!--<li onclick="location.href=g5_url+'/page/mypage/guide'"><i></i>사용자 가이드 설정</li>-->
                     <li onclick="location.href=g5_url+'/page/mypage/edit_profile_chkpwd'"><i></i>개인정보 수정</li>
                     <li class="active" ><i></i>회원탈퇴</li>

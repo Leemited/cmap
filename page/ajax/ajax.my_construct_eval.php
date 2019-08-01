@@ -13,6 +13,12 @@ if(!$pk_id){
     return false;
 }
 
+if(!$is_member){
+    $result["msg"] = "3";
+    echo json_encode($result);
+    return false;
+}
+
 $eval = sql_fetch("select * from `cmap_my_construct_eval` where mb_id = '{$member["mb_id"]}' and const_id = '{$constid}'");
 
 if($eval==null || ($eval["pk_ids1"] == "" && $eval["pk_score1"]=="")||($eval["pk_ids2"] == "" && $eval["pk_score2"]=="")){
@@ -45,7 +51,6 @@ if($eval==null || ($eval["pk_ids1"] == "" && $eval["pk_score1"]=="")||($eval["pk
         $sql = "update `cmap_my_construct_eval` set const_id = '{$constid}' , mb_id ='{$member["mb_id"]}', pk_ids1 = '{$evals}', pk_score1 = '{$eval1score}', pk_ids2 = '{$evals2}', pk_score2 = '{$eval2score}' , pk_score1_total = '0``0``0', pk_score2_total = '0``0``0``0``0``0``0``0',pk_row_active = '0' where mb_id = '{$member["mb_id"]}' and const_id = '{$constid}'";
     }
     sql_query($sql);
-
 }
 
 if($page==1){

@@ -94,7 +94,7 @@ if(count($mynavi)==0){
  for($i=0;$i<count($menudepth);$i++){
     //$sql = "select count(*) as cnt from `cmap_depth1`";
     if($menudepth[$i]["cnt"]>1){
-        $sql = "select * from `cmap_depth1` where me_code ='{$menudepth[$i]["menu_code"]}'";
+        $sql = "select * from `cmap_depth1` where me_code ='{$menudepth[$i]["menu_code"]}' order by id ";
         $res = sql_query($sql);
     }
     if($menu_id=="60"){
@@ -111,7 +111,15 @@ if(count($mynavi)==0){
         <div title="<?php echo $row["depth_name"];?>" onclick="location.href=g5_url+'<?php echo $link;?>'"><span><?php echo $menudepth[$i]["menu_name"];?></span></div>
         <ul class="depth_menu2">
             <?php while($row = sql_fetch_array($res)){
-                $link = "/page/view?me_id=".$menudepth[$i]['menu_code']."&depth1_id=".$row["id"];
+                if($menu_id=="60") {
+                    if($menudepth.$menudepth[$i]["me_id"] == "6064"){
+                        $link = "/page/view2?me_id=".$menudepth[$i]["menu_code"] . "&depth1_id=" . $row["id"];
+                    }else{
+                        $link = "/page/view3?me_id=".$menudepth[$i]["menu_code"] . "&depth1_id=" . $row["id"];
+                    }
+                }else{
+                    $link = "/page/view?me_id=" . $menudepth[$i]['menu_code'] . "&depth1_id=" . $row["id"];
+                }
                 ?>
                 <li title="<?php echo $row["depth_name"];?>" onclick="location.href=g5_url+'<?php echo $link;?>'"><?php echo $row["depth_name"];?></li>
             <?php }?>

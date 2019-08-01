@@ -10,6 +10,16 @@ if($chkm["mb_id"]==$mb_id){
     return;
 }
 
+
+$sql = "select count(*) as cnt from `cmap_my_construct` where mb_id = '{$mb_id}' or INSTR(members,'{$mb_id}') > 0 ";
+$chkcnt = sql_fetch($sql);
+
+if($chkcnt["cnt"]>=10){
+    $result["msg"] = "참여가능한 현장이 초과되어 초대할 수 없습니다.";
+    echo json_encode($result);
+    return false;
+}
+
 $sql = "select count(*) as cnt from `cmap_construct_invite` where const_id = '{$id}' and read_mb_id = '{$mb_id}' and msg_status = 0";
 $chkmem = sql_fetch($sql);
 

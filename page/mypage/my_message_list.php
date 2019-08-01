@@ -1,5 +1,8 @@
 <?php
 include_once ("../../common.php");
+if($member["mb_level"]==5){
+    include_once (G5_PATH."/page/manager/manager_auth.php");
+}
 
 if(!$is_member){
     goto_url(G5_BBS_URL."/login.php");
@@ -112,6 +115,7 @@ while($row = sql_fetch_array($res)){
     $worklist[$c]['num']=$total-($start)-$c;
     $c++;
 }
+
 ?>
 <div class="etc_view messages">
 
@@ -130,6 +134,7 @@ while($row = sql_fetch_array($res)){
             <colgroup>
                 <col width="5%">
                 <col width="10%">
+                <col width="10%">
                 <col width="12%">
                 <col width="12%">
                 <col width="*">
@@ -141,6 +146,7 @@ while($row = sql_fetch_array($res)){
             <tr>
                 <th>번호</th>
                 <th>구분</th>
+                <th>문서번호</th>
                 <th>발신자</th>
                 <th>수신자</th>
                 <th>제목</th>
@@ -172,25 +178,63 @@ while($row = sql_fetch_array($res)){
                 }else{
                     $read_tchk = false;
                 }
+                
                 $msg_read_info = "";
-                for($j=0;$j<count($msg_read_members);$j++){
-                    $read_mb = get_member($msg_read_members[$j]);
-                    if($msg_read_info){$msg_read_info .= ",";}
-                    $msg_read_info .= $read_mb["mb_name"]." ".$msg_read_date[$j]." ".$msg_read_time[$j];
+
+                if($msg_read_info==""){
+                    $msg_read_info = "수신현황 \r";
+                    $mm = explode(",",$worklist[$i]["read_mb_id"]);
+                    for($j=0;$j<count($mm);$j++){
+                        $mss = get_member($mm[$j]);
+                        if(in_array($mm[$j],$msg_read_members)){
+                            if ($msg_read_info) {
+                                $msg_read_info .= "\n";
+                            }
+                            for($a=0;$a<count($msg_read_members);$a++){
+                                if($mm[$j]==$msg_read_members[$a]){
+                                    $msg_read_info .= $mss["mb_name"] . " : ".$msg_read_date[$a]." ".$msg_read_date[$a];
+                                }
+                            }
+                        }else {
+                            if ($msg_read_info) {
+                                $msg_read_info .= "\n";
+                            }
+                            $msg_read_info .= $mss["mb_name"] . " : 미수신";
+                        }
+                    }
                 }
                 $msg_retype_members = explode(",",$worklist[$i]["msg_retype_member"]);
                 $msg_retype_date = explode(",",$worklist[$i]["msg_retype_date"]);
                 $msg_retype_time = explode(",",$worklist[$i]["msg_retype_time"]);
                 $msg_retype_info = "";
-                for($j=0;$j<count($msg_retype_members);$j++){
-                    $read_mb = get_member($msg_read_members[$j]);
-                    if($msg_retype_info){$msg_retype_info .= ",";}
-                    $msg_retype_info .= $read_mb["mb_name"]." ".$msg_retype_date[$j]." ".$msg_retype_time[$j];
+
+                if($msg_retype_info==""){
+                    $msg_retype_info = "회신 현황 \r";
+                    $mms = explode(",",$worklist[$i]["read_mb_id"]);
+                    for($j=0;$j<count($mms);$j++){
+                        $mss2 = get_member($mms[$j]);
+                        if(in_array($mms[$j],$msg_retype_members)){
+                            if ($msg_retype_info) {
+                                $msg_retype_info .= "\n";
+                            }
+                            for($a=0;$a<count($msg_retype_members);$a++){
+                                if($mm[$j]==$msg_retype_members[$a]){
+                                    $msg_retype_info .= $mss2["mb_name"] . " : ".$msg_retype_date[$a]." ".$msg_retype_time[$a];
+                                }
+                            }
+                        }else {
+                            if ($msg_retype_info) {
+                                $msg_retype_info .= "\n";
+                            }
+                            $msg_retype_info .= $mss2["mb_name"] . " : 미회신";
+                        }
+                    }
                 }
                 ?>
                 <tr>
                     <td class="td_center"><?php echo $worklist[$i]["num"];?></td>
                     <td class="td_center"><?php echo $msg_type;?></td>
+                    <td class="td_center"><?php if($worklist[$i]["msg_count"]!=0){echo str_pad($worklist[$i]["msg_count"],0,'',STR_PAD_LEFT);}?> 호</td>
                     <td class="td_center"><div><?php echo $mb1["mb_name"];?></div></td>
                     <td class="td_center">
                         <div onclick="fnMemberView('<?php echo $mb2["mb_id"];?>')">
@@ -204,11 +248,11 @@ while($row = sql_fetch_array($res)){
                         </div>
                     </td>
                     <td onclick="fnWriteMessage2('<?php echo $worklist[$i]["id"];?>')" style="text-decoration: underline;cursor: pointer;padding:5px">
-                        <?php echo ($worklist[$i]["msg_subject"])?$worklist[$i]["msg_subject"]:"제목없음";?><?php if($worklist[$i]["msg_count"]!=0){echo "_".str_pad($worklist[$i]["msg_count"],0,'',STR_PAD_LEFT);}?>
+                        <?php echo ($worklist[$i]["msg_subject"])?$worklist[$i]["msg_subject"]:"제목없음";?>
                     </td>
                     <td class="td_center" title="<?php echo $worklist[$i]["send_date"].' '.$worklist[$i]["send_time"]?>"><?php echo $worklist[$i]["send_date"];?></td>
                     <td class="td_center" title="<?php echo $msg_read_info;?>"><?php if($read_tchk==false){echo "<span style='color:red;font-weight:bold'>미확인</span>";}else{echo array_pop(explode(",",$worklist[$i]["read_date"]));}?></td>
-                    <td class="td_center" title="<?php echo $msg_retype_info?>"><?php if($worklist[$i]["msg_retype"]==1){if($worklist[$i]["msg_retype_date"]){echo $worklist[$i]["msg_retype_date"];}else{echo "<span style='color:red;font-weight:bold'>미회신</span>";} } else{ echo "-"; }?></td>
+                    <td class="td_center" title="<?php echo $msg_retype_info?>"><?php if($worklist[$i]["msg_retype"]==1){if($worklist[$i]["msg_retype_status"]==1){echo $worklist[$i]["msg_retype_date"];}else{echo "<span style='color:red;font-weight:bold'>미회신</span>";} } else{ echo "-"; }?></td>
                     <!--<td></td>-->
                 </tr>
             <?php
@@ -258,7 +302,7 @@ while($row = sql_fetch_array($res)){
 <script>
     $(function(){
         <?php if($msg_id){?>
-        fnWriteMessage2('<?php echo $msg_id;?>')
+        setTimeout(function(){fnWriteMessage2('<?php echo $msg_id;?>')},1000);
         <?php }?>
 
         $(".datepicker").datepicker({

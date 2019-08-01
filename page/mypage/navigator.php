@@ -99,7 +99,7 @@ if(count($mynavi)==0){
 }
 
 ?>
-<div class="full-width" style="padding:0 20px;">
+<div class="full-width" style="padding:120px 20px 0 20px;">
     <section class="sub_sec" id="mypages">
         <header class="top">
             <h2>MY C.MAP</h2>

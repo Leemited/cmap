@@ -27,6 +27,8 @@ if($member["mb_level"]==5){
 }
 $delayitem = sql_fetch($sql);
 
+
+
 $vpk_ids = explode("``",$delayitem["pk_ids"]);
 $vpk_active = explode("``",$delayitem["pk_actives"]);
 $vpk_active_date = explode("``",$delayitem["pk_actives_date"]);
@@ -230,7 +232,6 @@ $myconstruction = false;
 <?php }?>
 
 <div class="full-width">
-
     <div class="view">
         <div class="left">
             <div class="title">
@@ -263,7 +264,7 @@ $myconstruction = false;
                             <textarea name="memo_content" id="memo_content" style="font-size:14px;background-color:transparent;border:1px solid #ddd;color:#000;padding:5px;width:100%;text-align: left;height:50px;" placeholder="메모를 입력해주세요."></textarea>
                         </div>
                         </form>
-                        <div class="memo_area" style="width:100%;height:300px;padding:5px;">
+                        <div class="memo_area">
                             <?php for($a = 0; $a<count($memo);$a++){?>
                                 <div class="memo_item">
                                     <div class="top">
@@ -920,7 +921,7 @@ function fnCheckDelay(pk_id,const_id){
         data:{pk_id:pk_id,const_id:const_id},
         dataType:"json"
     }).done(function(data){
-        console.log(data);
+        console.log(data)
         if(data.msg=="1"){
             alert("현장을 선택해주세요.");
         }else if(data.msg=="2"){
@@ -934,14 +935,14 @@ function fnCheckDelay(pk_id,const_id){
         }else if(data.msg=="7") {
             alert("PM은 현장정보를 수정할수 없습니다.");
         }else{
-                location.reload();
-                /*$("#date_"+pk_id).html(data.insert_date);
-                 $(".depth_name_"+pk_id).toggleClass("red_td");
-                 if(data.insert_date) {
-                 $("#delay" + pk_id).html("-");
-                 }else{
-                 $("#delay" + pk_id).html("");
-                 }*/
+            location.reload();
+            /*$("#date_"+pk_id).html(data.insert_date);
+             $(".depth_name_"+pk_id).toggleClass("red_td");
+             if(data.insert_date) {
+             $("#delay" + pk_id).html("-");
+             }else{
+             $("#delay" + pk_id).html("");
+             }*/
         }
     });
 }

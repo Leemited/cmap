@@ -19,6 +19,14 @@ if($member["mb_level"]>=5){
     return false;
 }
 
+//스케쥴의 PK 개수랑 저장된 개수 파악
+$sql = "select * from `cmap_myschedule` where construct_id = '{$const_id}'";
+$res = sql_query($sql);
+while($row = sql_fetch_array($res)){
+    $pks = explode("``",$row["pk_ids"]);
+    $counts += count($pks);
+}
+$result["pkcount"] = $counts;
 $sql = "select * from `cmap_my_construct_map` where const_id = '{$const_id}' and mb_id ='{$member["mb_id"]}'";
 $map = sql_fetch($sql);
 
@@ -35,8 +43,9 @@ $chk_pk_actives_date = explode("``",$map["pk_actives_date"]);
 $chk_cont1 = count($chk_pk_ids);
 $chk_cont2 = count($chk_pk_actives);
 $chk_cont3 = count($chk_pk_actives_date);
-
+$result["pkcount1"] = $chk_cont1;
 if($chk_cont1 != $chk_cont2 && $chk_cont1 != $chk_cont3){
+    $result["c"]="A";
     for($i=0;$i<count($chk_pk_ids);$i++){
         $re_pk_actives[] = "0";
         $re_pk_actives_date[] = "0000-00-00";
@@ -56,6 +65,7 @@ if($chk_cont1 != $chk_cont2 && $chk_cont1 != $chk_cont3){
 
 for($i=0;$i<count($chk_pk_ids);$i++){
     $result["pppp"][] = $chk_pk_ids[$i]."//".$pk_id;
+    $keys = false;
     if($chk_pk_ids[$i]==""){continue;}
     if($chk_pk_ids[$i]==$pk_id){
         if($chk_pk_actives[$i] == 1){
@@ -67,12 +77,19 @@ for($i=0;$i<count($chk_pk_ids);$i++){
             $chk_pk_actives_date[$i] = date("Y-m-d");
             $insert_date = date("Y-m-d");
         }
+        $keys = true;
     }
 }
+if($keys==false){
+    $chk_pk_ids[] = $pk_id;
+    $chk_pk_actives[] = 1;
+    $chk_pk_actives_date[] = date("Y-m-d");
+}
+$inpk_ids = implode("``",$chk_pk_ids);
 $inpk_activess = implode("``",$chk_pk_actives);
 $inpk_actives_dates = implode("``",$chk_pk_actives_date);
 
-$sql = "update `cmap_my_construct_map` set pk_actives = '{$inpk_activess}', pk_actives_date = '{$inpk_actives_dates}' where id= '{$map["id"]}'";
+$sql = "update `cmap_my_construct_map` set pk_ids = '{$inpk_ids}', pk_actives = '{$inpk_activess}', pk_actives_date = '{$inpk_actives_dates}' where id= '{$map["id"]}'";
 if(sql_query($sql)){
     $result["msg"]="6";
     $result["insert_date"] = $insert_date;

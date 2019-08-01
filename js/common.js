@@ -1088,8 +1088,10 @@ function fnConstReCancel(constid) {
 function fnSearch(){
     if(!$(".search_area").hasClass("active")){
         $(".search_area").addClass("active");
+        $("html,body").attr("style","overflow:hidden");
     }else{
         $(".search_area").removeClass("active");
+        $("html,body").removeAttr("style");
     }
 }
 
@@ -1427,7 +1429,6 @@ function fnConstJoinUp(invite_id,const_id){
         method:"post",
         data:{invite_id:invite_id,const_id:const_id}
     }).done(function(data){
-        console.log(data);
         if(data==1){
             alert("사용자 초대정보 오류입니다.");
             return false;
@@ -1442,6 +1443,9 @@ function fnConstJoinUp(invite_id,const_id){
             return false;
         }else if(data==5) {
             alert("현장에 참여 하지 못했습니다.\n다시 시도해 주세요.");
+            return false;
+        }else if(data==8) {
+            alert("참여가능한 현장이 초과되어 초대가 취소 되었습니다.");
             return false;
         }else if(data==6){
             alert("이미 참여한 현장입니다.\n요청 또는 초대는 목록에서 삭제됩니다.");
@@ -1493,7 +1497,6 @@ function footerModal(url,co_id){
         method:"post",
         data:{co_id:co_id}
     }).done(function(data){
-        console.log(data);
         $(".modalpopup").append(data);
         $(".modalpopup").addClass("active");
     });
@@ -1513,7 +1516,6 @@ function fnViewDelay(mb_id,const_id){
             method: "post",
             data: {mb_id: mb_id, const_id: const_id}
         }).done(function (data) {
-            console.log(data);
             if (data == 1) {
                 alert("회원 정보가 없습니다.");
             } else {
@@ -1555,14 +1557,14 @@ function fnViewMessage(mb_id,const_id){
 
 function fnWriteMessage(msg_id){
     var const_id = "";
-    if(msg_id=="") {
+    //if(msg_id!="") {
          const_id = $("#cons_id").val();
         if (const_id == "") {
             alert("현장을 선택해 주세요.");
             $("#cons_id").focus();
             return false;
         }
-    }
+    //}
     $.ajax({
         url:g5_url+"/page/ajax/ajax.get_message.php",
         method:"post",
@@ -1583,14 +1585,14 @@ function fnWriteMessage(msg_id){
 
 function fnWriteMessage2(msg_id){
     var const_id = "";
-    if(msg_id=="") {
-        const_id = $("#cons_id").val();
-        if (const_id == "") {
-            alert("현장을 선택해 주세요.");
-            $("#cons_id").focus();
-            return false;
-        }
+    //if(msg_id=="") {
+    const_id = $("#cons_id").val();
+    if (const_id == "") {
+        alert("현장을 선택해 주세요.");
+        $("#cons_id").focus();
+        return false;
     }
+    //}
     $.ajax({
         url:g5_url+"/page/mypage/message_preview.php",
         method:"post",
@@ -1626,7 +1628,6 @@ function fnPmPreview(type,constid){
         method:"post",
         data:{constids:constid}
     }).done(function(data){
-        console.log(data);
         $(".etc_view").html(data)
         $(".etc_view_bg").addClass("active");
         $(".etc_view").addClass("active");
@@ -1648,6 +1649,7 @@ function fn_join(id,mb_id){
         data:{mb_id:mb_id,id:id},
         dataType:"json"
     }).done(function(data){
+        console.log(data);
         alert(data.msg);
     });
 }
@@ -1739,6 +1741,102 @@ function memberPayment(amount,payment_type,order_type,mb_name,mb_hp,mb_email,mb_
     })
 }
 
+function memberPaymentCom(amount,payment_type,order_type,mb_name,mb_hp,mb_email,mb_id) {
+    if(order_type==""){
+        alert("결제 방식을 선택해 주세요.");
+        return false;
+    }
+    var goodsname = "";
+    switch (payment_type){
+        case "1":
+            goodsname = "맴버쉽 1개월";
+            break;
+        case "2":
+            goodsname = "맴버쉽 6개월";
+            break;
+        case "3":
+            goodsname = "맴버쉽 12개월";
+            break;
+        case "4":
+            goodsname = "PM MODE 1개월";
+            break;
+        case "5":
+            goodsname = "PM MODE 6개월";
+            break;
+        case "6":
+            goodsname = "PM MODE 12개월";
+            break;
+
+    }
+    var merchant_uid = 'mb_od_'+new Date().getTime()+'_'+mb_id;
+
+    $("#amount").val(amount);
+    $("#merchant_uid").val(merchant_uid);
+
+    IMP.request_pay({
+        pg:'html5_inicis',
+        amount: amount,
+        merchant_uid: merchant_uid,
+        buyer_name: mb_name,
+        buyer_tel: mb_hp,
+        buyer_email: mb_email,
+        name: goodsname,
+        digital:true,
+        pay_method:order_type,
+        m_redirect_url: g5_url
+    }, function (response) {
+        //결제 후 호출되는 callback함수
+        if (response.success) { //결제 성공
+            location.href=g5_url+'/page/company/member_payment?amount='+amount+"&merchant_uid="+response.merchant_uid+'&payment_type='+payment_type+'&order_type='+order_type+'&mb_id='+mb_id;
+        } else {
+            alert('결제실패 : ' + response.error_msg);
+            //결제 실패시 임시저장 삭제(임시저장 일경우)
+            fnPayments(mb_id);
+        }
+    })
+}
+
+function memberPaymentComAll(order_type,mb_name,mb_hp,mb_email,mb_ids,mb_id,price,months,prices,type) {
+    if(order_type==""){
+        alert("결제 방식을 선택해 주세요.");
+        return false;
+    }
+
+    var goodsname = "사업자모드 회원 일괄결제";
+    var amount = price;
+
+    var merchant_uid = 'mb_od_'+new Date().getTime()+'_'+mb_id;
+
+    $("#amount").val(amount);
+    $("#merchant_uid").val(merchant_uid);
+    //테스트용
+    //location.href=g5_url+'/page/company/member_payment_all?amount='+amount+"&merchant_uid="+merchant_uid+'&order_type='+order_type+'&mb_ids='+mb_ids+"&months="+months+"&prices="+prices+"&type="+type;
+
+
+    IMP.request_pay({
+        pg:'html5_inicis',
+        amount: amount,
+        merchant_uid: merchant_uid,
+        buyer_name: mb_name,
+        buyer_tel: mb_hp,
+        buyer_email: mb_email,
+        name: goodsname,
+        digital:true,
+        pay_method:order_type,
+        m_redirect_url: g5_url
+    }, function (response) {
+        //결제 후 호출되는 callback함수
+        if (response.success) { //결제 성공
+            location.href=g5_url+'/page/company/member_payment_all?amount='+amount+"&merchant_uid="+response.merchant_uid+'&order_type='+order_type+'&mb_ids='+mb_ids+"&months="+months+"&prices="+prices+"&type="+type;
+        } else {
+            alert('결제실패 : ' + response.error_msg);
+            //결제 실패시 임시저장 삭제(임시저장 일경우)
+            fnAllPayment();
+        }
+    })
+}
+
+
 function fnLogout(){
     if(confirm("로그아웃을 하시겠습니까?")) {
         location.href = g5_bbs_url + '/logout';
@@ -1771,6 +1869,9 @@ function fnSavePm(type){
 
     var link = g5_url+'/page/manager/';
     switch (type){
+        case "":
+            link += 'pm_delay_save';
+            break;
         case "1":
             link += 'pm_delay_save';
             break;
@@ -1779,6 +1880,9 @@ function fnSavePm(type){
             break;
         case "3":
             link += 'pm_eval2_save';
+            break;
+        default:
+            link = 'pm_delay_save';
             break;
     }
 

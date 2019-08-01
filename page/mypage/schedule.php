@@ -85,15 +85,16 @@ if(isset($_GET["constid"]) && $_GET["constid"]!=""){
     $where = " and construct_id = '{$current_const["const_id"]}'";
 }
 
-
-$sql = "select * from `cmap_myschedule` where status != -1 {$where} order by id";
-$res = sql_query($sql);
-while($row = sql_fetch_array($res)){
-    /*$sql = "select * from `cmap_my_construct` where id = '{$row["construct_id"]}'";
-    $chkstatus = sql_fetch($sql);
-    if($chkstatus["status"] == -1) continue;*/
-    $myschedule[$row["schedule_date"]][] = $row;
-    $myschedule[$row["schedule_date"]]["construct_id"] = $row["construct_id"];
+if($where) {
+    $sql = "select * from `cmap_myschedule` where status != -1 {$where} order by id";
+    $res = sql_query($sql);
+    while ($row = sql_fetch_array($res)) {
+        /*$sql = "select * from `cmap_my_construct` where id = '{$row["construct_id"]}'";
+        $chkstatus = sql_fetch($sql);
+        if($chkstatus["status"] == -1) continue;*/
+        $myschedule[$row["schedule_date"]][] = $row;
+        $myschedule[$row["schedule_date"]]["construct_id"] = $row["construct_id"];
+    }
 }
 
 if(strpos($constid,",")!==false){
@@ -127,7 +128,7 @@ while($activechk = sql_fetch_array($activeres)) {
     $map_pk_actives = explode("``", $activechk["pk_actives"]);
     $map_pk_actives_date = explode("``", $activechk["pk_actives_date"]);
 
-    $delaysql = "select * from `cmap_myschedule` where pk_id <> '' and construct_id = '{$activechk["const_id"]}' {$order}";
+    $delaysql = "select * from `cmap_myschedule` where pk_id <> '' and construct_id = '{$activechk["const_id"]}' and mb_id <> '' {$order}";
     $delayres = sql_query($delaysql);
     $a = 0;
     while ($delayrow = sql_fetch_array($delayres)) {
@@ -144,12 +145,12 @@ while($activechk = sql_fetch_array($activeres)) {
                     $schdelaylist[$delayrow["construct_id"] . "_" . $pk_ids[$i]] = $ddd;
                     if ($map_pk_actives[$j] == 0) {
                         if($delay_now > $delayrow["schedule_date"]) {
-                            if (strpos($chcccid, $ddd["pk_id"]) !== false) {
-                            } else {
+                            /*if (strpos($chcccid, $ddd["pk_id"]) !== false) {
+                            } else {*/
                                 $delaylists[$delayrow["construct_id"] . "_" . $pk_ids[$i]] = $ddd;
                                 $delaylists[$delayrow["construct_id"] . "_" . $pk_ids[$i]]["delay_date"] = "-".$delaydays;
                                 $chcccid .= ',' . $ddd["pk_id"];
-                            }
+                            //}
                         }
                         $schdelaylist[$delayrow["construct_id"] . "_" . $pk_ids[$i]]["delay_date"] = "-" . $delaydays;
                         $schdelaylist[$delayrow["construct_id"] . "_" . $pk_ids[$i]]["active"] = $map_pk_actives[$j];
@@ -379,7 +380,7 @@ $delaylists = array_filter($delaylists);
                                                         }else{ //제출안함
                                                             if($schdelaylist[$myschedule[$key][$item]["construct_id"]."_".$sch_pk_id[$chk]]["active"]==0) {//0 = 제출안함
                                                                 if(date("Y-m-d") <= $key) {
-                                                                    $chkActive = 0;
+                                                                    $chkActive = 2;
                                                                 }else {
                                                                     $chkActive = 1;
                                                                 }
@@ -388,11 +389,11 @@ $delaylists = array_filter($delaylists);
                                                     }
                                                 }
 
-                                                if($chkActive==0){
+                                                /*if($chkActive==0){
                                                     if(date("Y-m-d") <= $key){
                                                         $chkActive = 2;
                                                     }
-                                                }
+                                                }*/
                                                 if($item>5 || $myschedule[$key][$item]["schedule_name"] == ""){continue;}
                                                 ?>
                                                 <li class="<?php if($chkActive==1){?>delays<?php }else if($chkActive==0){?>confirm<?php }?>" id="cal_<?php echo $myschedule[$key][$item]["id"];?>" title="<?php echo $myschedule[$key][$item]["schedule_name"];?>">
@@ -433,7 +434,7 @@ $delaylists = array_filter($delaylists);
                                                         }else{ //제출안함
                                                             if($schdelaylist[$myschedule[$key][$item]["construct_id"]."_".$sch_pk_id[$chk]]["active"]==0) {//0 = 제출안함
                                                                 if(date("Y-m-d") <= $key) {
-                                                                    $chkActive = 0;
+                                                                    $chkActive = 2;
                                                                 }else {
                                                                     $chkActive = 1;
                                                                 }
@@ -442,11 +443,11 @@ $delaylists = array_filter($delaylists);
                                                     }
                                                 }
 
-                                                if($chkActive==0){
+                                                /*if($chkActive==0){
                                                     if(date("Y-m-d") <= $key){
                                                         $chkActive = 2;
                                                     }
-                                                }
+                                                }*/
                                                 if($item>5 || $myschedule[$key][$item]["schedule_name"] == ""){continue;}
                                                 ?>
                                                 <li class="<?php if($chkActive==1){?>delays<?php }else if($chkActive==0){?>confirm<?php }?>" id="cal_<?php echo $myschedule[$key][$item]["id"];?>" title="<?php echo $myschedule[$key][$item]["schedule_name"];?>">

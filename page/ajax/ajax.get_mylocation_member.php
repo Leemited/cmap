@@ -17,7 +17,7 @@ $result["msg"] = '0';
 $result['modal_data'] = '
 <div class="modal_in" id="find_id">
     <div class="modal_title">
-        <h2><i></i> 현장위임</h2>
+        <h2><i></i> 현장위임 및 삭제확인</h2>
         <div class="close" onclick="fnCloseModal()">
             <img src="'.G5_IMG_URL.'/close_icon.svg" alt="">
         </div>
@@ -30,6 +30,9 @@ for($i=0;$i<count($mbs);$i++){
     $result['modal_data'] .= '<li><input type="radio" name="mb_id[]" value="'.$mem["mb_id"].'" id="mb_id_'.$mem["mb_id"].'" ><label for="mb_id_'.$mem["mb_id"].'"></label><div>['.$mem["mb_id"].']'.$mem["mb_name"].'</div></li>';
 }
 $result['modal_data'].='</ul>' .
+    '</div>' .
+    '<div style="margin-top:20px">' .
+        '<input type="text" name="delText" id="delText" placeholder="[지금삭제]를 입력해주세요." class="basic_input01 width100">'.
     '</div>' .
     '</div>' .
     '<div class="modal_btns">' .

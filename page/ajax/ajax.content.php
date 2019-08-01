@@ -13,7 +13,6 @@ $str = conv_content($co['co_content'], $co['co_html'], $co['co_tag_filter_use'])
             <img src="<?php echo G5_IMG_URL;?>/close_icon.svg" alt="">
         </div>
     </div>
-
     <div id="modal_content">
         <?php echo $str; ?>
     </div>

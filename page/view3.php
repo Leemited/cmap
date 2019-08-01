@@ -6,29 +6,6 @@ if($member["mb_auth"]==false){
         alert("무료 이용기간이 만료 되었거나,\\r맴버쉽 기간이 만료 되었습니다. \\n맴버쉽 구매후 이용바랍니다.",G5_URL);
     }
 }
-//평가 항목 가저오기
-if($is_member && $mycont && $current_const["const_id"]!=0){
-    if($member["mb_level"]==5){
-        $sql = "select * from `cmap_my_pmmode_set` where mb_id='{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'";
-        $ss = sql_fetch($sql);
-        if($ss!=null) {
-            $evaldata = sql_fetch("select * from `cmap_my_construct_eval` where mb_id='{$ss["set_mb_id"]}' and const_id = '{$current_const["const_id"]}'");
-        }else{
-            $sql = "select * from `cmap_my_construct` where id = '{$const_id}'";
-            $ss2 = sql_fetch($sql);
-            $evaldata = sql_fetch("select * from `cmap_my_construct_eval` where mb_id='{$ss2["mb_id"]}' and const_id = '{$current_const["const_id"]}'");
-        }
-    }else {
-        $evaldata = sql_fetch("select * from `cmap_my_construct_eval` where mb_id='{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'");
-    }
-    //$evaldata = sql_fetch("select * from `cmap_my_construct_eval` where mb_id='{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'");
-    $pk_ids = explode("``",$evaldata["pk_ids2"]);
-    $pk_scores = explode("``",$evaldata["pk_score2"]);
-    for($i=0;$i<count($pk_ids);$i++){
-        $scores[$pk_ids[$i]]["score"] = (double)$pk_scores[$i];
-        $scores[$pk_ids[$i]]["pk_row_active"] = $evaldata["pk_row_active"];
-    }
-}
 if(strlen($me_id)==2){
     $sql = "select * from `cmap_depth1` where SUBSTRING(me_code,1,2) like '%{$me_id}%' order by me_code asc limit 0,1 ";
     $codes = sql_fetch($sql);
@@ -192,6 +169,29 @@ while ($row = sql_fetch_array($res)) {
 
 include_once (G5_PATH."/_head.php");
 
+//평가 항목 가저오기
+if($is_member && $mycont && $current_const["const_id"]!=0){
+    if($member["mb_level"]==5){
+        $sql = "select * from `cmap_my_pmmode_set` where mb_id='{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'";
+        $ss = sql_fetch($sql);
+        if($ss!=null) {
+            $evaldata = sql_fetch("select * from `cmap_my_construct_eval` where mb_id='{$ss["set_mb_id"]}' and const_id = '{$current_const["const_id"]}'");
+        }else{
+            $sql = "select * from `cmap_my_construct` where id = '{$current_const["const_id"]}'";
+            $ss2 = sql_fetch($sql);
+            $evaldata = sql_fetch("select * from `cmap_my_construct_eval` where mb_id='{$ss2["mb_id"]}' and const_id = '{$current_const["const_id"]}'");
+        }
+    }else {
+        $evaldata = sql_fetch("select * from `cmap_my_construct_eval` where mb_id='{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'");
+    }
+    //$evaldata = sql_fetch("select * from `cmap_my_construct_eval` where mb_id='{$member["mb_id"]}' and const_id = '{$current_const["const_id"]}'");
+    $pk_ids = explode("``",$evaldata["pk_ids2"]);
+    $pk_scores = explode("``",$evaldata["pk_score2"]);
+    for($i=0;$i<count($pk_ids);$i++){
+        $scores[$pk_ids[$i]]["score"] = (double)$pk_scores[$i];
+        $scores[$pk_ids[$i]]["pk_row_active"] = $evaldata["pk_row_active"];
+    }
+}
 ?>
 
 <div class="full-width">
@@ -236,7 +236,7 @@ include_once (G5_PATH."/_head.php");
                             <textarea name="memo_content" id="memo_content" style="font-size:14px;background-color:transparent;border:1px solid #ddd;color:#000;padding:5px;width:100%;text-align: left;height:50px;" placeholder="메모를 입력해주세요."></textarea>
                         </div>
                     </form>
-                    <div class="memo_area" style="width:100%;height:300px;padding:5px;">
+                    <div class="memo_area" >
                         <?php for($a = 0; $a<count($memo);$a++){?>
                             <div class="memo_item">
                                 <div class="top">
@@ -287,9 +287,9 @@ include_once (G5_PATH."/_head.php");
                     <th>중분류(배점)</th>
                     <th>세부분류 (평가방법 미리보기)</th>
                     <th >우수 ( X 1.0)</th>
-                    <th >보통 ( X 0.9)</th>
-                    <th >미흡 ( X 0.8)</th>
-                    <th >불량 ( X 0.7)</th>
+                    <th >양호 ( X 0.9)</th>
+                    <th >보통 ( X 0.8)</th>
+                    <th >미흡 ( X 0.7)</th>
                     <th >불량 ( X 0.6)</th>
                 </tr>
             </table>
@@ -582,16 +582,16 @@ include_once (G5_PATH."/_head.php");
         });
 
         <?php if($is_member && $mycont && $current_const["const_id"]!=0){?>
-        $("td[id^=scoretd_]").each(function(e){
+        /*$("td[id^=scoretd_]").each(function(){
             $(this).click(function(){
                 var id = $(this).attr("id");
                 var split_id = id.split("_");
-                if(!$(this).hasClass("active")) {
+                if (!$(this).hasClass("active")) {
                     $(this).addClass("active");
-                    $("td[id^=scoretd_"+split_id[1]+"]").not($(this)).removeClass("active");
+                    $("td[id^=scoretd_" + split_id[1] + "]").not($(this)).removeClass("active");
                 }
             });
-        });
+        });*/
         <?php }?>
 
         $(".etc_view_bg").click(function(){
@@ -636,42 +636,59 @@ include_once (G5_PATH."/_head.php");
         $(".etc_view").removeClass("active");
         $(".etc_view_bg").removeClass("active");
     }
-
+    var chkUpdate = false;
     function fnUpdateNumber(pk_id,num,constid,score_cnt,direct_point){
-        console.log(pk_id+"//"+num+"//"+constid+"//"+score_cnt+"//"+direct_point);
-        $.ajax({
-            url:g5_url+'/page/ajax/ajax.my_construct_eval.php',
-            method:"post",
-            data:{pk_id:pk_id,num:num,constid:constid,score_cnt:score_cnt,page:2,direct_point:direct_point},
-            dataType:"json"
-        }).done(function(data){
-            console.log(data);
-            if(data.msg=="1"){
-                alert("선택된 현장이 없습니다.");
-                return false;
-            }else if(data.msg=="2"){
-                alert("선택된 항목이 없습니다.");
-                return false;
-            }else if(data.msg=="3"){
-                alert("점수 기록에 실패 하였습니다.");
-                return false;
-            }else{
-                if(pk_id=="22090" || pk_id == "22089"){
-                    if(pk_id=="22090"){
-                        //pk_id="22089";
-                        $(".pk_22089").removeClass("active");
-                    }else{
-                        $(".pk_22090").removeClass("active");
+        if(chkUpdate==false) {
+            chkUpdate=true;
+            $.ajax({
+                url: g5_url + '/page/ajax/ajax.my_construct_eval.php',
+                method: "post",
+                data: {pk_id: pk_id,num: num,constid: constid,score_cnt: score_cnt,page: 2,direct_point: direct_point},
+                dataType: "json",
+                //async:false,
+                beforeSend: function () {
+                    if ($(".div_ajax_load_image").length > 0) {
+                        $(".div_ajax_load_image").show();
+                    } else {
+                        $("body").append("<div class='div_ajax_load_image' ><div class='ring'></div><div class='text'><p class='textAni'></p></div></div>");
                     }
-                    $(".score_22089").text(data.score);
-                }else {
-                    $(".score_" + pk_id).text(data.score);
                 }
-                setTotal();
-            }
-        });
+            }).done(function (data) {
+                //console.log(data);
+                if (data.msg == "1") {
+                    alert("선택된 현장이 없습니다.");
+                    return false;
+                } else if (data.msg == "2") {
+                    alert("선택된 항목이 없습니다.");
+                    return false;
+                } else if (data.msg == "3") {
+                    alert("점수 기록에 실패 하였습니다.");
+                    return false;
+                } else {
+                    if (pk_id == "22090" || pk_id == "22089") {
+                        if (pk_id == "22090") {
+                            //pk_id="22089";
+                            $(".pk_22089").removeClass("active");
+                        } else {
+                            $(".pk_22090").removeClass("active");
+                        }
+                        $(".score_22089").text(data.score);
+                    } else {
+                        $(".score_" + pk_id).text(data.score);
+                    }
+                    $("#scoretd_"+pk_id+'_'+num).addClass("active");
+                    $("td[id^=scoretd_"+pk_id+"]").not($("#scoretd_"+pk_id+'_'+num)).removeClass("active");
+                    setTotal(constid);
+                }
+                $(".div_ajax_load_image").hide();
+                chkUpdate = false;
+            });
+        }else{
+            alert("점수 반영중입니다.");
+            return false;
+        }
     }
-    function setTotal(){
+    function setTotal(constid){
         var score = 0;
         $("td[class^=score]").each(function(e){
             score += Number($(this).text());
@@ -679,12 +696,10 @@ include_once (G5_PATH."/_head.php");
         score = score.toFixed(2);
         $(".alltotal").text(score);
 
-        console.log(score);
-
         $.ajax({
             url:g5_url+'/page/ajax/ajax.my_construct_eval_total.php',
             method:"post",
-            data:{step:"<?php echo $step;?>",page:2,constid:"<?php echo $current_const["const_id"];?>",total:score}
+            data:{step:"<?php echo $step;?>",page:2,constid:constid,total:score}
         }).done(function(data){
             console.log(data);
         })

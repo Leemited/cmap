@@ -17,9 +17,6 @@ while($row = sql_fetch_array($res)){
     $tabmenu[$s]["cnt"] = 0;
     $s++;
 }
-/*if($search_type){
-
-}*/
 
 $sql = "select * from `cmap_content` as c , `cmap_menu` as m where (select me_id from `cmap_depth1` as d where c.depth1_id = d.id) = m.menu_code and m.menu_status = 0 and  (INSTR(`content`,'{$search_text}') > 0 or INSTR(`linkname`,'{$search_text}') > 0) order by m.menu_order ";
 $res = sql_query($sql);
@@ -93,7 +90,7 @@ while($row = sql_fetch_array($res)){
     $total++;
 }
 
-$sql = "select * from `cmap_depth4` as c left join `cmap_depth3` as b on c.depth3_id = b.id left join `cmap_menu` as m on m.menu_code <> '' where (select me_id from `cmap_depth1` as d where c.depth1_id = d.id) = m.menu_code and m.menu_status = 0 and (INSTR(c.depth_name,'{$search_text}') > 0 or INSTR(b.depth_name,'{$search_text}') > 0)  order by m.menu_order ";
+$sql = "select depth1_id,depth2_id,depth3_id,c.depth_name from `cmap_depth4` as c left join `cmap_depth3` as b on c.depth3_id = b.id left join `cmap_menu` as m on m.menu_code <> '' where (select me_id from `cmap_depth1` as d where c.depth1_id = d.id) = m.menu_code and m.menu_status = 0 and (INSTR(c.depth_name,'{$search_text}') > 0 or INSTR(b.depth_name,'{$search_text}') > 0)  order by m.menu_order ";
 /*
 $sql = "select * from `cmap_depth1` where INSTR(depth_name,'{$search_text}') > 0 and menu_status = 0 UNION select * from `cmap_depth2` where INSTR(depth_name,'{$search_text}') > 0 and menu_status = 0  UNION select * from `cmap_depth3` where INSTR(depth_name,'{$search_text}') > 0 UNION select * from `cmap_depth4` where INSTR(depth_name,'{$search_text}') > 0 UNION select * from `cmap_content` where INSTR(content,'{$search_text}') > 0 ";*/
 

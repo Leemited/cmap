@@ -60,7 +60,6 @@ if($msg_id){
         $parent_msg[] = $parent_msg_row;
     }
     $mb = get_member($msgs["send_mb_id"]);
-
     $sql = "select * from `cmap_my_construct` where id= '{$msgs["const_id"]}'";
     $const = sql_fetch($sql);
 }else{
@@ -86,7 +85,7 @@ for($i=0;$i<count($mbs);$i++){
 }
 if($msg_id) {
     //내 현황 가져오기
-    $sql = "select * from `cmap_construct_work_msg` where const_id = '{$const["id"]}' and send_mb_id ='{$mb["mb_id"]}'";
+    $sql = "select * from `cmap_construct_work_msg` where id = '{$msg_id}'";
     $delayitem = sql_fetch($sql);
 
     $vpk_ids = explode("``",$delayitem["pk_ids"]);
@@ -178,7 +177,7 @@ $delaylist = arr_sort($delaylist, "delay_date", "asc");
                         <tr>
                             <td colspan="2" style="">
                                 <div class="read_msg_content">
-                                    <h2 style="">---&nbsp;&nbsp;아&nbsp;&nbsp;&nbsp;&nbsp;래&nbsp;&nbsp;---</h2>
+                                    <h2 style=""></h2>
                                     <p class="msg_content_detail" style="">
                                         <?php echo nl2br(str_replace(" ","&nbsp;",$msgs["msg_content"]));?>
                                     </p>
@@ -192,12 +191,15 @@ $delaylist = arr_sort($delaylist, "delay_date", "asc");
                         <tr>
                             <td colspan="2">
                                 <div class="send_info">
-                                    <p><?php echo $mb["mb_1"];?> <?php echo $mb["mb_4"];?> <?php echo $mb["mb_name"];?></p>
-                                    <?php if($msgs["msg_sign_filename"]){?>
-                                        <div class="signs" style=""><img src="<?php echo G5_DATA_URL;?>/member/<?php echo substr($mb["mb_id"],0,2);?>/<?php echo $msgs["msg_sign_filename"];?>" alt="" style="width:100%;"></div>
-                                    <?php }else{?>
-                                        <div class="stemp">직인생략</div>
-                                    <?php }?>
+                                    <h2>
+                                        <span><?php echo $mb["mb_1"];?> <?php echo $mb["mb_4"];?> <?php echo $mb["mb_name"];?></span>
+                                        <?php if($msgs["msg_sign_filename"]){?>
+                                            <div class="signs"><img src="<?php echo G5_DATA_URL;?>/member/<?php echo substr($mb["mb_id"],0,2);?>/<?php echo $msgs["msg_sign_filename"];?>" alt="" style="width:100%;"></div>
+                                        <?php }else{?>
+                                            <div class="stemp">직인생략</div>
+                                        <?php }?>
+                                    </h2>
+
                                 </div>
                             </td>
                         </tr>
@@ -206,7 +208,7 @@ $delaylist = arr_sort($delaylist, "delay_date", "asc");
                             <td class="addmember" style="border-bottom:5px solid #999999;">
                                 <?php if($msg_id){
                                     for($i=0;$i<count($read_mb_ids);$i++){
-                                        echo $read_mb_ids[$i]["mb_1"]."".$read_mb_ids[$i]["mb_4"]."".$read_mb_ids[$i]["mb_name"]."&nbsp;&nbsp;";
+                                        echo $read_mb_ids[$i]["mb_1"]." ".$read_mb_ids[$i]["mb_4"]." ".$read_mb_ids[$i]["mb_name"]."&nbsp;&nbsp;&nbsp;";
                                     }
                                 }?>
                             </td>
@@ -220,13 +222,15 @@ $delaylist = arr_sort($delaylist, "delay_date", "asc");
                         </tr>
                     </table>
                 </div>
+                <?php if($msgs["delay_view"]==1){?>
+                <?php if(count($delaylist)>0){?>
+                <div class="paging" style="height:5px;width: 100%;background-color:#eee;"></div>
                 <div class="page2" style="page-break-before:always;padding:20px;">
-                    <?php if($msgs["delay_view"]==1){?>
                         <div class="delay_view_t">[붙 임]</div>
                         <div class="delay_cons">
                             <table class="delay_table">
                                 <tr>
-                                    <th><input type="checkbox" id="chk_all" checked><label for="chk_all"></label></th>
+                                    <th></th>
                                     <th>지연서류</th>
                                     <th>제출기한</th>
                                     <th>지연일수</th>
@@ -259,16 +263,16 @@ $delaylist = arr_sort($delaylist, "delay_date", "asc");
                             </table>
                         </div>
                         <!--<p style="padding:10px 0 0 0;">* 개인설정 및 현황에 따라 지연현황의 차이가 있을 수 있습니다.<br>* PM일 경우 개인 설정을 업데이트하여 확인 바랍니다.</p>-->
-                    <?php }?>
                 </div>
+                <?php }?>
                 <?php if(count($delaylist)>26){?>
                 <div class="page2" style="page-break-before:always">
-                    <?php if($msgs["delay_view"]==1){?>
+                <div class="paging" style="height:5px;width: 100%;background-color:#eee;"></div>
                         <div class="delay_view_t">[붙 임]</div>
                         <div class="delay_cons">
                             <table class="delay_table">
                                 <tr>
-                                    <th><input type="checkbox" id="chk_all" checked><label for="chk_all"></label></th>
+                                    <th></th>
                                     <th>지연서류</th>
                                     <th>제출기한</th>
                                     <th>지연일수</th>
@@ -301,17 +305,16 @@ $delaylist = arr_sort($delaylist, "delay_date", "asc");
                             </table>
                         </div>
                         <!--<p style="padding:10px 0 0 0;">* 개인설정 및 현황에 따라 지연현황의 차이가 있을 수 있습니다.<br>* PM일 경우 개인 설정을 업데이트하여 확인 바랍니다.</p>-->
-                    <?php }?>
                 </div>
                 <?php }?>
                 <?php if(count($delaylist)>51){?>
                     <div class="page2" style="page-break-before:always">
-                        <?php if($msgs["delay_view"]==1){?>
+                    <div class="paging" style="height:5px;width: 100%;background-color:#eee;"></div>
                             <div class="delay_view_t">[붙 임]</div>
                             <div class="delay_cons">
                                 <table class="delay_table">
                                     <tr>
-                                        <th><input type="checkbox" id="chk_all" checked><label for="chk_all"></label></th>
+                                        <th></th>
                                         <th>지연서류</th>
                                         <th>제출기한</th>
                                         <th>지연일수</th>
@@ -344,9 +347,10 @@ $delaylist = arr_sort($delaylist, "delay_date", "asc");
                                 </table>
                             </div>
                             <!--<p style="padding:10px 0 0 0;">* 개인설정 및 현황에 따라 지연현황의 차이가 있을 수 있습니다.<br>* PM일 경우 개인 설정을 업데이트하여 확인 바랍니다.</p>-->
-                        <?php }?>
                     </div>
                 <?php }?>
+                <?php }?>
+
             </div>
         </div>
         <div class="msg_write_btn">

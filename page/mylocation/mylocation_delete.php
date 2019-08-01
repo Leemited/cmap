@@ -29,7 +29,7 @@ if($mb_id){
 }else {
     $sql = "update `cmap_my_construct` set status = -1 where id = '{$constid}'";
     if (sql_query($sql)) {
-        $sql = "delete from `cmap_myschedule` where construct_id = '{$constid}'";
+        /*$sql = "delete from `cmap_myschedule` where construct_id = '{$constid}'";
         sql_query($sql);
 
         $sql = "delete from `cmap_my_construct_eval` where const_id = '{$constid}'";
@@ -42,7 +42,7 @@ if($mb_id){
         sql_query($sql);
 
         $sql = "delete from `cmap_my_construct_eval_temp` where const_id = '{$constid}'";
-        sql_query($sql);
+        sql_query($sql);*/
 
         $sql = "delete from `cmap_construct_invite` where const_id = '{$constid}'";
         sql_query($sql);

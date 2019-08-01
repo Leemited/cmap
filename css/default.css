@@ -6,17 +6,17 @@
 
 /* 초기화 */
 html {overflow-x: hidden;}
-body {margin:0;padding:0;font-size:0.75em;font-family:'nsr', dotum, sans-serif;background:#e7e7e7;zoom:1}
+body {margin:0;padding:0;font-size:0.75em;font-family:'nsr', dotum,Dotum, sans-serif;background:#e7e7e7;zoom:1}
 body.board{background-color:#ffffff}
 /*body.sub{border-bottom:2px solid #0e2080}*/
 html, h1, h2, h3, h4, h5, h6, form, fieldset, img {margin:0;padding:0;border:0}
-h1, h2, h3, h4, h5, h6 {font-size:1em;font-family:'nsr', dotum, sans-serif}
+h1, h2, h3, h4, h5, h6 {font-size:1em;font-family:'nsr', Dotum, sans-serif}
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {display:block}
 
 ul, dl,dt,dd {margin:0;padding:0;list-style:none}
 legend {position:absolute;margin:0;padding:0;font-size:0;line-height:0;text-indent:-9999em;overflow:hidden}
 label, input, button, select, img {vertical-align:middle;font-size:1em}
-input, button {margin:0;padding:0;font-family:'nsr', dotum, sans-serif;font-size:1em}
+input, button {margin:0;padding:0;font-family:'nsr', Dotum, sans-serif;font-size:1em}
 input[type=password]{font-family:Dotum,Sans-serif;}
 input[type="submit"]{cursor:pointer}
 button {cursor:pointer}
@@ -142,9 +142,9 @@ border: 1px solid #558ab7 !important;
 
 /*body.main {background-image:url("../img/main_bg.jpg");background-size: cover;background-position: center bottom;background-repeat: no-repeat;height:100vh;width:100%;}*/
 #main{width:100vw;height:100vh ;position: absolute;top:0;left:0}
-#main .text{width:80%;position: absolute;top:28%;left:50%;text-align: center;-webkit-transform: translate(-50%,-50%);-moz-transform: translate(-50%,-50%);-ms-transform: translate(-50%,-50%);-o-transform: translate(-50%,-50%);transform: translate(-50%,-50%);}
-#main .text h2{padding-bottom:24px;font-size:38px;color:#000;}
-#main .text p{color:#1b1b1b;font-size:16px;line-height: 22px;}
+#main .texts{width:80%;position: absolute;top:28%;left:50%;text-align: center;-webkit-transform: translate(-50%,-50%);-moz-transform: translate(-50%,-50%);-ms-transform: translate(-50%,-50%);-o-transform: translate(-50%,-50%);transform: translate(-50%,-50%);}
+#main .texts h2{padding-bottom:24px;font-size:38px;color:#000;}
+#main .texts p{color:#1b1b1b;font-size:16px;line-height: 22px;}
 /* 레이아웃 크기 지정 */
 #hd, #wrapper, #ft{min-width:1200px}
 #hd{position:relative;z-index:3}
@@ -197,7 +197,7 @@ border: 1px solid #558ab7 !important;
 
 
 .search_area{
-    position: absolute;
+    position: fixed;
     top: -100vh;
     left: 0;
     width: 100vw;
@@ -214,14 +214,14 @@ border: 1px solid #558ab7 !important;
     transition: all 0.5s ease-in-out;
 }
 .search_area.active{
-    top:0vh;
+    top:0;
 }
 
 .search_area .search_wrap{width:760px;height:200px;position:absolute;top:50%;left:50%;-webkit-transform: translate(-50%,-50%);-moz-transform: translate(-50%,-50%);-ms-transform: translate(-50%,-50%);-o-transform: translate(-50%,-50%);transform: translate(-50%,-50%);}
 .search_area .search_wrap .searchs{border-bottom:3px solid #002c60;margin:0 0 20px 0;padding:10px 0;}
 .search_area .search_wrap .populars{padding:10px;text-align: center}
 .search_area .search_wrap .populars h3{font-size:24px;color:#555}
-.search_area .search_wrap .populars .text{margin-top:20px;}
+.search_area .search_wrap .populars .texts{margin-top:20px;}
 .search_area .search_wrap .populars span{color:#999;border-bottom:1px solid #ddd;font-size:19px;padding:10px 0; margin:10px;cursor:pointer;display: inline-block;}
 .search_area .search_wrap select,
 .search_area .search_wrap input{border:none;}
@@ -240,6 +240,7 @@ border: 1px solid #558ab7 !important;
 #logo {position:absolute;padding:19px 14px;}
 #logo img {width:200px;height:22px;}
 .white #logo{}
+#logo .company_text {margin-left:10px;font-size:16px;color:#fff;font-family:'nsr', dotum,Dotum, sans-serif;display:inline-block;vertical-align: middle}
 
 .hd_sch_wr{position:absolute;top:25px;left:50%;width:430px;margin-left:-215px;}
 #hd_sch h3 {position:absolute;font-size:0;line-height:0;overflow:hidden}
@@ -329,6 +330,9 @@ transition: background-color 0.3s ease-out;}
 #gnb.white .gnb_1dli:hover{background:RGBA(0,43,104,1);}
 #gnb.white .gnb_1dli .gnb_1da{color:#000}
 #gnb.white .gnb_1dli:hover .gnb_1da{color:#FFF;}
+#gnb_1dul .company_gnb{width:100%;text-align:center;display:block;}
+#gnb_1dul .company_gnb h2{padding: 14px 0;font-size: 28px;color: #fff;text-align: center;display:block;position: relative;line-height: normal;}
+#gnb_1dul .company_gnb h2 span{color:#12a9e2;font-weight:bold;}
 
 .gnb_1dli .bg{display:inline-block;width:10px;height:10px;overflow:hidden;/*background:url(../img/gnb_bg2.gif) no-repeat 50% 50%;*/text-indent:-999px}
 .gnb_1da {display:inline-block;font-weight:bold;color:#fff;text-decoration:none;font-family: "NanumBarunGothic",Dotum,Sans-serif;}
@@ -374,7 +378,7 @@ transition: background-color 0.3s ease-out;}
 .gnb_3da:focus, .gnb_3da:hover {color:#fff}
 .gnb_1dli_over .gnb_2dul {display:block;left:0}
 .gnb_1dli_over2 .gnb_2dul {display:block;right:0}
-.gnb_wrap .gnb_empty {padding:10px 0;width:100%;text-align:center;line-height:2em;color:#fff}
+.gnb_wrap .gnb_empty {padding:10px 0;width:100%;text-align:center;line-height:2em;color:#fff; font-size: 20px;font-weight: bold;height:61px}
 .gnb_wrap .gnb_empty a{color:#fff;text-decoration:underline}
 .gnb_wrap .gnb_al_ul .gnb_empty, .gnb_wrap .gnb_al_ul .gnb_empty a{color:#555}
 
@@ -416,6 +420,7 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
 .latest_wr:after {display:block;visibility:hidden;clear:both;content:""}
 /* 하단 레이아웃 */
 #ft {padding-bottom:0;margin:0 auto;text-align:center;font-family: "nsr",Sans-serif;height:62px;}
+#ft.company_ft {position:fixed;bottom:0;left:0;width:100%;background-color: #eee}
 #ft.mainFt{position:absolute;bottom:0;left:0;width:100%;}
 #ft h1 {position:absolute;font-size:0;line-height:0;overflow:hidden}
 #ft_wr {margin:0 auto;position:relative;}
@@ -693,6 +698,7 @@ box-sizing: content-box;
     transition: all 0.5s ease-in-out;
     background-color:rgba(0,0,0,.5);
     opacity: 0;
+    display:none;
 }
 
 .siteMaps .siteIn{width:85vw;height:80vh;background-color:#fff;position:absolute;top:50%;left:50%;-webkit-transform: translate(-50%,-45%);-moz-transform: translate(-50%,-45%);-ms-transform: translate(-50%,-45%);-o-transform: translate(-50%,-45%);transform: translate(-50%,-45%);padding:3vw}
@@ -704,6 +710,7 @@ box-sizing: content-box;
 .siteMaps header input{position:absolute;top:0;right:0;cursor: pointer}
 .siteMaps .navigator_tab ul{width:80%;margin:30px auto;}
 .siteMaps.active{
+    display:block;
     z-index:9;
     opacity:1;
 }

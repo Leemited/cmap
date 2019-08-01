@@ -60,7 +60,7 @@ if (G5_IS_MOBILE) {
             <a href="#">대표자 : 이지연</a>
             <a href="#">사업자번호 : 398-18-00805</a>
             <a href="#">통신판매업신고 : 제2019-경남진주-0136호 </a>
-            <a href="javascript:footerModal('<?php echo G5_URL; ?>/page/ajax/ajax.content.php','privacy')">개인정보처리방침</a>
+            <a href="javascript:footerModal('<?php echo G5_URL; ?>/page/ajax/ajax.content.php','privacy')"  >개인정보처리방침</a>
             <a href="javascript:footerModal('<?php echo G5_URL; ?>/page/ajax/ajax.content.php','provision')">서비스이용약관</a>
             <a href="#">TEL : 055-763-7222</a>
             <a href="#">주소 : 52852 경상남도 진주시 충의로 20-16, 3층 310호</a>

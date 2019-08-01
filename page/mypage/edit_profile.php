@@ -42,9 +42,11 @@ add_javascript(G5_POSTCODE_JS, 0);
             </div>
             <div class="mbottom">
                 <ul class="mmenu">
+                    <?php if($member["mb_level"]!=5){?>
                     <li onclick="location.href=g5_url+'/page/mypage/mypage'"><i></i>홈페이지 설정</li>
                     <li onclick="location.href=g5_url+'/page/mypage/quickmenu'"><i></i>퀵메뉴 설정</li>
                     <li onclick="location.href=g5_url+'/page/mypage/navigator'"><i></i>네비게이터 설정</li>
+                    <?php }?>
                     <!--<li onclick="location.href=g5_url+'/page/mypage/guide'"><i></i>사용자 가이드 설정</li>-->
                     <li class="active"><i></i>개인정보 수정</li>
                     <li onclick="location.href=g5_url+'/page/mypage/member_leave'"><i></i>회원탈퇴</li>
@@ -70,37 +72,37 @@ add_javascript(G5_POSTCODE_JS, 0);
                         <input type="hidden" name="cert_no" value="">
                         <table>
                             <tr>
-                                <th>성명 <span>*</span></th>
+                                <th>성명 </th>
                                 <td>
-                                    <input type="text" name="mb_name" id="reg_mb_name" value="<?php echo $member["mb_name"];?>" required class="basic_input01 width70">
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>회사명</th>
-                                <td>
-                                    <input type="text" name="mb_1" id="reg_mb_1" value="<?php echo $member["mb_1"];?>" class="basic_input01 width70">
+                                    <span style="font-size:1.2em"><?php echo $member["mb_name"];?></span>
                                 </td>
                             </tr>
                             <tr>
                                 <th>직책</th>
                                 <td>
-                                    <input type="text" name="mb_4" id="reg_mb_4" value="<?php echo $member["mb_4"];?>" class="basic_input01 width70">
+                                    <input type="text" name="mb_4" id="reg_mb_4" value="<?php echo $member["mb_4"];?>" class="basic_input01 width70" >
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>회사명</th>
+                                <td>
+                                    <input type="text" name="mb_1" id="reg_mb_1" value="<?php echo $member["mb_1"];?>" class="basic_input01 width70" <?php if($member["parent_mb_id"]){?>readonly<?php }?>>
                                 </td>
                             </tr>
                             <tr>
                                 <th>대표자</th>
                                 <td>
-                                    <input type="text" name="mb_2" id="reg_mb_2" value="<?php echo $member["mb_2"];?>" class="basic_input01 width70">
+                                    <input type="text" name="mb_2" id="reg_mb_2" value="<?php echo $member["mb_2"];?>" class="basic_input01 width70" <?php if($member["parent_mb_id"]){?>readonly<?php }?>>
                                 </td>
                             </tr>
                             <tr>
                                 <th>사업자 등록번호</th>
                                 <td>
-                                    <input type="text" name="mb_3[]" id="mb_3_1" value="<?php echo $mb_3[0];?>" class="basic_input01 width20">
+                                    <input type="text" name="mb_3[]" id="mb_3_1" value="<?php echo $mb_3[0];?>" class="basic_input01 width20" <?php if($member["parent_mb_id"]){?>readonly<?php }?>>
                                     -
-                                    <input type="text" name="mb_3[]" id="mb_3_2" value="<?php echo $mb_3[1];?>" class="basic_input01 width20">
+                                    <input type="text" name="mb_3[]" id="mb_3_2" value="<?php echo $mb_3[1];?>" class="basic_input01 width20" <?php if($member["parent_mb_id"]){?>readonly<?php }?>>
                                     -
-                                    <input type="text" name="mb_3[]" id="mb_3_3" value="<?php echo $mb_3[2];?>" class="basic_input01 width20">
+                                    <input type="text" name="mb_3[]" id="mb_3_3" value="<?php echo $mb_3[2];?>" class="basic_input01 width20" <?php if($member["parent_mb_id"]){?>readonly<?php }?>>
                                 </td>
                             </tr>
                             <tr>
@@ -153,8 +155,9 @@ add_javascript(G5_POSTCODE_JS, 0);
                                     <input type="text" name="file_name2" id="file_name2" class="basic_input01 width50" readonly placeholder="파일을 선택해주세요." value="">
                                     <input type="file" name="mb_7" id="reg_mb_7" value="<?php echo $member["mb_7"];?>" class="" style="display:none;" onchange="$('#file_name2').val(this.value);">
                                     <label for="reg_mb_7" class="basic_btn02">파일 등록</label>
+                                    <?php if($member["mb_7"]){?>
                                     <div style="width:60px;display:inline-block;vertical-align: middle;margin-left:20px;"><img src="<?php echo G5_DATA_URL;?>/member/<?php echo substr($member["mb_id"],0,2);?>/<?php echo $member["mb_7"];?>" alt="" style="width:100%;"></div>
-
+                                    <?php }?>
                                     <div class="msg">* 업무연락서에서 사용됩니다.</div>
                                 </td>
                             </tr>
@@ -164,8 +167,9 @@ add_javascript(G5_POSTCODE_JS, 0);
                                     <input type="text" name="file_name" id="file_name" class="basic_input01 width50" readonly placeholder="파일을 선택해주세요." value="">
                                     <input type="file" name="mb_8" id="reg_mb_8" value="<?php echo $member["mb_8"];?>" class="" style="display:none;" onchange="$('#file_name').val(this.value);">
                                     <label for="reg_mb_8" class="basic_btn02">파일 등록</label>
+                                    <?php if($member["mb_8"]){?>
                                     <div style="width:60px;display:inline-block;vertical-align: middle;margin-left:20px;"><img src="<?php echo G5_DATA_URL;?>/member/<?php echo substr($member["mb_id"],0,2);?>/<?php echo $member["mb_8"];?>" alt="" style="width:100%;"></div>
-
+                                    <?php }?>
                                     <div class="msg">* 업무연락서에서 사용됩니다.</div>
                                 </td>
                             </tr>
@@ -187,8 +191,9 @@ add_javascript(G5_POSTCODE_JS, 0);
                                     <input type="hidden" name="mb_addr_jibeon" id="reg_mb_addr_jibeon" value="<?php echo $member["mb_addr_jibeon"];?>" class="basic_input01">
                                 </td>
                             </tr>
+                            <?php if($member["parent_mb_id"]==""){?>
                             <tr>
-                                <th>본인인증 <span>*</span></th>
+                                <th>본인인증 </th>
                                 <td class="cert">
                                     <div>
                                         <input type="text" name="mb_email" id="mb_email" value="<?php echo $email[0];?>" class="basic_input01 width20">
@@ -222,6 +227,7 @@ add_javascript(G5_POSTCODE_JS, 0);
                                     </div>
                                 </td>
                             </tr>
+                            <?php }?>
                             <tr>
                                 <th>비밀번호 확인 <span>*</span></th>
                                 <td>
@@ -229,6 +235,7 @@ add_javascript(G5_POSTCODE_JS, 0);
                                     <label for="reg_mb_password">정보를 수정 하시려면 기존 비밀번호를 입력 하시기 바랍니다.</label>
                                 </td>
                             </tr>
+                            <?php if($member["parent_mb_id"]==""){?>
                             <?php if($member["mb_level"]==3 || $member["mb_level"]==5){?>
                             <tr>
                                 <th>맴버쉽</th>
@@ -240,11 +247,13 @@ add_javascript(G5_POSTCODE_JS, 0);
                                 </td>
                             </tr>
                             <?php }?>
+                            <?php }?>
                         </table>
                         <div class="mypage_btns">
                             <input type="submit" class="basic_btn01 width20" value="나의정보 수정">
                         </div>
                     </form>
+                    <?php if($member['parent_mb_id']==""){?>
                     <form action="<?php echo G5_URL;?>/page/mypage/password_update" method="post" name="password_form" onsubmit="return fnPass();">
                         <input type="hidden" name="pass_confirm" id="pass_confirm" value="N">
                         <table>
@@ -278,6 +287,7 @@ add_javascript(G5_POSTCODE_JS, 0);
                             <input type="submit" class="basic_btn01 width20" value="비밀번호 수정">
                         </div>
                     </form>
+                    <?php }?>
                 </div>
             </div>
         </article>
@@ -368,6 +378,7 @@ add_javascript(G5_POSTCODE_JS, 0);
     }
 
     function fnSubmit(f){
+        <?php if($member["parent_mb_id"]==""){?>
         <?php if (($config['cf_use_hp'] || $config['cf_cert_hp']) && $config['cf_req_hp']) {  ?>
         // 휴대폰번호 체크
         var msg = reg_mb_hp_check();
@@ -377,6 +388,7 @@ add_javascript(G5_POSTCODE_JS, 0);
             $("#mb_hp2").focus();
             return false;
         }
+        <?php } ?>
         <?php } ?>
     }
 </script>

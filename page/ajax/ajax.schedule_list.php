@@ -4,20 +4,26 @@ include_once ("../../common.php");
 if($const){
     $where = " and construct_id = '{$const}'";
 }else{
-    if($member["mb_level"]==5){
-        $sql = "select * from `cmap_my_construct` where INSTR(manager_mb_id,'{$mb_id}') != 0 and status = 0 ";
+    if($current_const["const_id"]){
+        $where = " and construct_id = '{$current_const["const_id"]}'";
     }else {
-        $sql = "select * from `cmap_my_construct` where (mb_id = '{$mb_id}' or INSTR(members,'{$mb_id}') != 0) and status = 0 ";
-    }
-    $res = sql_query($sql);
-    while($row = sql_fetch_array($res)){
-        $const_id[] = $row["id"];
-    }
-    if(count($const_id)>0) {
-        $constid = implode(",", $const_id);
-        $where = " and construct_id in ({$constid})";
+        if ($member["mb_level"] == 5) {
+            $sql = "select * from `cmap_my_construct` where INSTR(manager_mb_id,'{$mb_id}') != 0 and status = 0 ";
+        } else {
+            $sql = "select * from `cmap_my_construct` where (mb_id = '{$mb_id}' or INSTR(members,'{$mb_id}') != 0) and status = 0 ";
+        }
+
+        $res = sql_query($sql);
+        while ($row = sql_fetch_array($res)) {
+            $const_id[] = $row["id"];
+        }
+        if (count($const_id) > 0) {
+            $constid = implode(",", $const_id);
+            $where = " and construct_id in ({$constid})";
+        }
     }
 }
+
 
 $sql = "select * from `cmap_myschedule` where schedule_date = '{$date}' and status != -1 {$where} order by id";
 $res = sql_query($sql);

@@ -34,7 +34,7 @@ $mainslide_time = sql_fetch($sql);
 <div class="owl-carousel" id="main" style="z-index:0;">
     <?php if(count($mainimage)==0){?>
     <div class="item" style="background-image:url('<?php echo G5_IMG_URL;?>/main_bg.jpg');background-size: cover;background-position: center bottom;background-repeat: no-repeat;height: 100vh;width:100%;">
-        <div class="text">
+        <div class="texts">
             <h2>함께하는 사회, 새로운 가치를 창조합니다.</h2>
             <p>C.MAP은 전문지식이 없어도 검색을 통해 쉽고 빠르게 관련 법률을 찾을 수 있습니다.<br>이를 통해 시공 단계를 좀 더 간결하고 빠르게 처리할 수 있도록 도와줍니다.</p>
         </div>
@@ -43,7 +43,7 @@ $mainslide_time = sql_fetch($sql);
         for($i=0;$i<count($mainimage);$i++){
     ?>
     <div class="item" style="background-image:url('<?php echo G5_DATA_URL."/file/main/".$mainimage[$i]["main_image"];?>');background-size: cover;background-position: center top;background-repeat: no-repeat;width:100%;height:100vh">
-        <div class="text">
+        <div class="texts">
             <h2><?php echo nl2br($mainimage[$i]["main_text"]);?></h2>
             <p style="color:blue"><?php echo nl2br($mainimage[$i]["sub_text"]);?></p>
         </div>

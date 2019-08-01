@@ -125,12 +125,43 @@ while($row = sql_fetch_array($res)){
                                     <?php }?>
                                 </td>
                             </tr>
-                        <?php }
-                    } ?>
+                        <?php } ?>
+                    <?php } ?>
                 </table>
             </div>
-
-
+            <?php
+            if($total_page>1){
+                $start_page=1;
+                $end_page=$total_page;
+                if($total_page>5){
+                    if($total_page<($page+2)){
+                        $start_page=$total_page-4;
+                        $end_page=$total_page;
+                    }else if($page>3){
+                        $start_page=$page-2;
+                        $end_page=$page+2;
+                    }else{
+                        $start_page=1;
+                        $end_page=5;
+                    }
+                }
+                ?>
+                <div class="num_list01">
+                    <ul>
+                        <?php if($page!=1){?>
+                            <li class="prev"><a href="<?php echo G5_URL."/page/mylocation/mylocation?page=".($page-1); ?>">&lt;</a></li>
+                        <?php } ?>
+                        <?php for($i=$start_page;$i<=$end_page;$i++){ ?>
+                            <li class="<?php echo $page==$i?"active":""; ?>"><a href="<?php if($page!=$i){?><?php echo G5_URL."/page/mylocation/mylocation?page=".$i; ?><?php }else{?>#<?php }?>"><?php echo $i; ?></a></li>
+                        <?php } ?>
+                        <?php if($page<$total_page){?>
+                            <li class="next"><a href="<?php echo G5_URL."/page/mylocation/mylocation?page=".($page+1); ?>">&gt;</a></li>
+                        <?php } ?>
+                    </ul>
+                </div>
+                <?php
+            }
+            ?>
         </div>
     </section>
 </div>
@@ -151,11 +182,11 @@ while($row = sql_fetch_array($res)){
             method:"post",
             data:{stx:stx}
         }).done(function(data){
-            console.log(data);
             $(".seach_list").html(data);
         });
     }
     function fnDelete(url,const_id){
+        var msg = '해당 건설현장을 삭제하시겠습니까?<br>삭제 시 다시 복구 할 수 없습니다.<br>신중히 선택해 주시기 바랍니다.';
         //참여 인원 체크
         $.ajax({
             url:g5_url+'/page/ajax/ajax.get_mylocation_member.php',
@@ -169,7 +200,7 @@ while($row = sql_fetch_array($res)){
                 $.ajax({
                     url:g5_url+"/page/modal/ajax.alert.php",
                     method:"post",
-                    data:{title:"현장삭제",msg:"해당 건설현장을 삭제하시겠습니까?<br>삭제 시 다시 복구 할 수 없습니다.<br>신중히 선택해 주시기 바랍니다.",link:g5_url+url,btns:"삭제하기"}
+                    data:{title:"현장삭제",msg:msg,link:g5_url+url,btns:"삭제하기",type:"confirm"}
                 }).done(function(data){
                     fnShowModal(data);
                 });
@@ -191,6 +222,16 @@ while($row = sql_fetch_array($res)){
         var mb_id = $(".member_list li input:checked").val();
         if(chk_mb_id==0){
             alert("위임할 대상을 선택해 주세요.");
+            return false;
+        }
+        if($("#delText").val()==""){
+            alert("지금삭제 문구를 입력해주세요.");
+            $("#delText").focus();
+            return false;
+        }
+        if($("#delText").val()!="지금삭제"){
+            alert("삭제요청문구가 다릅니다. \r\n다시 확인해 주세요.");
+            $("#delText").focus();
             return false;
         }
         location.href=g5_url+'/page/mylocation/mylocation_delete?constid='+constid+'&mb_id='+mb_id;

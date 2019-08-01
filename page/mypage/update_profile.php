@@ -39,7 +39,6 @@ $mb_mailling = ($_POST["mb_mailling"])?$_POST["mb_mailling"]:"0";
 $mb_sms = ($_POST["mb_sms"])?$_POST["mb_sms"]:"0";
 
 $sql = "update `g5_member` set
-          mb_name = '{$mb_name}',
           mb_1 = '{$mb_1}',
           mb_2 = '{$mb_2}',
           mb_3 = '{$mb_3}',

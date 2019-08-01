@@ -114,7 +114,7 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
         }
     }
      ?>
-
+    <?php if($bo_table!="boards"){?>
     <?php if($cnt) { ?>
     <!-- 첨부파일 시작 { -->
     <section id="bo_v_file">
@@ -141,6 +141,7 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
         </ul>
     </section>
     <!-- } 첨부파일 끝 -->
+    <?php } ?>
     <?php } ?>
 
     <?php if(array_filter($view['link'])) { ?>

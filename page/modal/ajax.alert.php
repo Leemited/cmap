@@ -12,7 +12,15 @@ include_once("../../common.php");
     <div class="confirm_con">
         <div style="display:table">
             <div style="display:table-cell;vertical-align:middle;width:30%"><img src="<?php echo G5_IMG_URL;?>/modal_confirm.svg" alt="" style="width: 100%"></div>
-            <div style="display:table-cell;vertical-align:middle;width:70%"><?php echo $msg;?></div>
+            <div style="display:table-cell;vertical-align:middle;width:70%">
+                <?php echo $msg;?>
+                <?php if($type=="confirm"){?>
+                    <div>
+                        <br>
+                        <input type="text" name="chkText" id="chkText" class="basic_input01 width80" required placeholder="[지금삭제]를 입력해주세요.">
+                    </div>
+                <?php }?>
+            </div>
         </div>
     </div>
     <div class="modal_btns">

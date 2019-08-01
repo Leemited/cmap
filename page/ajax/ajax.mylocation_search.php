@@ -18,9 +18,11 @@ for ($i=0;$i<count($list);$i++) {
     $sql =  "select * from `cmap_construct_invite` where const_id = '{$list[$i]["id"]}' and send_mb_id = '{$member["mb_id"]}' and msg_status = 0";
 
     $chk_send = sql_fetch($sql);
+
+    print_r2($chk_send);
     
+    $chk_members = false;
     if($list[$i]["members"]!="") {
-        $chk_members = false;
         $members = explode(",", $list[$i]["members"]);
         for ($j = 0; $j < count($member);$j++){
             if($members[$j]==$member["mb_id"]){
@@ -54,7 +56,7 @@ for ($i=0;$i<count($list);$i++) {
 if(count($list)==0) {
 ?>
 <tr>
-    <td colspan="4">검색된 현장/용역이 없습니다.</td>
+    <td colspan="4" class="td_center">검색된 현장/용역이 없습니다.</td>
 </tr>
 <?php
 }

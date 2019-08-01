@@ -4,6 +4,7 @@ include_once ("../../common.php");
     echo "1";
     return false;
 }*/
+$delay_now = date("Y-m-d");
 $count = 0;
 $chk_read = true;//확인 불가능 false = 가능 , 신규등록은 불가능
 if($msg_id){
@@ -75,7 +76,7 @@ if($msg_id){
 
 }
 
-$sql = "select MAX(msg_count)as max_count from `cmap_construct_work_msg` where msg_group = '{$msgs["msg_group"]}' or const_id = '{$const_id}'";
+$sql = "select MAX(msg_count)as max_count from `cmap_construct_work_msg` where const_id = '{$const_id}'";
 $countmx = sql_fetch($sql);
 $count = $countmx["max_count"]+1;
 
@@ -101,13 +102,13 @@ for($i=0;$i<count($mbs);$i++){
     if($member["mb_id"]==$mbs[$i] || $mbs[$i]==""){continue;}
     $mem[] = get_member($mbs[$i]);
 }
-for($i=0;$i<count(2);$i++){
+for($i=0;$i<count($mbs2);$i++){
     if($member["mb_id"]==$mbs2[$i] || $mbs[$i]==""){continue;}
     $mem[] = get_member($mbs2[$i]);
 }
 if($msg_id) {
     //내 현황 가져오기
-    $sql = "select * from `cmap_construct_work_msg` where const_id = '{$const["id"]}' and send_mb_id ='{$mb["mb_id"]}'";
+    $sql = "select * from `cmap_construct_work_msg` where id = '{$msg_id}'";
     $delayitem = sql_fetch($sql);
 
     $vpk_ids = explode("``",$delayitem["pk_ids"]);
@@ -139,10 +140,22 @@ if($msg_id) {
             }
         }
     }
-    unset($delaylist);
-    $delaylist = $delaylists;
+    unset($delaylistmsg);
+    $delaylistmsg = $delaylists;
 }else{
-    $activesql = "select * from `cmap_my_construct_map` where mb_id ='{$member["mb_id"]}' and const_id = '{$const_id}'";
+    if($member["mb_level"]==5){
+        $sql = "select * from `cmap_my_pmmode_set` where mb_id='{$member["mb_id"]}' and const_id = '{$const_id}'";
+        $ss = sql_fetch($sql);
+        if($ss==null){
+            $sql = "select * from `cmap_my_construct` where id = '{$const_id}'";
+            $cnst = sql_fetch($sql);
+            $activesql = "select * from `cmap_my_construct_map` where mb_id ='{$cnst["mb_id"]}' and const_id = '{$const_id}'";
+        }else{
+            $activesql = "select * from `cmap_my_construct_map` where mb_id ='{$ss["set_mb_id"]}' and const_id = '{$const_id}'";
+        }
+    }else {
+        $activesql = "select * from `cmap_my_construct_map` where mb_id ='{$member["mb_id"]}' and const_id = '{$const_id}'";
+    }
     $activechk = sql_fetch($activesql);
     $map_pk_id = explode("``",$activechk["pk_ids"]);
     $map_pk_actives = explode("``",$activechk["pk_actives"]);
@@ -177,14 +190,14 @@ if($msg_id) {
             }
         }
     }
-    unset($delaylist);
-    $delaylist = $delaylists;
+    unset($delaylistmsg);
+    $delaylistmsg = $delaylists;
 }
 
-$delaylist = array_values($delaylist);
-$delaylist = arr_sort($delaylist, "delay_date", "asc");
+$delaylistmsg = array_values($delaylistmsg);
+$delaylistmsg = arr_sort($delaylistmsg, "delay_date", "asc");
 
-$delaylist = array_filter($delaylist);
+$delaylistmsg = array_filter($delaylistmsg);
 ?>
 
 <div class="message" >
@@ -239,7 +252,7 @@ $delaylist = array_filter($delaylist);
                             <?php for($i=0;$i<count($mem);$i++){
                                 if($mem[$i]["mb_id"]!=""){
                                 ?>
-                                <input type="checkbox" name="mb_id[]" id="mb_id_<?php echo $i;?>" value="<?php echo $mem[$i]["mb_id"];?>" <?php if($msgs["send_mb_id"]==$mem[$i]["mb_id"]){?>checked<?php }?>><label for="mb_id_<?php echo $i;?>" style="margin-left:0;margin-right:20px;"><?php echo $mem[$i]["mb_name"];?></label>
+                                <input type="checkbox" name="mb_id[]" id="mb_id_<?php echo $i;?>" value="<?php echo $mem[$i]["mb_id"];?>" checked><label for="mb_id_<?php echo $i;?>" style="margin-left:0;margin-right:20px;"><?php echo $mem[$i]["mb_name"];?></label>
                             <?php }?>
                             <?php }?>
                         </td>
@@ -267,13 +280,13 @@ $delaylist = array_filter($delaylist);
                         <td colspan="2" style="padding:10px 0 0 0;text-align: left">
                             <?php if($msgs["msg_content"]!=""){?>
                             <div class="msg_contents"  >
-                                <h2>업무연락서 내용보기</h2>
+                                <h2>관련문서 내용보기</h2>
                                 <div class="content_box">
                                     <?php echo nl2br(str_replace(" ","&nbsp;",$msgs["msg_content"]));?>
                                 </div>
                             </div>
                             <?php }?>
-                            <div class="read_msg_content" style="padding:10px;border:1px solid #ddd;">
+                            <div class="read_msg_content" style="">
                                 <textarea name="msg_content" id="msg_content" cols="30" rows="10" placeholder="업무연락 할 내용을 기입하세요" style="border:none;height:380px;padding:0" required></textarea>
                                 <input type="checkbox" name="delay_view" id="delay_view" value="1"><label for="delay_view" style="margin-left:0"> 붙임 : 공무행정 제출 지연 현황 1부.&nbsp;&nbsp;&nbsp;끝.</label>
                             </div>
@@ -282,12 +295,13 @@ $delaylist = array_filter($delaylist);
                     <tr>
                         <td colspan="2">
                             <div class="send_info">
-                                <p style="margin-top:8px"><?php echo $member["mb_1"];?> <?php echo $member["mb_4"];?> <?php echo $member["mb_name"];?></p>
-                                <?php if($member["mb_8"]){?>
-                                    <div style="width:58px;position: absolute;right:0;top:0;"><img src="<?php echo G5_DATA_URL;?>/member/<?php echo substr($member["mb_id"],0,2);?>/<?php echo $member["mb_8"];?>" alt="" style="width:100%;"></div>
-                                <?php }else{?>
-                                    <div style="border:1px solid #000;padding:10px;font-size:20px;font-family: batangche;position:absolute;right:0;top:15px;">직인생략</div>
-                                <?php }?>
+                                <h2 ><?php echo $member["mb_1"];?> <?php echo $member["mb_4"];?> <?php echo $member["mb_name"];?>
+                                    <?php if($member["mb_8"]){?>
+                                    <div ><img src="<?php echo G5_DATA_URL;?>/member/<?php echo substr($member["mb_id"],0,2);?>/<?php echo $member["mb_8"];?>" alt="" style="width:100%;"></div>
+                                    <?php }else{?>
+                                        <div style="border:1px solid #000;padding:10px;font-size:20px;font-family: batangche;position:absolute;right: -160px;top: -11px;width: 120px;">직인생략</div>
+                                    <?php }?>
+                                </h2>
                             </div>
                         </td>
                     </tr>
@@ -298,7 +312,7 @@ $delaylist = array_filter($delaylist);
                         <td class="addmember">
                             <?php if($msg_id){
                                 for($i=0;$i<count($read_mb_ids);$i++){
-                                    echo $read_mb_ids[$i]["mb_1"]."".$read_mb_ids[$i]["mb_4"]."".$read_mb_ids[$i]["mb_name"]."&nbsp;&nbsp;";
+                                    echo $read_mb_ids[$i]["mb_1"]." ".$read_mb_ids[$i]["mb_4"]." ".$read_mb_ids[$i]["mb_name"]."&nbsp;&nbsp;&nbsp;";
                                 }
                             }?>
                         </td>
@@ -308,13 +322,12 @@ $delaylist = array_filter($delaylist);
                     </tr>
                     <tr>
                         <td colspan="2">
-                            <p>시행 : (계약명) <?php echo $const["cmap_name"];?> - <?php echo $msgs["msg_count"];?> (<?php echo date("Y.m.d");?>)호</p>
+                            <p>시행 : (계약명) <?php echo $const["cmap_name"];?> - <?php echo $count;?> (<?php echo date("Y.m.d");?>)호</p>
                             <?php if($member["mb_addr1"] || $member["mb_zip1"]){?><p>우편번호 : <?php echo $member["mb_zip1"]." ";?> 주소 : <?php echo $member["mb_addr1"]. " ". $member["mb_addr2"];?></p><?php }?>
                             <?php if($member["mb_tel"] || $member["mb_7"]){?><p><?php if($member["mb_tel"]){?>전화 : <?php echo $member["mb_tel"]." "; } ?></p><?php }?>
                         </td>
                     </tr>
                 </table>
-                <?php if($msgs["delay_view"]==1){?>
                 <div style="font-size:15px;padding:30px 0 8px 0;margin-top:30px;border-top:1px solid #ddd;">[붙 임]</div>
                 <div class="delay_cons">
                     <table class="delay_table">
@@ -325,25 +338,25 @@ $delaylist = array_filter($delaylist);
                             <th>지연일수</th>
                         </tr>
                         <?php
-                        for($i=0;$i<count($delaylist);$i++){
-                            if($delaylist[$i]["pk_id"]=="1"){continue;}
+                        for($i=0;$i<count($delaylistmsg);$i++){
+                            if($delaylistmsg[$i]["pk_id"]=="1"){continue;}
                             if($msg_id) {
-                                if (strpos($msgs["pk_ids"], $delaylist[$i]["pk_id"]) === false) {
+                                if (strpos($msgs["pk_ids"], $delaylistmsg[$i]["pk_id"]) === false) {
                                     continue;
                                 }
                             }
                         ?>
                         <tr>
                             <td class="td_center">
-                                <input type="checkbox" name="pk_ids[]" id="pk_id_<?php echo $delaylist[$i]["pk_id"];?>" value="<?php echo $delaylist[$i]["pk_id"];?>" checked>
-                                <label for="pk_id_<?php echo $delaylist[$i]["pk_id"];?>"></label>
+                                <input type="checkbox" name="pk_ids[]" id="pk_id_<?php echo $delaylistmsg[$i]["pk_id"];?>" value="<?php echo $delaylistmsg[$i]["pk_id"];?>" checked>
+                                <label for="pk_id_<?php echo $delaylistmsg[$i]["pk_id"];?>"></label>
                             </td>
-                            <td title="<?php echo $delaylist[$i]["depth1_name"];?>"><?php echo "[".$delaylist[$i]["depth1_name"]."]".cut_str($delaylist[$i]["depth_name"],20,"...");?></td>
-                            <td class="td_center"><?php echo $delaylist[$i]["schedule_date"];?></td>
-                            <td class="td_center"><?php echo $delaylist[$i]["delay_date"];?></td>
+                            <td title="<?php echo $delaylistmsg[$i]["depth1_name"];?>"><?php echo "[".$delaylistmsg[$i]["depth1_name"]."]".cut_str($delaylistmsg[$i]["depth_name"],20,"...");?></td>
+                            <td class="td_center"><?php echo $delaylistmsg[$i]["schedule_date"];?></td>
+                            <td class="td_center"><?php echo $delaylistmsg[$i]["delay_date"];?></td>
                         </tr>
                         <?php }?>
-                        <?php if(count($delaylist)==0 || ($msg_id && $msgs["pk_ids"] == "")){?>
+                        <?php if(count($delaylistmsg)==0 || ($msg_id && $msgs["pk_ids"] == "")){?>
                             <tr>
                                 <td colspan="4" class="td_center">지연 현황이 없습니다.</td>
                             </tr>
@@ -351,7 +364,6 @@ $delaylist = array_filter($delaylist);
                     </table>
                 </div>
                 <p style="padding:10px 0 0 0;">* 개인설정 및 현황에 따라 지연현황의 차이가 있을 수 있습니다.<br>* PM일 경우 개인 설정을 업데이트하여 확인 바랍니다.</p>
-                <?php }?>
             </div>
             <div class="msg_write_btn">
                 <input type="button" class="basic_btn01 disabled" disabled value="수신확인">
@@ -400,7 +412,7 @@ $delaylist = array_filter($delaylist);
         $("#chk_all").click(function(){
             if($(this).prop("checked")==true){
                 $("input[name^=pk_ids]").each(function(){
-                    $(this).attr("checked",true);
+                    $(this).prop("checked",true);
                 });
             }else{
                 $("input[name^=pk_ids]").each(function(){
@@ -410,22 +422,24 @@ $delaylist = array_filter($delaylist);
         })
 
         $("input[name^=mb_id]").click(function(){
-            var members = $("#in_members").val();
-            var chk = $(this).prop("checked");
+            var mb_ids = '';
+            $("input[name^=mb_id]").each(function(){
+                if($(this).prop("checked")==true){
+                    if(mb_ids){mb_ids += ",";}
+                    mb_ids += $(this).val();
+                }
+            });
             $.ajax({
                 url: g5_url + '/page/ajax/ajax.get_member.php',
                 method: "post",
-                data: {mb_id: $(this).val(), members: members,chk:chk},
+                data: {mb_ids:mb_ids},
                 dataType: "json"
             }).done(function (data) {
-                $(".addmember").html(data.add_member);
-                $("#in_members").val(data.add_id);
+                console.log(data);
+                $(".addmember").html(data.members);
+                $("#in_members").val(mb_ids);
             });
         });
-
-        /*$("#msg_retype").datepicker({
-
-        });*/
     });
 </script>
 
