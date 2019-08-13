@@ -4,7 +4,7 @@ $sub = "sub";
 $mypage = true;
 $menu_id = "depth_desc_home";
 include_once (G5_PATH."/_head.php");
-if($member["mb_level"]=5){
+if($member["mb_level"]==5){
     goto_url(G5_URL."/page/mypage/edit_profile_chkpwd.php");
 }
 

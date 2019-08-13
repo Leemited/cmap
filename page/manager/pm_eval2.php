@@ -337,7 +337,7 @@ $yearPMPer5 = round($totaleval5_save/$totaleval5_save_cal,2);
                         <th rowspan="2">준공일</th>
                         <th rowspan="2">기간경과율</th>
                         <th rowspan="2">계약금액(원)</th>
-                        <th rowspan="2">평가기간<br>통보점수</th>
+                        <th rowspan="2">평가기관<br>통보점수</th>
                         <th rowspan="2">총점 (C)<br><span style="font-size:12px;">C = (A X 0.8) + (B X 0.2)</span></th>
                         <th colspan="4">업체 평가</th>
                         <th colspan="6">기술자 평가</th>

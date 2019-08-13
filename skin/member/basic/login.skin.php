@@ -89,7 +89,12 @@ function fnFindId(){
     });
 }
 function fnFindPw(){
-
+    $.ajax({
+        url:g5_url+"/page/modal/ajax.find_pw.php",
+        method:"post"
+    }).done(function(data){
+        fnShowModal(data);
+    });
 }
 </script>
 <!-- } 로그인 끝 -->

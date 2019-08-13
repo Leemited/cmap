@@ -6,7 +6,6 @@ $count = 0;
 $chk_read = true;//확인 불가능 false = 가능 , 신규등록은 불가능
 if($msg_id){
     $msgs = sql_fetch("select * from `cmap_construct_work_msg` where id = '{$msg_id}'");
-
     /*if($msgs["read_mb_id"]==$member["mb_id"] && $msgs["read_date"] == "") {
         $sql = "update `cmap_construct_work_msg` set read_date = now(), read_time = now() where id = '{$msg_id}'";
         sql_query($sql);
@@ -265,7 +264,7 @@ $delaylist = arr_sort($delaylist, "delay_date", "asc");
 <!-- MeadCo Security Manager -->
 <object id="factory" style="display:none"
         classid="clsid:1663ed61-23eb-11d2-b92f-008048fdd814"
-        codebase="https://xn--z69akkg7o1wgdnk53m.com/smsx.cab#Version=8,1,0,2">
+        codebase="http://test.xn--z69akkg7o1wgdnk53m.com/smsx.cab#Version=8,1,0,2">
 </object>
 <script>
     function fnPrint(){

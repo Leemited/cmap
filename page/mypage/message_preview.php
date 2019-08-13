@@ -135,7 +135,7 @@ $delaylist = arr_sort($delaylist, "delay_date", "asc");
                 <!--<li onclick="">새로고침</li>-->
                 <li onclick="fnMsgSave('<?php echo $msg_id;?>');"><img src="<?php echo G5_IMG_URL;?>/ic_save.svg" alt=""></li>
                 <!-- <li>다운로드</li>-->
-                <li onclick="fnPrint('<?php echo $msg_id;?>','<?php echo $msg_id["const_id"];?>');"><img src="<?php echo G5_IMG_URL;?>/ic_print.svg" alt=""></li>
+                <li onclick="fnPrint('<?php echo $msg_id;?>','<?php echo $msgs["const_id"];?>');"><img src="<?php echo G5_IMG_URL;?>/ic_print.svg" alt=""></li>
             </ul>
         <?php }?>
         <div class="close" onclick="fnEtcClose()"></div>
@@ -146,7 +146,7 @@ $delaylist = arr_sort($delaylist, "delay_date", "asc");
                 <h2>업무연락서</h2>
             </div>
             <div class="msg_write_container">
-                <div class="page1">
+                <div class="page1 preview">
                     <table>
                         <tr>
                             <td>수&nbsp;신&nbsp;자 : </td>

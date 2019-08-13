@@ -671,6 +671,43 @@ if($is_member) {
     $sql = "select * from `cmap_my_current_construct` where mb_id = '{$member["mb_id"]}'";
     $current_const = sql_fetch($sql);
 
+    if($current_const==null){
+        $sql = "select id from `cmap_my_construct` where mb_id = '{$member["mb_id"]}'";
+        $chkConst = sql_fetch($sql);
+        if($chkConst==null){
+            $sql = "select * from `cmap_my_construct` where members like '%{$member["mb_id"]}%' or manager_mb_id like '%{$member["mb_id"]}%' order by id desc";
+            $res = sql_query($sql);
+            while($row = sql_fetch_array($res)){
+                $mbs = explode(",",$row["members"]);
+                $currentchk = false;
+                for($i=0;$i<count($mbs);$i++){
+                    if($mbs[$i]==$member["mb_id"]){
+                        $sql = "insert into `cmap_my_current_construct` set mb_id = '{$member["mb_id"]}', const_id = '{$row["id"]}'";
+                        sql_query($sql);
+                        $currentchk = true;
+                        continue;
+                    }
+                }
+                if($currentchk==false) {
+                    $mbs2 = explode(",", $row["manager_mb_id"]);
+                    for ($i = 0; $i < count($mbs2); $i++) {
+                        if ($mbs2[$i] == $member["mb_id"]) {
+                            $sql = "insert into `cmap_my_current_construct` set mb_id = '{$member["mb_id"]}', const_id = '{$row["id"]}'";
+                            sql_query($sql);
+                            continue;
+                        }
+                    }
+                }
+            }
+        }else{
+            $sql = "insert into `cmap_my_current_construct` set mb_id = '{$member["mb_id"]}', const_id = '{$chkConst["id"]}'";
+            sql_query($sql);
+        }
+
+        $sql = "select * from `cmap_my_current_construct` where mb_id = '{$member["mb_id"]}'";
+        $current_const = sql_fetch($sql);
+    }
+
     /*if($member["mb_level"]==5){
         $constwhere = " or manager_mb_id = '{$member["mb_id"]}'";
     }*/

@@ -81,7 +81,7 @@ while($row = sql_fetch_array($res)){
                 <th colspan="3">기간</th>
                 <th>선택</th>
                 <th>상태</th>
-                <th>관리</th>
+                <th colspan="2">관리</th>
             </tr>
             <?php for($i=0;$i<count($list);$i++){?>
             <tr class="company_mbs">
@@ -98,12 +98,17 @@ while($row = sql_fetch_array($res)){
                 </td>
                 <td class="td_center"><?php if($list[$i]["payments"]=="활성"){?><input type="button" class="basic_btn02" style="padding:6px 10px;width:auto" value="연장하기" onclick="fnPayments('<?php echo $list[$i]["mb_id"];?>')"><?php }else{?>
         <input type="button" value="결제하기" class="basic_btn02" style="padding:6px 10px;width:auto" onclick="fnPayments('<?php echo $list[$i]["mb_id"];?>')"><?php }?></td>
-                <td class="td_center"><input type="button" class="basic_btn02" style="padding:6px 10px;width:auto" value="상세보기" onclick="location.href=g5_url+'/page/company/edit_member?mb_id=<?php echo $list[$i]["mb_id"];?>'"></td>
+                <td class="td_center">
+                    <input type="button" class="basic_btn02" style="padding:6px 10px;width:auto" value="상세보기" onclick="location.href=g5_url+'/page/company/edit_member?mb_id=<?php echo $list[$i]["mb_id"];?>'">
+                </td>
+                <td class="td_center">
+
+                </td>
             </tr>
             <?php }?>
             <?php if(count($list)==0){?>
                 <tr>
-                    <td colspan="9" class="td_center">등록된 부계정이 없습니다.</td>
+                    <td colspan="10" class="td_center">등록된 부계정이 없습니다.</td>
                 </tr>
             <?php }else{?>
                 <tr class="blod_tr">
@@ -113,7 +118,7 @@ while($row = sql_fetch_array($res)){
                     <td class="td_center">
                         총 결제 금액 :
                     </td>
-                    <td colspan="2" style="text-align: right;padding:5px;">
+                    <td colspan="3" style="text-align: right;padding:5px;">
                         <span class="totalPrice">0</span> 원
                     </td>
                 </tr>
@@ -121,6 +126,7 @@ while($row = sql_fetch_array($res)){
         </table>
         <div style="text-align: right;padding:30px 0 0;">
             <input type="hidden" name="payments" id="payments" value="">
+            <input type="hidden" name="amount" id="amount" value="">
             <input type="button" value="선택일괄결제" class="basic_btn01" onclick="fnAllPayment();">
         </div>
     </div>
@@ -197,6 +203,17 @@ while($row = sql_fetch_array($res)){
 
        var payments = $("#payments").val();
 
+       if(Number($("#amount").val()) > 10000000){
+           $.ajax({
+               url:g5_url+'/page/ajax/ajax.alert.php',
+               method:"post",
+               data:{title:"결제금액 초과시 결제방법",msg:"<h2>결제한도</h2><br>카드 : 10,000,000원 / 1회<br>이체 : 2,000,000원 / 1일<br><br><h2>결제방법</h2><br>카드 : 10,000,000원 이내로 분할 결제 (1일 제한 없음)<br>이체 : 2,000,000원 이내로 분할 이체(1일 제한 있음)<br>기타 직접이체 및 전자세금계산서 발금 등은 아래의 문의하기로 남겨주시면 담당자가 신속히 연락드리겠습니다.",link:g5_url+'/page/board/inquiry',btns:"문의하기",payments:payments,od_type:"pm"}
+           }).done(function(data){
+               fnShowModal(data);
+           });
+           return false;
+       }
+
        $.ajax({
            url:g5_url+'/page/ajax/ajax.company_sub_member.php',
            method:"post",
@@ -243,9 +260,9 @@ while($row = sql_fetch_array($res)){
            }
        });
 
-
        $(".totalMonth").html(totalMonth);
        $(".totalPrice").html(number_format(totalPrice));
+       $("#amount").val(totalPrice);
        $("#payments").val(payments);
    }
    </script>

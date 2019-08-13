@@ -100,12 +100,23 @@ $mbs2 = array_filter($mbs2);
 
 for($i=0;$i<count($mbs);$i++){
     if($member["mb_id"]==$mbs[$i] || $mbs[$i]==""){continue;}
-    $mem[] = get_member($mbs[$i]);
+    if($msgs["msg_retype"]==0) {
+        $mem[] = get_member($mbs[$i]);
+    }
 }
 for($i=0;$i<count($mbs2);$i++){
-    if($member["mb_id"]==$mbs2[$i] || $mbs[$i]==""){continue;}
-    $mem[] = get_member($mbs2[$i]);
+    if($member["mb_id"]==$mbs2[$i] || $mbs2[$i]==""){continue;}
+    if($msgs["msg_retype"]==0) {
+        $mem[] = get_member($mbs2[$i]);
+    }
 }
+
+if($msgs["msg_retype"]==1){
+    if($msgs["send_mb_id"]!=$member["mb_id"]){
+        $mem[] = get_member($msgs["send_mb_id"]);
+    }
+}
+
 if($msg_id) {
     //내 현황 가져오기
     $sql = "select * from `cmap_construct_work_msg` where id = '{$msg_id}'";
@@ -228,6 +239,7 @@ $delaylistmsg = array_filter($delaylistmsg);
             <input type="hidden" value="<?php if($msg_id){echo "resend";}?>" name="type">
             <input type="hidden" value="<?php echo $msg_id;?>" name="msg_id">
             <input type="hidden" value="" name="in_members" id="in_members">
+            <input type="hidden" value="<?php echo $member["mb_name"];?>" name="msg_send_name" id="msg_send_name">
             <input type="hidden" value="<?php echo $member["mb_8"];?>" name="msg_sing_filename" id="msg_sing_filename">
             <?php if($msg_id){?>
                 <!--<input type="hidden" name="mb_id[]" value="<?php /*echo $msgs["send_mb_id"];*/?>">-->
@@ -295,7 +307,12 @@ $delaylistmsg = array_filter($delaylistmsg);
                     <tr>
                         <td colspan="2">
                             <div class="send_info">
-                                <h2 ><?php echo $member["mb_1"];?> <?php echo $member["mb_4"];?> <?php echo $member["mb_name"];?>
+                                <h2 >
+                                    <?php if($member["mb_9"]==""){
+                                        echo $member["mb_1"]." ".$member["mb_4"]." ".$member["mb_name"];
+                                    }else{
+                                        echo $member["mb_9"];
+                                    }?>
                                     <?php if($member["mb_8"]){?>
                                     <div ><img src="<?php echo G5_DATA_URL;?>/member/<?php echo substr($member["mb_id"],0,2);?>/<?php echo $member["mb_8"];?>" alt="" style="width:100%;"></div>
                                     <?php }else{?>
@@ -312,7 +329,19 @@ $delaylistmsg = array_filter($delaylistmsg);
                         <td class="addmember">
                             <?php if($msg_id){
                                 for($i=0;$i<count($read_mb_ids);$i++){
-                                    echo $read_mb_ids[$i]["mb_1"]." ".$read_mb_ids[$i]["mb_4"]." ".$read_mb_ids[$i]["mb_name"]."&nbsp;&nbsp;&nbsp;";
+                                    if($read_mb_ids[$i]["mb_9"]){
+                                        echo $read_mb_ids[$i]["mb_9"]."&nbsp;&nbsp;&nbsp;";
+                                    }else {
+                                        echo $read_mb_ids[$i]["mb_1"] . " " . $read_mb_ids[$i]["mb_4"] . " " . $read_mb_ids[$i]["mb_name"] . "&nbsp;&nbsp;&nbsp;";
+                                    }
+                                }
+                            }else{
+                                for($i=0;$i<count($mem);$i++){
+                                    if($mem[$i]["mb_9"]) {
+                                        echo $mem[$i]["mb_9"] . "&nbsp;&nbsp;&nbsp;";
+                                    }else {
+                                        echo $mem[$i]["mb_1"] . " " . $mem[$i]["mb_4"] . " " . $mem[$i]["mb_name"] . "&nbsp;&nbsp;&nbsp;";
+                                    }
                                 }
                             }?>
                         </td>
@@ -324,7 +353,7 @@ $delaylistmsg = array_filter($delaylistmsg);
                         <td colspan="2">
                             <p>시행 : (계약명) <?php echo $const["cmap_name"];?> - <?php echo $count;?> (<?php echo date("Y.m.d");?>)호</p>
                             <?php if($member["mb_addr1"] || $member["mb_zip1"]){?><p>우편번호 : <?php echo $member["mb_zip1"]." ";?> 주소 : <?php echo $member["mb_addr1"]. " ". $member["mb_addr2"];?></p><?php }?>
-                            <?php if($member["mb_tel"] || $member["mb_7"]){?><p><?php if($member["mb_tel"]){?>전화 : <?php echo $member["mb_tel"]." "; } ?></p><?php }?>
+                            <?php if($member["mb_tel"] && $member["mb_tel"] != "010--"){?><p><?php if($member["mb_tel"]){?>전화 : <?php echo $member["mb_tel"]." "; } ?></p><?php }?>
                         </td>
                     </tr>
                 </table>

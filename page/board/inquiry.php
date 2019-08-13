@@ -83,6 +83,27 @@ for ($i=0;$row=sql_fetch_array($result);$i++){
     }
 }
 
+$today = date("Y-m-d");
+if($payments){
+    if($od_type=="pm") {
+        $text = "PM회원 일괄 결제 문의 \r\n\r\n";
+    }else{
+        $text = "CM회원 일괄 결제 문의 \r\n\r\n";
+    }
+    $text .= "다음회원의 결제를 요청합니다.\r\n\r\n";
+    $data1 = explode(",",$payments);
+    for($i=0;$i<count($data1);$i++){
+        $texts = explode("``",$data1[$i]);
+        $sql = "select * from `cmap_payments` where order_cancel = 0 and '{$today}' between payment_start_date and payment_end_date and mb_id = '{$texts[1]}' ";//구매 이력 확인
+        $mbchk = sql_fetch($sql);
+        if($mbchk==null){
+            $ty = "신규결제";
+        }else{
+            $ty = "연장결제";
+        }
+        $text .= $texts[1]. " : ". $texts[2]."개월 [".$ty."]\r\n";
+    }
+}
 ?>
 <div class="width-fixed">
     <header class="sub">
@@ -163,7 +184,7 @@ for ($i=0;$row=sql_fetch_array($result);$i++){
             <tr>
                 <th>내용 <span>*</span></th>
                 <td>
-                    <textarea name="content" id="content" cols="30" rows="10" class="basic_input01 width100" style="resize: none" required></textarea>
+                    <textarea name="content" id="content" cols="30" rows="10" class="basic_input01 width100" style="resize: none" required><?php echo $text;?></textarea>
                 </td>
             </tr>
             <tr>
@@ -179,7 +200,7 @@ for ($i=0;$row=sql_fetch_array($result);$i++){
             </tr>
         </table>
         <div class="inquiry_btns">
-            <input type="submit" value="제안등록" class="basic_btn01">
+            <input type="submit" value="제안/문의 등록" class="basic_btn01">
         </div>
         </form>
     </div>

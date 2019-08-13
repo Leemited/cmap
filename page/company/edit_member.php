@@ -236,7 +236,7 @@ add_javascript(G5_POSTCODE_JS, 0);
                                 <td>
                                     <div style="font-size:16px">맴버쉽기한 : <?php echo $mypayments["payment_end_date"];?></div>
                                     <div style="position: absolute;right:10px;top:11px;">
-                                        <input type="button" value="맴버쉽 취소" class="basic_btn01">
+                                        <input type="button" value="맴버쉽 취소" class="basic_btn01" onclick="fnMemberCancel('<?php echo $mypayments["order_id"];?>');">
                                     </div>
                                 </td>
                             </tr>
@@ -361,6 +361,16 @@ add_javascript(G5_POSTCODE_JS, 0);
             alert("삭제할 회원정보가 없습니다.");
             return false;
         }
+        $.ajax({
+            url:g5_url+"/page/ajax/ajax.delete_confirm.php",
+            method:"post",
+            data:{title:"삭제확인",msg:"해당회원을 삭제하시려면 <br>아래 입력창에 [지금삭제]문구를 입력해주세요.",link:g5_url+'/page/company/member_delete',btns:"삭제하기",mb_id:mb_id}
+        }).done(function(data){
+            fnShowModal(data);
+        });
+        /*if(confirm('해당 회원을 삭제하시겠습니까?')){
+            location.href=g5_url+'/page/company/member_delete?mb_id='+mb_id;
+        }*/
     }
 </script>
 <?php

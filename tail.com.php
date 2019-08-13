@@ -64,7 +64,7 @@ if (G5_IS_MOBILE) {
             <a href="javascript:footerModal('<?php echo G5_URL; ?>/page/ajax/ajax.content.php','provision')">서비스이용약관</a>
             <a href="#">TEL : 055-763-7222</a>
             <a href="#">주소 : 52852 경상남도 진주시 충의로 20-16, 3층 310호</a>
-            <a href="mailto:aplatoxin80@naver.com">Email : aplatoxin80@naver.com</a>
+            <a href="mailto:aplatoxin80@naver.com">Email : cmap114@cmap4u.com</a>
             <!--<a href="<?php /*echo get_device_change_url(); */?>">모바일버전</a>-->
         </div>
     </div>

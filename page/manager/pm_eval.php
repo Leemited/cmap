@@ -309,8 +309,8 @@ $yearPMPer5 = round($totaleval5_save/$totaleval5_save_cal,2);
                                 <td class="td_center"><?php echo $worklist[$i]["cmap_construct_start"];?></td>
                                 <td class="td_center"><?php echo $worklist[$i]["cmap_construct_finish"];?></td>
                                 <td class="td_center"><?php echo $dayper;?></td>
-                                <td class="td_center "><input type="text" class="basic_input01 width100 td_center" onchange="fnEvalPm('<?php echo $worklist[$i]["id"];?>',this.value,'const_price')" value="<?php echo ($worklist[$i]["pm_price"])?$worklist[$i]["pm_price"]:"";?>" <?php if($worklist[$i]["pm_price"]==""){?>placeholder="계약금액 입력"<?php }?>></td>
-                                <td class="td_center "><input type="text" class="basic_input01 width100 td_center" onchange="fnEvalPm('<?php echo $worklist[$i]["id"];?>',this.value,'const_percent')" value="<?php echo ($worklist[$i]["pm_percent"])?$worklist[$i]["pm_percent"]:"";?>" <?php if($worklist[$i]["pm_percent"]==""){?>placeholder="계약금액 입력"<?php }?>></td>
+                                <td class="td_center "><input type="text" class="basic_input01 width100 td_center" onchange="fnEvalPm('<?php echo $worklist[$i]["id"];?>',this.value,'const_price')" value="<?php echo ($worklist[$i]["pm_price"])?$worklist[$i]["pm_price"]:"";?>" <?php if($worklist[$i]["pm_price"]==""){?>placeholder="계약금액입력"<?php }?>></td>
+                                <td class="td_center "><input type="text" class="basic_input01 width100 td_center" onchange="fnEvalPm('<?php echo $worklist[$i]["id"];?>',this.value,'const_percent')" value="<?php echo ($worklist[$i]["pm_percent"])?$worklist[$i]["pm_percent"]:"";?>" <?php if($worklist[$i]["pm_percent"]==""){?>placeholder="평가점수입력"<?php }?>></td>
                                 <td class="td_center eval_point"><?php echo $worklist[$i]["sum"];?></td>
                                 <td class="td_center"><?php echo $worklist[$i]["eval_01"];?></td>
                                 <td class="td_center"><?php echo $worklist[$i]["eval_02"];?></td>

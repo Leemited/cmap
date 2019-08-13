@@ -283,7 +283,7 @@ header( "Content-Description: PHP4 Generated Data" );
         <th style="background-color:#002060;color:#fff;text-align: center;border:0.25pt solid #fff" rowspan="2">준공일</th>
         <th style="background-color:#002060;color:#fff;text-align: center;border:0.25pt solid #fff" rowspan="2">기간경과율</th>
         <th style="background-color:#002060;color:#fff;text-align: center;border:0.25pt solid #fff" rowspan="2">계약금액(원)</th>
-        <th style="background-color:#002060;color:#fff;text-align: center;border:0.25pt solid #fff" rowspan="2">평가기간<br>통보점수</th>
+        <th style="background-color:#002060;color:#fff;text-align: center;border:0.25pt solid #fff" rowspan="2">평가기관<br>통보점수</th>
         <th style="background-color:#002060;color:#fff;text-align: center;border:0.25pt solid #fff" rowspan="2">총점</th>
         <th style="background-color:#002060;color:#fff;text-align: center;border:0.25pt solid #fff" colspan="4">업체 평가(A)</th>
         <th style="background-color:#002060;color:#fff;text-align: center;border:0.25pt solid #fff" colspan="6">기술자 평가(B)</th>

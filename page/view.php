@@ -12,6 +12,7 @@ if($member["mb_auth"]==false){
 }*/
 
 //내 현황 가져오기
+
 if($member["mb_level"]==5){
     $sql = "select * from `cmap_my_pmmode_set` where mb_id='{$member["mb_id"]}' and const_id = '{$const_id}'";
     $ss = sql_fetch($sql);

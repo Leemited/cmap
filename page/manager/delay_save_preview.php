@@ -79,7 +79,6 @@ if($ss!=null){
         }
     }
 }
-
 for($i=0;$i<count($worklistpm);$i++){
     $sql = "select *,b.menu_name as menu_name from `cmap_depth1` as a left join `cmap_menu` as b on a.me_code = b.menu_code where a.id = '{$worklistpm[$i]["depth1_id"]}'  ";
     $res = sql_query($sql);
@@ -103,6 +102,10 @@ for($i=0;$i<count($worklistpm);$i++){
     $sql = "select m.menu_code,a.pk_id as pk_ids, e.pk_id as pk_idss, d.pk_id, d.content from `cmap_content` as d left join `cmap_depth4` as e on d.depth4_id = e.id left join `cmap_depth1` as a on d.depth1_id = a.id left join `cmap_menu` as m on m.menu_code = a.me_code where d.pk_id = '{$worklistpm[$i]["pk_id"]}'";
     $res3 = sql_query($sql);
     while($row3 = sql_fetch_array($res3)){
+        if(strpos($pks,$row3["pk_id"]."//")!==false){
+            continue;
+        }
+        $pks .= $row3["pk_id"]."//";
         $worklists[$row3["menu_code"]][$row3["pk_ids"]][$row3["pk_idss"]][$row3["pk_id"]]["content"] = $row3["content"];
         $worklists[$row3["menu_code"]][$row3["pk_ids"]][$row3["pk_idss"]][$row3["pk_id"]]["delaydate"] = $worklistpm[$i]["delays"];
         $worklists[$row3["menu_code"]][$row3["pk_ids"]][$row3["pk_idss"]]["content_pk_id"]= $row3["pk_id"];
@@ -143,8 +146,8 @@ $const = sql_fetch("select * from `cmap_my_construct` where id = '{$constids}'")
         <tr>
             <th style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;">구분</th>
             <th style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;">현장명</th>
-            <th style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;">지연항목</th>
             <th style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;">지연서류</th>
+            <th style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;">지연항목</th>
             <th style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;">지연일</th>
         </tr>
 
@@ -197,7 +200,7 @@ $const = sql_fetch("select * from `cmap_my_construct` where id = '{$constids}'")
                 $pk_idss = $worklists2[$j];
                 $worklists3 = array_values($worklists[$i][$pk_idss]["depth2_pk"]);
                 ?>
-                <td style="padding:5px;border-right:0.25pt solid #000;border-bottom:0.25pt solid #000;color:#000;text-align: center" rowspan="<?php echo $worklists[$i][$pk_idss]["menu_rows"];?>"><?php echo $worklists[$i][$pk_idss]["depth1_name"];?></td>
+                <td style="padding:5px;border-right:0.25pt solid #000;border-bottom:0.25pt solid #000;color:#000;text-align: center" rowspan="<?php echo $worklists[$i][$pk_idss]["depth2_pk"]["count"];?>"><?php echo $worklists[$i][$pk_idss]["depth1_name"];?></td>
                 <?php for($k=0;$k<count($worklists[$i][$pk_idss]["depth2_pk"]);$k++){
                     $pk_idss2 = $worklists3[$k];
                     $worklists4 = array_values($worklists[$i][$pk_idss][$pk_idss2]["content_pk"]);

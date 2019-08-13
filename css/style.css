@@ -109,11 +109,13 @@ html,body{font-family: "nsr", Sans-serif;zoom:1}
 
 .my_profile_top {padding: 20px 30px;display: inline-block;width: 100%;position:relative;z-index:2;background-color:#2d2d2d}
 .my_profile_top h2 {font-size: 18px;color: #fff;font-weight: normal;display: inline-block;cursor:pointer;width:100%}
-.my_profile_top h2 label{width:86px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;word-break: keep-all;display:inline-block;color:#8abcf9}
+.my_profile_top h2 label{width:96px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;word-break: keep-all;display:inline-block;color:#8abcf9}
 .my_profile_top h2 span{font-size:18px;display:none;vertical-align:middle;}
 .my_profile_top h2 span.cm{color: #57aeff;display:inline-block}
 .my_profile_top h2 span.pm{color:red;display:inline-block}
-.my_profile_top h2 img{width:22px;height:22px;margin-left:10px;}
+.my_profile_top h2 img{width:25px;height:25px;position:absolute;top:17px;}
+.my_profile_top h2 img.logout{right:100px;}
+.my_profile_top h2 img.settings{right:62px;}
 .my_profile_top .pays{margin-top:10px;position:relative}
 .my_profile_top .pays:after{content:"";clear:both;display:block;}
 .my_profile_top .pays a {font-size: 15px;position: relative;color: #fff;float:right;padding:5px 0;}
@@ -423,8 +425,8 @@ html,body{font-family: "nsr", Sans-serif;zoom:1}
 /*.view .menu_table .memo .memo_area li{font-size:15px;width:100%;text-overflow: ellipsis;white-space: nowrap;overflow: hidden;word-break: keep-all;padding:5px;position: relative;border:1px solid #ddd;}*/
 /*.view .menu_table .memo .memo_area li span{display:inline-block;margin-right:6px;font-weight:bold;}*/
 /*.view .menu_table .memo .memo_area li i{position:absolute;right:0;z-index: 9;cursor:pointer}*/
-.view table tr:nth-child(2){border-bottom:4px;}
-.view .menu_table tr th{background-color:#002d62;color:#fff;font-size:18px;text-align: center ;padding:6px 0;width:200px;}
+.view table tr:nth-child(2){border-bottom: 4px;height: 7px;}
+.view .menu_table tr th{background-color:#002d62;color:#fff;font-size:15px;text-align: center ;padding:6px 0;width:200px;}
 .view .menu_table tr td{background-color: transparent;border:none;width:200px;}
 .view .menu_table.view3 tr td{width:auto !important}
 .view .menu_table tr td .depth_btn{background-color:#f1f1f1;color:#000;font-size:15px;text-align: center;width:200px;border:1px solid #c8c8c8;padding:4px 0;cursor: pointer;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;word-break:break-all;}
@@ -1060,7 +1062,8 @@ header.sub.cal_top{position:fixed;top: 113px;background-color: #fff;z-index: 9;}
 .payment_title span{position:absolute;right:10px;top:15px;color:#002e89;font-weight:bold;font-size:13px;}
 
 #prints .msg_content{padding:0;}
-#prints .page1{height:24cm;position:relative;}
+#prints .page1{height:21cm;position:relative;}
+#prints .page1.preview{height:18cm;position:relative;}
 #prints .page2{position:relative;}
 /* width */
 #prints .msg_content::-webkit-scrollbar {
@@ -1148,7 +1151,7 @@ header.sub.cal_top{position:fixed;top: 113px;background-color: #fff;z-index: 9;}
 #prints .delay_title input[type=checkbox]:checked + label:before{background-image:url("../img/ic_msg_check_on.png");}
 
 #prints .send_info{padding:0;font-weight:bold;text-align:center;font-size:18pt;margin-bottom:1.4cm}
-#prints .send_info .signs{width:58px;position: absolute;z-index:0;right: -40px;top: -19px;}
+#prints .send_info .signs{width:2cm;height:2cm;position: absolute;z-index:0;right: -60px;top: -27px;}
 #prints .send_info h2{display:inline-block;position:relative;}
 #prints .send_info span{position:relative;z-index:1;}
 #prints .send_info .stemp{border:1px solid #000;padding:10px;font-size:20px;font-family: 'gulim';position:absolute;right: -149px;top: -10px;z-index: 0;width: 112px;}
@@ -1165,7 +1168,7 @@ header.sub.cal_top{position:fixed;top: 113px;background-color: #fff;z-index: 9;}
     #prints .msg_title1 h2{font-size:20pt;font-family:"gulim" !important;}
 
     #prints .msg_content{padding:0;}
-    #prints .msg_content .page1{height:24cm;position:relative;}
+    #prints .msg_content .page1{height:21cm;position:relative;}
     #prints .msg_content .page2{position:relative;}
     /* width */
     #prints .msg_content::-webkit-scrollbar {
@@ -1250,7 +1253,7 @@ header.sub.cal_top{position:fixed;top: 113px;background-color: #fff;z-index: 9;}
     #prints .delay_title input[type=checkbox]:checked + label:before{background-image:url("../img/ic_msg_check_on.png");}
 
     #prints .send_info{padding:0;font-weight:bold;text-align:center;font-size:18pt;margin-bottom:1.4cm}
-    #prints .send_info .signs{width:58px;position: absolute;z-index:0;right: -40px;top: -19px;}
+    #prints .send_info .signs{width:2cm;height:2cm;position: absolute;z-index:0;right: -60px;top: -27px;}
     #prints .send_info h2{display:inline-block;position:relative;}
     #prints .send_info span{position:relative;z-index:1;}
     #prints .send_info .stemp{border:1px solid #000;padding:10px;font-size:20px;font-family: 'gulim';position:absolute;right: -149px;top: -10px;z-index: 0;width: 112px;}
@@ -1270,6 +1273,10 @@ header.sub.cal_top{position:fixed;top: 113px;background-color: #fff;z-index: 9;}
 .schedule_mores{font-size:22px;position:absolute;bottom:2px;right:2px;}
 .schedule_list{margin-top:20px;height:26vh;overflow-y:auto}
 .schedule_list li{padding:5px;font-size:15px;word-break: keep-all;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;width:340px;cursor: pointer}
+.schedule_list li:before{content: "";width: 3px;height: 16px;display: inline-block;vertical-align: middle;margin-right: 15px;background-color:#00c200;}
+.schedule_list li.delays:before{content: "";width: 3px;height: 16px;display: inline-block;vertical-align: middle;margin-right: 15px;background-color:red;}
+.schedule_list li.delay_confirm:before{content: "";width: 3px;height: 16px;display: inline-block;vertical-align: middle;margin-right: 15px;background-color:#ffd800;}
+.schedule_list li.confirm:before{content: "";width: 3px;height: 16px;display: inline-block;vertical-align: middle;margin-right: 15px;background-color:#12a9e2;}
 .schedule_list li.active, .schedule_list li:hover{background-color:#eee}
 
 .delay_list_ul {margin-top:20px;height:50vh;overflow-y:auto;}
@@ -1305,6 +1312,10 @@ header.sub.cal_top{position:fixed;top: 113px;background-color: #fff;z-index: 9;}
 .cal_data .detail_list h2 span.close{background-image:url("../img/close_icon.svg");background-size:contain;background-position: center;background-repeat: no-repeat;width:25px;height:25px;position: absolute;right:15px;cursor: pointer}
 .cal_data .detail_list .lists{padding:10px 0;margin-top:20px;height:13vh;overflow-y:auto}
 .cal_data .detail_list .lists li{padding:5px;font-size:15px;word-break: keep-all;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;width:340px;cursor: pointer}
+.cal_data .detail_list .lists li:before{content: "";width: 3px;height: 16px;display: inline-block;vertical-align: middle;margin-right: 15px;background-color:#00c200;}
+.cal_data .detail_list .lists li.delays:before{content: "";width: 3px;height: 16px;display: inline-block;vertical-align: middle;margin-right: 15px;background-color:red;}
+.cal_data .detail_list .lists li.delay_confirm:before{content: "";width: 3px;height: 16px;display: inline-block;vertical-align: middle;margin-right: 15px;background-color:#ffd800;}
+.cal_data .detail_list .lists li.confirm:before{content: "";width: 3px;height: 16px;display: inline-block;vertical-align: middle;margin-right: 15px;background-color:#12a9e2;}
 .cal_data .detail_list .lists li.active, .cal_data .detail_list .lists li:hover{background-color:#eee}
 
 .cal_data .edit_con{margin-top:6px;border-top:2px solid #001738;display:block;}

@@ -249,8 +249,8 @@ while($rs_row = sql_fetch_array($res)){
             $rs_dp_ch=sql_fetch($sql_duplicate_check);
 
             if($rs_dp_ch["cnt"]==0){
-                $sql_w_inu="insert into `weather` (lat, lng, addr1, addr2, addr3, insert_date, insert_time, update_date, {$c_str})
-                    values ({$rs_row['cmap_construct_lat']}, {$rs_row['cmap_construct_lng']}, '{$rs_row['weather_addr1']}', '{$rs_row['weather_addr2']}', '{$rs_row['weather_addr3']}', {$item->fcstDate}, {$item->fcstTime}, now(), {$item->fcstValue})";
+                $sql_w_inu="insert into `weather` (lat, lng, addr1, addr2, addr3, insert_date, update_date, {$c_str})
+                    values ({$rs_row['cmap_construct_lat']}, {$rs_row['cmap_construct_lng']}, '{$rs_row['weather_addr1']}', '{$rs_row['weather_addr2']}', '{$rs_row['weather_addr3']}', {$item->fcstDate}, now(), {$item->fcstValue})";
             }
             else{
                 $sql_w_inu="update `weather` set {$c_str} = {$item->fcstValue}, update_date = now() {$sqlTime}
@@ -267,8 +267,8 @@ while($rs_row = sql_fetch_array($res)){
             $rs_dp_ch=sql_fetch($sql_duplicate_check);
 
             if($rs_dp_ch["cnt"]==0){
-                $sql_w_inu="insert into `weather` (lat, lng, addr1, addr2, addr3, insert_date, insert_time, update_date, {$c_str})
-                    values ({$rs_row['cmap_construct_lat']}, {$rs_row['cmap_construct_lng']}, '{$rs_row['weather_addr1']}', '{$rs_row['weather_addr2']}', '{$rs_row['weather_addr3']}', {$item->fcstDate}, {$item->fcstTime}, now(), {$item->fcstValue})";
+                $sql_w_inu="insert into `weather` (lat, lng, addr1, addr2, addr3, insert_date, update_date, {$c_str})
+                    values ({$rs_row['cmap_construct_lat']}, {$rs_row['cmap_construct_lng']}, '{$rs_row['weather_addr1']}', '{$rs_row['weather_addr2']}', '{$rs_row['weather_addr3']}', {$item->fcstDate}, now(), {$item->fcstValue})";
             }
             else{
                 $sql_w_inu="update `weather` set {$c_str} = {$item->fcstValue}, update_date = now() {$sqlTime}
@@ -277,6 +277,84 @@ while($rs_row = sql_fetch_array($res)){
 
             sql_query($sql_w_inu);
         }
+
+        if($item->category=='R06'){
+            $rain_str="";
+            switch($item->fcstTime){
+                case "0000":
+                    $rain_str="rain00";
+                    break;
+                case "0600":
+                    $rain_str="rain06";
+                    break;
+                case "1200":
+                    $rain_str="rain12";
+                    break;
+                case "1800":
+                    $rain_str="rain18";
+                    break;
+            }
+
+            $sql_duplicate_check="
+            select count(id)as cnt, id from `weather`
+            where lat = '{$rs_row["cmap_construct_lat"]}' and lng = '{$rs_row["cmap_construct_lng"]}' and date_format(insert_date, '%Y%m%d') = {$item->fcstDate}";
+            $rs_dp_ch=sql_fetch($sql_duplicate_check);
+
+            if($rs_dp_ch["cnt"]==0){
+                $sql_w_inu="insert into 
+                            `weather` (
+                                lat, lng, addr1, addr2, addr3, insert_date, update_date, {$rain_str}
+                            )
+                            values (
+                                {$rs_row['cmap_construct_lat']}, {$rs_row['cmap_construct_lng']}, '{$rs_row['weather_addr1']}', '{$rs_row['weather_addr2']}', '{$rs_row['weather_addr3']}', {$item->fcstDate}, now(), {$item->fcstValue}
+                            )";
+            }
+            else{
+                $sql_w_inu="update `weather` set {$rain_str} = {$item->fcstValue}, update_date = now() where id = {$rs_dp_ch['id']}";
+            }
+
+            sql_query($sql_w_inu);
+        }
+
+        if($item->category=='S06'){
+            $rain_str="";
+            switch($item->fcstTime){
+                case "0000":
+                    $rain_str="snow00";
+                    break;
+                case "0600":
+                    $rain_str="snow06";
+                    break;
+                case "1200":
+                    $rain_str="snow12";
+                    break;
+                case "1800":
+                    $rain_str="snow18";
+                    break;
+            }
+
+            $sql_duplicate_check="
+            select count(id)as cnt, id from `weather`
+            where lat = '{$rs_row["cmap_construct_lat"]}' and lng = '{$rs_row["cmap_construct_lng"]}' and date_format(insert_date, '%Y%m%d') = {$item->fcstDate}";
+            $rs_dp_ch=sql_fetch($sql_duplicate_check);
+
+            if($rs_dp_ch["cnt"]==0){
+                $sql_w_inu="insert into 
+                            `weather` (
+                                lat, lng, addr1, addr2, addr3, insert_date, update_date, {$rain_str}
+                            )
+                            values (
+                                {$rs_row['cmap_construct_lat']}, {$rs_row['cmap_construct_lng']}, '{$rs_row['weather_addr1']}', '{$rs_row['weather_addr2']}', '{$rs_row['weather_addr3']}', {$item->fcstDate}, now(), {$item->fcstValue}
+                            )";
+            }
+            else{
+                $sql_w_inu="update `weather` set {$rain_str} = {$item->fcstValue}, update_date = now() where id = {$rs_dp_ch['id']}";
+            }
+
+            sql_query($sql_w_inu);
+        }
+        //print_r2($sql_duplicate_check);
+        //print_r2($sql_w_inu);
     }
 }
 

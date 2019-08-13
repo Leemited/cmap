@@ -51,7 +51,7 @@ if($is_member) {
 
     //스케쥴 가져오기
     $sch_today = date("Y-m-d");
-    $res = sql_query("select * from `cmap_myschedule` as s left join `cmap_my_construct` as c on s.construct_id = c.id where schedule_date = '{$sch_today}' and (mb_id = '{$member["mb_id"]}' or instr(members,'{$member["mb_id"]}') > 0 or instr(manager_mb_id,'{$member["mb_id"]}') > 0) {$com_where2} order by id limit 0, 6");
+    $res = sql_query("select * from `cmap_myschedule` as s left join `cmap_my_construct` as c on s.construct_id = c.id where schedule_date = '{$sch_today}' and (c.mb_id = '{$member["mb_id"]}' or instr(c.members,'{$member["mb_id"]}') > 0 or instr(c.manager_mb_id,'{$member["mb_id"]}') > 0) {$com_where2} order by s.id limit 0, 6");
 
     while ($row = sql_fetch_array($res)) {
         $myschedule[] = $row;
@@ -73,21 +73,16 @@ if($is_member) {
     }
 
     //my현장 업무연락서
-    $msgsql = "select * from `cmap_construct_work_msg` where (instr(read_mb_id,'{$member["mb_id"]}') != 0 or send_mb_id = '{$member["mb_id"]}') and read_status = 0 ";
+    $msgsql = "select read_mb_id from `cmap_construct_work_msg` where read_status = 0 ";
     $msgres = sql_query($msgsql);
     while($msgrow = sql_fetch_array($msgres)){
         $reads = explode(",",$msgrow["read_mb_id"]);
-        $chk==true;
-        for($i=0;$i<count($reads);$i++){
-            if($reads[$i]!=$member["mb_id"]){
-                $chk==false;
+        if(count($reads)>0) {
+            for ($i = 0; $i < count($reads); $i++) {
+                if ($member["mb_id"]==$reads[$i]) {
+                    $msglist[] = $reads[$j];
+                }
             }
-        }
-        if($member["mb_id"]==$msgrow["send_mb_id"]){
-            $chk = true;
-        }
-        if($chk) {
-            $msglist[] = $msgrow;
         }
     }
 
@@ -567,8 +562,8 @@ $mypayments = sql_fetch($sql);
         <h2 >
             <span class="<?php if($member["mb_level"]==3){echo "cm";}else if($member["mb_level"]==5){echo "pm";}?>"><?php if($member["mb_level"]==3){echo "CM";}else if($member["mb_level"]==5){echo "PM";}?></span>
             <label onclick="location.href=g5_url+'/page/mypage/mypage'"><?php echo $member["mb_id"];?></label> 님
-            <img src="<?php echo G5_IMG_URL?>/ic_logout_w.png" alt="" onclick="fnLogout()">
-            <img src="<?php echo G5_IMG_URL?>/ic_profile_setting.svg" alt="" onclick="location.href=g5_url+'/page/mypage/mypage'">
+            <img src="<?php echo G5_IMG_URL?>/ic_logout_w.png" alt="" onclick="fnLogout()" class="logout">
+            <img src="<?php echo G5_IMG_URL?>/ic_profile_setting.svg" alt="" onclick="location.href=g5_url+'/page/mypage/mypage'" class="settings">
             <div class="close" onclick="fnCloseProfile()"></div>
         </h2>
         <div class="pays">
@@ -1229,7 +1224,7 @@ $mypayments = sql_fetch($sql);
                 </select>
                 <select name="sfl" id="sfl" class="basic_input01 width10">
                     <option value="" <?php if($sfl==""){?>selected<?php }?>>전체</option>
-                    <option value="name" <?php if($sfl=="name"){?>selected<?php }?>>작성자</option>
+                    <option value="name" <?php if($sfl=="name"){?>selected<?php }?>>담당자</option>
                     <option value="msg_subject" <?php if($sfl=="msg_subject"){?>selected<?php }?>>제목</option>
                     <option value="msg_content" <?php if($sfl=="msg_content"){?>selected<?php }?>>내용</option>
                 </select>
@@ -1247,8 +1242,8 @@ $mypayments = sql_fetch($sql);
                 <input type="text" name="stx" id="stx" value="<?php echo $stx;?>" class="basic_input01 width20" placeholder="현장명을 입력해주세요.">
                 <select name="sfl" id="sfl" class="basic_input01 width10">
                     <option value="0" <?php if($sfl=="0"){?>selected<?php }?>>전체표기</option>
-                    <option value="1" <?php if($sfl=="1"){?>selected<?php }?>>준공현장 표기</option>
-                    <option value="2" <?php if($sfl=="2"){?>selected<?php }?>>준공현장 미표기</option>
+                    <option value="1" <?php if($sfl=="1"){?>selected<?php }?>>준공현장</option>
+                    <option value="2" <?php if($sfl=="2"){?>selected<?php }?>>진행현장</option>
                 </select>
                 <input type="submit" class="basic_btn01" value="검색">
             </form>

@@ -55,7 +55,7 @@ $holiday8_1 = $thank[0];
 $holiday8_2 = date("Y-m-d",strtotime(" +1 day",strtotime($thank[0])));
 $holiday8_3 = $thank[1];
 
-if($current_const["id"] && $constid=="" && $type == ""){
+if($current_const["const_id"] && $constid=="" && $type == ""){
     $constid = $current_const["const_id"];
 }
 
@@ -491,7 +491,7 @@ $delaylists = array_filter($delaylists);
         <div class="tab1">
             <div class="list_con">
                 <input type="hidden" id="del_id" value="">
-                <h2>일정목록 <span class="del" onclick="fnScheduleDel();"></span></h2 >
+                <h2>일정목록 <!--<span class="del" onclick="fnScheduleDel();"></span>--></h2 >
                 <ul class="schedule_list">
 
                 </ul>

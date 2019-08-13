@@ -72,6 +72,12 @@ add_javascript(G5_POSTCODE_JS, 0);
                         <input type="hidden" name="cert_no" value="">
                         <table>
                             <tr>
+                                <th>아이디 </th>
+                                <td>
+                                    <span style="font-size:1.2em"><?php echo $member["mb_id"];?></span>
+                                </td>
+                            </tr>
+                            <tr>
                                 <th>성명 </th>
                                 <td>
                                     <span style="font-size:1.2em"><?php echo $member["mb_name"];?></span>

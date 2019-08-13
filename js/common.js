@@ -1546,7 +1546,7 @@ function fnViewMessage(mb_id,const_id){
                 alert("회원 정보가 없습니다.");
             } else {
                 $(".infos").hide();
-                $(".mymenu_detail .title h2").html("업무연락서")
+                $(".mymenu_detail .title h2").html("업무연락서 수신목록")
                 $(".mymenu_detail .detail_list").html(data);
                 $(".mymenu_detail").addClass("active");
                 chk_menu_on = true;

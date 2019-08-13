@@ -260,7 +260,7 @@ while($row = sql_fetch_array($res)){
             }?>
             <?php if(count($worklist)==0){?>
                 <tr>
-                    <td colspan="8" class="td_center">발신/수신된 업무연락서가 없습니다.</td>
+                    <td colspan="9" class="td_center">발신/수신된 업무연락서가 없습니다.</td>
                 </tr>
             <?php   }?>
         </table>

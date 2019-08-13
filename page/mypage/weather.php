@@ -1,181 +1,402 @@
 <?php
-include_once ("../../common.php");
-/*if($member["mb_auth"]==false){
-    alert("무료 이용기간이 만료 되었거나,\\r맴버쉽 기간이 만료 되었습니다. \\n맴버쉽 구매후 이용바랍니다.",G5_URL);
-}*/
-$sub = "sub";
-$bbody = "board";
-$mypage = false;
-$menu_id = "";
-include_once (G5_PATH."/_head.php");
-include_once(G5_PLUGIN_PATH.'/jquery-ui/datepicker.php');
+include_once("../../common.php");
 
-/********** 사용자 설정값 **********/
-$startYear        = date( "Y" ) ;
-$endYear        = date( "Y" ) + 4;
-$today = date("d");
+include_once(G5_PATH . "/_head.php");
+include_once(G5_PLUGIN_PATH . '/jquery-ui/datepicker.php');
 
-/********** 입력값 **********/
-$year            = ( $_GET['toYear'] )? $_GET['toYear'] : date( "Y" );
-$month            = ( $_GET['toMonth'] )? $_GET['toMonth'] : date( "m" );
-$doms            = array( "일", "월", "화", "수", "목", "금", "토" );
+$year               = ($_GET['toYear'])     ? $_GET['toYear']   : date("Y");
+$month              = ($_GET['toMonth'])    ? $_GET['toMonth']  : date("m");
+$date_search_start  = ($_GET['dss'])        ? $_GET['dss']      : date("Y-m-d", strtotime('-1 months'));
+$date_search_end    = ($_GET['dse'])        ? $_GET['dse']      : date("Y-m-d", strtotime('+3 days'));
+$select_const       = ($_GET['s_const'])    ? $_GET['s_const']  : null;
+$select_const_id    = ($_GET['s_c_id'])     ? $_GET['s_c_id']   : null;
+$ck_total           = ($_GET['ck_total'])   ? $_GET['ck_total'] : false;
+$ck_sunny           = ($_GET['ck_sunny'])   ? $_GET['ck_sunny'] : false;
+$ck_rain            = ($_GET['ck_rain'])    ? $_GET['ck_rain']  : false;
+$ck_snow            = ($_GET['ck_snow'])    ? $_GET['ck_snow']  : false;
+$ck_etc             = ($_GET['ck_etc'])     ? $_GET['ck_etc']   : false;
+$ck_tmn             = ($_GET['ck_tmn'])     ? $_GET['ck_tmn']   : false;
+$ck_tmx             = ($_GET['ck_tmx'])     ? $_GET['ck_tmx']   : false;
+$TMN                = ($_GET['TMN'])        ? $_GET['TMN']      : 5;
+$TMX                = ($_GET['TMX'])        ? $_GET['TMX']      : 36;
 
-
-if($const_id){
-    $where .= " and const_id = '{$const_id}' ";
-}else{
-    $sql = "select * from `cmap_my_construct` where (mb_id = '{$member['mb_id']}' or instr(members,'{$member["mb_id"]}')) and status = 0 order by id desc";
-    $res = sql_query($sql);
-    while($row = sql_fetch_array($res)){
-        $myconsts[] = $row["id"];
-    }
-    $inconst = implode(",",$myconsts);
-    $where .= " and const_id in ({$inconst})";
+class my_const
+{
+    public $id;
+    public $name;
+    public $lat;
+    public $lng;
 }
 
+$my_consts = array();
 
-$total=sql_fetch("select count(*) as cnt from `weather` where 1 {$where} GROUP by insert_date desc");
-if(!$page)
-    $page=1;
-$total=$total['cnt'];
-$rows=10;
-$start=($page-1)*$rows;
-$total_page=ceil($total/$rows);
+$sql = "select id, cmap_name as name, cmap_construct_lat as lat, cmap_construct_lng as lng from `cmap_my_construct` where (mb_id = '{$member['mb_id']}') and status = 0 order by id desc";
+$res = sql_query($sql);
+//echo $sql;
 
-$sql = "select *,MIN(TMN)as TMN , MAX(TMX)as TMX from `weather` where 1  {$where} group by insert_date order by insert_date desc limit {$start}, {$rows};";
+while ($row = sql_fetch_array($res)) {
+    $temp_const = new my_const;
+    $temp_const->id = $row["id"];
+    $temp_const->name = $row["name"];
+    $temp_const->lat = $row["lat"];
+    $temp_const->lng = $row["lng"];
+
+    $my_consts[] = $temp_const;
+}
+
+if ($select_const == null && $select_const_id == null) {
+    $select_const = $my_consts[0];
+}
+
+if ($select_const_id != null){
+    foreach($my_consts as $const){
+        if($const->id==$select_const_id)
+            $select_const=$const;
+    }
+}
+
+$total = sql_fetch("select count(*) as cnt from `weather` where lat={$select_const->lat} and lng={$select_const->lng}");
+if (!$page)
+    $page = 1;
+$total = $total['cnt'];
+$rows = 10;
+$start = ($page - 1) * $rows;
+$total_page = ceil($total / $rows);
+
+$sql = "select id, const_id, insert_date, concat(addr1, ' ', addr2, ' ', addr3) as addr, POP, SKY, PTY, T3H, REH, POP2, SKY2, PTY2, T3H2, REH2, TMN, TMX, sum(rain00, rain06, rain12, rain18) as rain, sum(snow00, snow06, snow12, snow18) as snow
+        from `weather` 
+        where lat={$select_const->lat} and lng={$select_const->lng} 
+        order by insert_date desc limit {$start}, {$rows};";
+//echo $sql;
+
 $res = sql_query($sql);
 $c = 0;
-while($row = sql_fetch_array($res)){
+while ($row = sql_fetch_array($res)) {
     $worklist[$c] = $row;
-    $worklist[$c]['num']=$total-($start)-$c;
+    $worklist[$c]['num'] = $total - ($start) - $c;
     $c++;
 }
-
 ?>
-    <div class="etc_view messages">
 
-    </div>
-    <span class="etc_view_bg"></span>
-    <div class="search" style="position: relative;">
-        <form action="" method="get">
-            <select name="const_id" id="cons_id" class="basic_input01" onchange="fnChangeConst2('<?php echo $member["mb_id"];?>',this.value)">
-                <option value="">현장 선택</option>
-                <?php for($i=0;$i<count($mycont);$i++){?>
-                    <option value="<?php echo $mycont[$i]["id"];?>" <?php if($current_const["const_id"]==$mycont[$i]["id"]){?>selected<?php }?>><?php echo $mycont[$i]["cmap_name"];?></option>
-                <?php }?>
-            </select>
-            <input type="text" class="datepicker basic_input01" id="datepicker1" name="date1" value="<?php if($date1==""){echo date("Y-m-d");}?>">
-            <input type="text" class="datepicker basic_input01" id="datepicker2" name="date2" value="<?php if($date2==""){echo date("Y-m-d");}?>">
-            <input type="button" class="basic_btn03" value="검색">
-        </form>
-        <div class="work_msg_btns">
-            <input type="button" class="basic_btn02" value="업무연락서" onclick="fnWriteMessage('')">
+<style>
+    .weather_header {
+        position: relative;
+        width: 100%;
+        top: 116px;
+    }
+
+    .weather_title {
+        position: relative;
+        width: 40%;
+        float: left;
+    }
+
+    .weather_search_condition {
+        position: relative;
+        width: 60%;
+        float: right;
+    }
+
+    .weather_result {
+        position: relative;
+        width: 100%;
+        top: 116px;
+    }
+</style>
+
+<div class="weather_header" class="full-width-fixed">
+    <div class="weather_title">
+        <div>
+            <header class="sub">
+                <h2>천후표</h2>
+            </header>
         </div>
-    </div>
-    <div class="width-fixed board-width" style="padding:0 20px">
-        <header class="sub">
-            <h2>천후표</h2>
-        </header>
         <div class="big_month">
-            <a class="prev_year" href="javascript:location.href='<?php echo G5_URL?>/page/mypage/schedule?toYear=<?php echo ($month != 1)?($prevYear - 1):$prevYear?>&toMonth=<?php echo $month ?>&id=<?php echo $id;?>'">
-                <img src="<?php echo G5_IMG_URL?>/cal_arrow_year_prev.png" alt=""> </a>
-            <a class="prev_month" href="javascript:location.href='<?php echo G5_URL?>/page/mypage/schedule?toYear=<?php echo $prevYear?>&toMonth=<?php echo $prevMonth?>&id=<?php echo $id;?>'">
-                <img src="<?php echo G5_IMG_URL?>/cal_arrow_m_prev.png" alt=""> </a>
-            <span><?php echo $year;?>. <?php echo (strlen($month)==1)?"0".$month:$month;?></span>
-            <a class="next_month" href="javascript:location.href='<?php echo G5_URL?>/page/mypage/schedule?toYear=<?php echo $nextYear?>&toMonth=<?php echo $nextMonth?>&id=<?php echo $id;?>'">
-                <img src="<?php echo G5_IMG_URL?>/cal_arrow_m_next.png" alt=""> </a>
-            <a class="next_year" href="javascript:location.href='<?php echo G5_URL?>/page/mypage/schedule?toYear=<?php echo ($month != 12)?($nextYear + 1):$nextYear?>&toMonth=<?php echo $month?>&id=<?php echo $id;?>'">
-                <img src="<?php echo G5_IMG_URL?>/cal_arrow_year_next.png" alt=""> </a>
+            <a class="prev_year" href="javascript:location.href='<?php echo G5_URL ?>/page/mypage/weather?toYear=<?php echo ($month != 1) ? ($prevYear - 1) : $prevYear ?>&toMonth=<?php echo $month ?>&id=<?php echo $id; ?>'">
+                <img src="<?php echo G5_IMG_URL ?>/cal_arrow_year_prev.png" alt=""> </a>
+            <a class="prev_month" href="javascript:location.href='<?php echo G5_URL ?>/page/mypage/weather?toYear=<?php echo $prevYear ?>&toMonth=<?php echo $prevMonth ?>&id=<?php echo $id; ?>'">
+                <img src="<?php echo G5_IMG_URL ?>/cal_arrow_m_prev.png" alt=""> </a>
+            <span><?php echo $year; ?>. <?php echo (strlen($month) == 1) ? "0" . $month : $month; ?></span>
+            <a class="next_month" href="javascript:location.href='<?php echo G5_URL ?>/page/mypage/weather?toYear=<?php echo $nextYear ?>&toMonth=<?php echo $nextMonth ?>&id=<?php echo $id; ?>'">
+                <img src="<?php echo G5_IMG_URL ?>/cal_arrow_m_next.png" alt=""> </a>
+            <a class="next_year" href="javascript:location.href='<?php echo G5_URL ?>/page/mypage/weather?toYear=<?php echo ($month != 12) ? ($nextYear + 1) : $nextYear ?>&toMonth=<?php echo $month ?>&id=<?php echo $id; ?>'">
+                <img src="<?php echo G5_IMG_URL ?>/cal_arrow_year_next.png" alt=""> </a>
         </div>
-        <div class="view" style="padding:20px 0;">
-            <table class="view_table">
+    </div>
+    <div class="weather_search_condition">
+        <div>
+            <table style="width:100%">
                 <colgroup>
-                    <col width="5%">
                     <col width="10%">
-                    <col width="12%">
-                    <col width="12%">
-                    <col width="*">
-                    <col width="8%">
-                    <col width="8%">
+                    <col width="90%">
                 </colgroup>
                 <tr>
-                    <th>일자</th>
-                    <th>지역</th>
-                    <th>현장</th>
-                    <th>수신자</th>
-                    <th>내용</th>
-                    <th>발신일</th>
-                    <th>수신일</th>
+                    <td>현장선택</td>
+                    <td>
+                        <select id="const" style="width:100%">
+                            <option>현장선택</option>
+                            <?php
+                                foreach($my_consts as $const){
+                                    if($const->id==$select_const->id)
+                                        $prt_text="<option value='{$const->id}' selected='selected'>{$const->name}</option>";
+                                    else
+                                        $prt_text="<option value='{$const->id}'>{$const->name}</option>";
+                                }
+
+                                echo $prt_text;
+                            ?>
+                        </select>
+                    </td>
                 </tr>
-                <?php for($i=0;$i<count($worklist);$i++){
-                    if($worklist[$i]["send_mb_id"]!=$member["mb_id"]){
-                        $msg_type = "수신";
-                    }else if($worklist[$i]["send_mb_id"]==$member["mb_id"]){
-                        $msg_type = "발신";
-                    }
-                    $mb1 = get_member($worklist[$i]["send_mb_id"]);
-                    $read_mb_id = explode(",",$worklist[$i]["read_mb_id"]);
-                    foreach($read_mb_id as $rmb){
-                        $mb2[] = get_member($rmb);
-                    }
-                    ?>
-                    <tr>
-                        <td class="td_center"></td>
-                        <td class="td_center"></td>
-                        <td class="td_center"></td>
-                        <td class="td_center"></td>
-                        <td onclick="fnWriteMessage('<?php echo $worklist[$i]["id"];?>')"></td>
-                        <td class="td_center"></td>
-                        <td class="td_center"></td>
-                        <td class="td_center"></td>
-                    </tr>
-                    <?php
-                    unset($mb2);
-                }?>
-                <?php if(count($worklist)==0){?>
-                    <tr>
-                        <td colspan="7" class="td_center">발신/수신된 업무연락서가 없습니다.</td>
-                    </tr>
-                <?php   }?>
             </table>
-            <?php
-            if($total_page>1){
-                $start_page=1;
-                $end_page=$total_page;
-                if($total_page>5){
-                    if($total_page<($page+2)){
-                        $start_page=$total_page-4;
-                        $end_page=$total_page;
-                    }else if($page>3){
-                        $start_page=$page-2;
-                        $end_page=$page+2;
-                    }else{
-                        $start_page=1;
-                        $end_page=5;
-                    }
-                }
-                ?>
-                <div class="num_list01">
-                    <ul>
-                        <?php if($page!=1){?>
-                            <li class="prev"><a href="<?php echo G5_URL."/admin/product_list.php?page=".($page-1)."&stx=".$stx."&sfl=".$sfl."&cate1=".$cate1."&cate2=".$cate2; ?>">&lt;</a></li>
-                        <?php } ?>
-                        <?php for($i=$start_page;$i<=$end_page;$i++){ ?>
-                            <li class="<?php echo $page==$i?"active":""; ?>"><a href="<?php echo G5_URL."/admin/product_list.php?page=".$i."&stx=".$stx."&sfl=".$sfl."&cate1=".$cate1."&cate2=".$cate2; ?>"><?php echo $i; ?></a></li>
-                        <?php } ?>
-                        <?php if($page<$total_page){?>
-                            <li class="next"><a href="<?php echo G5_URL."/admin/product_list.php?page=".($page+1)."&stx=".$stx."&sfl=".$sfl."&cate1=".$cate1."&cate2=".$cate2; ?>">&gt;</a></li>
-                        <?php } ?>
-                    </ul>
-                </div>
-                <?php
-            }
-            ?>
+        </div>
+        <div>
+            출력조건
+            <input type="checkbox" id="ck_total" onclick="check_total()" checked>전체
+            <input type="checkbox" id="ck_sunny" onclick="check_checked()" checked>맑음
+            <input type="checkbox" id="ck_snow" onclick="check_checked()" checked>눈
+            <input type="checkbox" id="ck_rain" onclick="check_checked()" checked>비
+            <input type="checkbox" id="ck_etc" onclick="check_checked()" checked>기타
+            <input type="checkbox" id="ck_tmn" onclick="check_checked()" checked>최저
+            <select id="TMN">
+                <option value="">최저온도선택</option>
+                <?php for ($i = 50; $i >= -50; $i--) { ?>
+                    <option value="<?php echo $i; ?>" <?php if ($i == 5) { ?> selected="selected" <?php } ?>>
+                        <?php echo $i; ?> </option>
+                <?php } ?>
+            </select>
+            도 이상
+            <input type="checkbox" id="ck_tmx" onclick="check_checked()" checked>최고
+            <select id="TMX">
+                <option value="">최고온도선택</option>
+                <?php for ($i = 50; $i >= -50; $i--) { ?>
+                    <option value="<?php echo $i; ?>" <?php if ($i == 36) { ?> selected="selected" <?php } ?>>
+                        <?php echo $i; ?> </option>
+                <?php } ?>
+            </select>
+            도 이하
+        </div>
+        <div>
+            <label>조회기간</label>
+            <input type="text" id="dss" class="datepicker basic_input01" value="<?php echo $date_search_start; ?>">
+            <input type="text" id="dse" class="datepicker basic_input01" value="<?php echo $date_search_end; ?>">
+            <input type="button" class="basic_btn03" value="조회" onclick="weather_search()">
+            <input type="button" class="basic_btn02" value="저장">
+            <input type="button" class="basic_btn02" value="출력">
         </div>
     </div>
-    <script>
+</div>
+<div class="weather_result view" class="full-width-fixed">
+    <table class="view_table">
+        <colgroup>
+            <col width="10%">
+            <col width="13%">
+            <col width="7%">
+            <col width="7%">
+            <col width="7%">
+            <col width="7%">
+            <col width="7%">
+            <col width="7%">
+            <col width="7%">
+            <col width="7%">
+            <col width="7%">
+            <col width="7%">
+            <col width="7%">
+        </colgroup>
+        <tr>
+            <th rowspan="2">일자</th>
+            <th rowspan="2">지역</th>
+            <th colspan="4">오전 (9시 기준)</th>
+            <th colspan="4">오후 (12시 기준)</th>
+            <th colspan="2">일일 기온</th>
+            <th rowspan="2">일일 강수량 (mm / cm)</th>
+        </tr>
+        <tr>
+            <th>강수확률</th>
+            <th>날씨</th>
+            <th>온도</th>
+            <th>습도</th>
+            <th>강수확률</th>
+            <th>날씨</th>
+            <th>온도</th>
+            <th>습도</th>
+            <th>최저</th>
+            <th>최고</th>
+        </tr>
+        <?php
 
-    </script>
+        for($i=0;$i<$c;$i++){
+            $row=$worklist[$i];
+            $weather_text="";
+            $weather_text2="";
+            $rain_text="";
+            $rain_text2="";
+            if($row["PTY"]==0){
+                switch($row["SKY"]){
+                    case(1):
+                        $weather_text="맑음";
+                        break;
+                    case(2):
+                        $weather_text="구름조금";
+                        break;
+                    case(3):
+                        $weather_text="구름많음";
+                        break;
+                    case(4):
+                        $weather_text="흐림";
+                        break;
+                }
+            }
+            else{
+                switch($row["PTY"]){
+                case(1):
+                    $weather_text="비";
+                    break;
+                case(2):
+                    $weather_text="비/눈";
+                    break;
+                case(3):
+                    $weather_text="눈";
+                    break;
+                }
+            }
+            if($row["PTY2"]==0){
+                switch($row["SKY2"]){
+                    case(1):
+                        $weather_text2="맑음";
+                        break;
+                    case(2):
+                        $weather_text2="구름조금";
+                        break;
+                    case(3):
+                        $weather_text2="구름많음";
+                        break;
+                    case(4):
+                        $weather_text2="흐림";
+                        break;
+                }
+            }
+            else{
+                switch($row["PTY2"]){
+                case(1):
+                    $weather_text2="비";
+                    break;
+                case(2):
+                    $weather_text2="비/눈";
+                    break;
+                case(3):
+                    $weather_text2="눈";
+                    break;
+                }
+            }
+            $prt_text = "
+                <tr>
+                    <td>{$row["insert_date"]}</td>
+                    <td>{$row["addr"]}</td>
+                    <td>{$row["POP"]}%</td>
+                    <td>{$weather_text}</td>
+                    <td>{$row["T3H"]}°C</td>
+                    <td>{$row["REH"]}%</td>
+                    <td>{$row["POP2"]}%</td>
+                    <td>{$weather_text2}</td>
+                    <td>{$row["T3H2"]}°C</td>
+                    <td>{$row["REH2"]}%</td>
+                    <td>{$row["TMN"]}°C</td>
+                    <td>{$row["TMX"]}°C</td>
+                    <td>{$row["rain"]}mm / {$row["snow"]} cm</td>
+                </tr>
+            ";
+            echo $prt_text;
+        }
+        ?>
+    </table>
+</div>
+
+<script>
+    function weather_search(){
+        var url_str="weather.php?";
+
+        if(document.getElementById('const').selectedIndex!=0)
+            url_str+="&s_c_id="+document.getElementById('const').value;
+        
+        if(document.getElementById('ck_total').checked){
+            url_str+="&ck_total="+document.getElementById('ck_total').checked;
+
+            if(document.getElementById('ck_tmn').checked){
+                if(document.getElementById('TMN').selectedIndex!=0)
+                    url_str+="&TMN="+document.getElementById('TMN').value;
+            }
+            if(document.getElementById('ck_tmx').checked){
+                if(document.getElementById('TMX').selectedIndex!=0)
+                    url_str+="&TMX="+document.getElementById('TMX').value;
+            }
+        }
+        else{
+            if(document.getElementById('ck_sunny').checked)
+                url_str+="&ck_sunny="+document.getElementById('ck_sunny').checked;
+            if(document.getElementById('ck_rain').checked)
+                url_str+="&ck_rain="+document.getElementById('ck_rain').checked;
+            if(document.getElementById('ck_snow').checked)
+                url_str+="&ck_snow="+document.getElementById('ck_snow').checked;
+            if(document.getElementById('ck_etc').checked)
+                url_str+="&ck_etc="+document.getElementById('ck_etc').checked;
+
+            if(document.getElementById('ck_tmn').checked){
+                if(document.getElementById('TMN').selectedIndex!=0)
+                    url_str+="&TMN="+document.getElementById('TMN').value;
+            }
+            if(document.getElementById('ck_tmx').checked){
+                if(document.getElementById('TMX').selectedIndex!=0)
+                    url_str+="&TMX="+document.getElementById('TMX').value;
+            }
+        }
+
+        url_str+="&dss="+document.getElementById('dss').value;
+        url_str+="&dse="+document.getElementById('dse').value;
+
+        //debugger;
+        location=url_str;
+    }
+
+    function check_total(){
+        var checkbox = document.getElementById('ck_total');
+        if (checkbox.checked){
+            checkbox = document.getElementById('ck_sunny');
+            checkbox.checked=true;
+            checkbox = document.getElementById('ck_rain');
+            checkbox.checked=true;
+            checkbox = document.getElementById('ck_snow');
+            checkbox.checked=true;
+            checkbox = document.getElementById('ck_etc');
+            checkbox.checked=true;
+            checkbox = document.getElementById('ck_tmn');
+            checkbox.checked=true;
+            checkbox = document.getElementById('ck_tmx');
+            checkbox.checked=true;
+        }
+        else{
+            checkbox = document.getElementById('ck_sunny');
+            checkbox.checked=false;
+            checkbox = document.getElementById('ck_rain');
+            checkbox.checked=false;
+            checkbox = document.getElementById('ck_snow');
+            checkbox.checked=false;
+            checkbox = document.getElementById('ck_etc');
+            checkbox.checked=false;
+            checkbox = document.getElementById('ck_tmn');
+            checkbox.checked=false;
+            checkbox = document.getElementById('ck_tmx');
+            checkbox.checked=false;
+        }
+    }
+    function check_checked(){
+        if(document.getElementById('ck_sunny').checked && document.getElementById('ck_rain').checked && document.getElementById('ck_snow').checked && document.getElementById('ck_etc').checked && document.getElementById('ck_tmn').checked && document.getElementById('ck_tmx').checked)
+            document.getElementById('ck_total').checked=true;
+        else
+            document.getElementById('ck_total').checked=false;
+    }
+</script>
+
 <?php
-include_once (G5_PATH."/_tail.php");
+include_once(G5_PATH . "/_tail.php");
 ?>
