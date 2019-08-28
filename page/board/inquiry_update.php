@@ -9,7 +9,6 @@ $path = G5_DATA_PATH."/inquiry/";
 
 $chars_array = array_merge(range(0,9), range('a','z'), range('A','Z'));
 
-
 if($_FILES["file"]["tmp_name"]){
     $tmp_name = $_FILES["file"]["tmp_name"];
     $filename = $_FILES["file"]["name"];
@@ -44,6 +43,10 @@ if($upload["filename"]!=""){
 
 $email = $email."@".$email2;
 
+if($payments){
+    $inquiry_type = "결제문의";
+    $where .= " , payments_mb_id = '{$payments_mb_id}'";
+}
 
 $sql = "insert into `cmap_inquiry` set `name` = '{$name}', email = '{$email}', inquiry_type = '{$inquiry_type}', content = '{$content}', insert_date = now() {$where}";
 if(sql_query($sql)){
@@ -54,7 +57,7 @@ if(sql_query($sql)){
     //사용자에게 등록 메일 송부
     //mailer($name,$email,$config['cf_admin_email'],$name."님의 ".$inquiry_type."입니다.",$content,1,$file);
 
-    alert("정상 등록되었습니다. \\r등록한 이메일주소로 처리사항이 전송됩니다.");
+    alert("정상 등록되었습니다. \\r등록한 이메일주소로 처리사항이 전송됩니다.\\r담당자 지정이 완료되면 빠른시간에 안내 드리겠습니다.");
 }else{
     alert("잘못된 요청입니다. \\r다시 시도해 주세요.");
 }

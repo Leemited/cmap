@@ -43,6 +43,9 @@ while($row = sql_fetch_array($res)){
 <div class="width-fixed-com">
     <header class="com_head">
         <h2><?php echo $member["mb_1"];?> 관리자 페이지</h2>
+        <div class="member_edit">
+            <a href="<?php echo G5_URL;?>/page/company/edit_member.php?mb_id=<?php echo $member["mb_id"];?>"><span></span> 회원정보수정</a>
+        </div>
         <div class="logout">
             <a href="javascript:fnLogout();"><span></span>로그아웃</a>
         </div>
@@ -81,7 +84,7 @@ while($row = sql_fetch_array($res)){
                 <th colspan="3">기간</th>
                 <th>선택</th>
                 <th>상태</th>
-                <th colspan="2">관리</th>
+                <th colspan="">관리</th>
             </tr>
             <?php for($i=0;$i<count($list);$i++){?>
             <tr class="company_mbs">
@@ -96,19 +99,18 @@ while($row = sql_fetch_array($res)){
                 <td class="td_center">
                     <input type="button" value="선택해제" onclick="fnRadioCancel('<?php echo $list[$i]["mb_id"];?>')" class="basic_btn02" style="padding:6px 10px;width:auto">
                 </td>
-                <td class="td_center"><?php if($list[$i]["payments"]=="활성"){?><input type="button" class="basic_btn02" style="padding:6px 10px;width:auto" value="연장하기" onclick="fnPayments('<?php echo $list[$i]["mb_id"];?>')"><?php }else{?>
-        <input type="button" value="결제하기" class="basic_btn02" style="padding:6px 10px;width:auto" onclick="fnPayments('<?php echo $list[$i]["mb_id"];?>')"><?php }?></td>
-                <td class="td_center">
-                    <input type="button" class="basic_btn02" style="padding:6px 10px;width:auto" value="상세보기" onclick="location.href=g5_url+'/page/company/edit_member?mb_id=<?php echo $list[$i]["mb_id"];?>'">
+                <td class="td_center"
+                ><?php if($list[$i]["payments"]=="활성"){?><input type="button" class="basic_btn02" style="padding:6px 10px;width:auto" value="연장하기" onclick="fnPayments('<?php echo $list[$i]["mb_id"];?>')"><?php }else{?>
+        <input type="button" value="결제하기" class="basic_btn02" style="padding:6px 10px;width:auto" onclick="fnPayments('<?php echo $list[$i]["mb_id"];?>')"><?php }?>
                 </td>
                 <td class="td_center">
-
+                    <input type="button" class="basic_btn02" style="padding:6px 10px;width:auto" value="상세보기" onclick="location.href=g5_url+'/page/company/edit_member?mb_id=<?php echo $list[$i]["mb_id"];?>'">
                 </td>
             </tr>
             <?php }?>
             <?php if(count($list)==0){?>
                 <tr>
-                    <td colspan="10" class="td_center">등록된 부계정이 없습니다.</td>
+                    <td colspan="11" class="td_center">등록된 부계정이 없습니다.</td>
                 </tr>
             <?php }else{?>
                 <tr class="blod_tr">
@@ -118,7 +120,7 @@ while($row = sql_fetch_array($res)){
                     <td class="td_center">
                         총 결제 금액 :
                     </td>
-                    <td colspan="3" style="text-align: right;padding:5px;">
+                    <td colspan="2" style="text-align: right;padding:5px;">
                         <span class="totalPrice">0</span> 원
                     </td>
                 </tr>
@@ -127,6 +129,7 @@ while($row = sql_fetch_array($res)){
         <div style="text-align: right;padding:30px 0 0;">
             <input type="hidden" name="payments" id="payments" value="">
             <input type="hidden" name="amount" id="amount" value="">
+            <input type="button" value="문의하기" class="basic_btn01" onclick="location.href=g5_url+'/page/board/inquiry'">
             <input type="button" value="선택일괄결제" class="basic_btn01" onclick="fnAllPayment();">
         </div>
     </div>

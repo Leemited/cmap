@@ -4,15 +4,16 @@ include_once ("../../common.php");
     echo "1";
     return false;
 }*/
+if($member["mb_9"]==""){
+    echo "4";
+    return false;
+}
+
 $delay_now = date("Y-m-d");
 $count = 0;
 $chk_read = true;//확인 불가능 false = 가능 , 신규등록은 불가능
 if($msg_id){
     $msgs = sql_fetch("select * from `cmap_construct_work_msg` where id = '{$msg_id}'");
-    /*if($msgs["read_mb_id"]==$member["mb_id"] && $msgs["read_date"] == "") {
-        $sql = "update `cmap_construct_work_msg` set read_date = now(), read_time = now() where id = '{$msg_id}'";
-        sql_query($sql);
-    }*/
 
     $read_mbs = explode(",",$msgs["read_mb_id"]);
     for($i=0;$i<count($read_mbs);$i++){
@@ -138,7 +139,7 @@ if($msg_id) {
         $days = $diff / (60 * 60 * 24);
         $schedule_pk = explode("``",$row["pk_id"]);
         for($j=0;$j<count($schedule_pk);$j++) {
-            $sql = "select *,c.pk_id as pk_id,c.depth1_id as depth1_id,a.pk_id as depth1_pk_id,c.depth2_id as depth2_id ,d.depth_name as depth_name,a.depth_name as depth1_name,d.pk_id as depth4_pk_id from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$schedule_pk[$j]}'";
+            $sql = "select *,c.pk_id as pk_id,c.depth1_id as depth1_id,a.pk_id as depth1_pk_id,c.depth2_id as depth2_id ,d.depth_name as depth_name,a.depth_name as depth1_name,d.pk_id as depth4_pk_id, a.me_code as me_code from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$schedule_pk[$j]}'";
             $ddd = sql_fetch($sql);
             if(strpos($chcccid,$ddd["depth4_pk_id"])!==false) {
                 continue;
@@ -185,9 +186,9 @@ if($msg_id) {
             for($j=0;$j<count($map_pk_id);$j++){
                 if($pk_ids[$i]==$map_pk_id[$j]){
                     if($map_pk_actives[$j]==0){
-                        $sql = "select *,c.pk_id as pk_id,c.depth1_id as depth1_id,a.pk_id as depth1_pk_id,c.depth2_id as depth2_id ,d.depth_name as depth_name,a.depth_name as depth1_name,d.pk_id as depth4_pk_id from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$pk_ids[$i]}'";
+                        $sql = "select *,c.pk_id as pk_id,c.depth1_id as depth1_id,a.pk_id as depth1_pk_id,c.depth2_id as depth2_id ,d.depth_name as depth_name,a.depth_name as depth1_name,d.pk_id as depth4_pk_id,a.me_code as me_code from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$pk_ids[$i]}'";
                         $ddd = sql_fetch($sql);
-                        if(strpos($chcccid1,$ddd["depth4_pk_id"])!==false) {
+                        if(strpos($chcccid1,$ddd["depth4_pk_id"])!==false && substr($ddd["me_code"],0,2)!=10) {
                             continue;
                         }//else{
                             //echo $ddd["depth4_pk_id"]."//".$chcccid1."<br>";
@@ -264,7 +265,7 @@ $delaylistmsg = array_filter($delaylistmsg);
                             <?php for($i=0;$i<count($mem);$i++){
                                 if($mem[$i]["mb_id"]!=""){
                                 ?>
-                                <input type="checkbox" name="mb_id[]" id="mb_id_<?php echo $i;?>" value="<?php echo $mem[$i]["mb_id"];?>" checked><label for="mb_id_<?php echo $i;?>" style="margin-left:0;margin-right:20px;"><?php echo $mem[$i]["mb_name"];?></label>
+                                <input type="checkbox" name="mb_id[]" id="mb_id_<?php echo $i;?>" value="<?php echo $mem[$i]["mb_id"];?>" checked><label for="mb_id_<?php echo $i;?>" style="margin-left:0;margin-right:20px;"><?php echo ($mem[$i]["mb_9"])?$mem[$i]["mb_9"]:$mem[$i]["mb_name"];?></label>
                             <?php }?>
                             <?php }?>
                         </td>
@@ -353,7 +354,7 @@ $delaylistmsg = array_filter($delaylistmsg);
                         <td colspan="2">
                             <p>시행 : (계약명) <?php echo $const["cmap_name"];?> - <?php echo $count;?> (<?php echo date("Y.m.d");?>)호</p>
                             <?php if($member["mb_addr1"] || $member["mb_zip1"]){?><p>우편번호 : <?php echo $member["mb_zip1"]." ";?> 주소 : <?php echo $member["mb_addr1"]. " ". $member["mb_addr2"];?></p><?php }?>
-                            <?php if($member["mb_tel"] && $member["mb_tel"] != "010--"){?><p><?php if($member["mb_tel"]){?>전화 : <?php echo $member["mb_tel"]." "; } ?></p><?php }?>
+                            <?php if($member["mb_hp"] && $member["mb_hp"] != "010--"){?><p><?php if($member["mb_hp"]){?>전화 : <?php echo $member["mb_hp"]." "; } ?></p><?php }?>
                         </td>
                     </tr>
                 </table>
@@ -380,7 +381,15 @@ $delaylistmsg = array_filter($delaylistmsg);
                                 <input type="checkbox" name="pk_ids[]" id="pk_id_<?php echo $delaylistmsg[$i]["pk_id"];?>" value="<?php echo $delaylistmsg[$i]["pk_id"];?>" checked>
                                 <label for="pk_id_<?php echo $delaylistmsg[$i]["pk_id"];?>"></label>
                             </td>
-                            <td title="<?php echo $delaylistmsg[$i]["depth1_name"];?>"><?php echo "[".$delaylistmsg[$i]["depth1_name"]."]".cut_str($delaylistmsg[$i]["depth_name"],20,"...");?></td>
+                            <td title="<?php echo $delaylistmsg[$i]["depth1_name"];?>">
+                                <?php
+                                if(substr($delaylistmsg[$i]["me_code"],0,2)==10){
+                                    echo "[" . $delaylistmsg[$i]["depth1_name"] . "]" . cut_str($delaylistmsg[$i]["content"], 20, "...");
+                                }else {
+                                    echo "[" . $delaylistmsg[$i]["depth1_name"] . "]" . cut_str($delaylistmsg[$i]["depth_name"], 20, "...");
+                                }
+                                ?>
+                            </td>
                             <td class="td_center"><?php echo $delaylistmsg[$i]["schedule_date"];?></td>
                             <td class="td_center"><?php echo $delaylistmsg[$i]["delay_date"];?></td>
                         </tr>
@@ -464,7 +473,6 @@ $delaylistmsg = array_filter($delaylistmsg);
                 data: {mb_ids:mb_ids},
                 dataType: "json"
             }).done(function (data) {
-                console.log(data);
                 $(".addmember").html(data.members);
                 $("#in_members").val(mb_ids);
             });

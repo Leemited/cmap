@@ -1,13 +1,23 @@
 <?php
 include_once ("../../common.php");
 
-if($type=="hp"){
-    $sel = " and REPLACE(mb_hp, '-', '') = '{$hp}'";
-}else if($type=="email"){
-    $sel = " and mb_email = '{$email}'";
+if($mb_level==6){//기업
+    $sel = " and mb_level = '{$mb_level}' ";
+    if($type=="hp"){
+        $sel .= " and REPLACE(mb_tel, '-', '') = '{$hp}'";
+    }else if($type=="email"){
+        $sel .= " and mb_email = '{$email}'";
+    }
+}else{//개인
+    if($type=="hp"){
+        $sel .= " and REPLACE(mb_hp, '-', '') = '{$hp}'";
+    }else if($type=="email"){
+        $sel .= " and mb_email = '{$email}'";
+    }
 }
 
 $sql = "select * from `g5_member` where mb_name = '{$name}' {$sel}";
+$result["sql"]=$sql;
 
 $find = sql_fetch($sql);
 

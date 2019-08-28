@@ -133,7 +133,7 @@ $delaylist = arr_sort($delaylist, "delay_date", "asc");
         <?php if($msg_id){?>
             <ul>
                 <!--<li onclick="">새로고침</li>-->
-                <li onclick="fnMsgSave('<?php echo $msg_id;?>');"><img src="<?php echo G5_IMG_URL;?>/ic_save.svg" alt=""></li>
+                <!--<li onclick="fnMsgSave('<?php /*echo $msg_id;*/?>');"><img src="<?php /*echo G5_IMG_URL;*/?>/ic_save.svg" alt=""></li>-->
                 <!-- <li>다운로드</li>-->
                 <li onclick="fnPrint('<?php echo $msg_id;?>','<?php echo $msgs["const_id"];?>');"><img src="<?php echo G5_IMG_URL;?>/ic_print.svg" alt=""></li>
             </ul>
@@ -177,7 +177,7 @@ $delaylist = arr_sort($delaylist, "delay_date", "asc");
                         <tr>
                             <td colspan="2" style="">
                                 <div class="read_msg_content">
-                                    <h2 style=""></h2>
+                                    <!--<h2 style=""></h2>-->
                                     <p class="msg_content_detail" style="">
                                         <?php echo nl2br(str_replace(" ","&nbsp;",$msgs["msg_content"]));?>
                                     </p>
@@ -192,7 +192,7 @@ $delaylist = arr_sort($delaylist, "delay_date", "asc");
                             <td colspan="2">
                                 <div class="send_info">
                                     <h2>
-                                        <span><?php echo $mb["mb_1"];?> <?php echo $mb["mb_4"];?> <?php echo $mb["mb_name"];?></span>
+                                        <span><?php echo $msgs["msg_send_name"]?></span>
                                         <?php if($msgs["msg_sign_filename"]){?>
                                             <div class="signs"><img src="<?php echo G5_DATA_URL;?>/member/<?php echo substr($mb["mb_id"],0,2);?>/<?php echo $msgs["msg_sign_filename"];?>" alt="" style="width:100%;"></div>
                                         <?php }else{?>
@@ -207,17 +207,27 @@ $delaylist = arr_sort($delaylist, "delay_date", "asc");
                             <td style="border-bottom:5px solid #999999;">수&nbsp;신&nbsp;자</td>
                             <td class="addmember" style="border-bottom:5px solid #999999;">
                                 <?php if($msg_id){
-                                    for($i=0;$i<count($read_mb_ids);$i++){
-                                        echo $read_mb_ids[$i]["mb_1"]." ".$read_mb_ids[$i]["mb_4"]." ".$read_mb_ids[$i]["mb_name"]."&nbsp;&nbsp;&nbsp;";
+                                    if($msgs["msg_read_name"]!=""){
+                                        $read_names = explode(",",$msgs["msg_read_name"]);
+                                        for($i=0;$i<count($read_names);$i++){
+                                            echo $read_names[$i]."&nbsp;&nbsp;&nbsp;";
+                                        }
+                                    }else{
+                                        for($i=0;$i<count($read_mb_ids);$i++){
+                                            echo $read_mb_ids[$i]["mb_1"]." ".$read_mb_ids[$i]["mb_4"]." ".$read_mb_ids[$i]["mb_name"]."&nbsp;&nbsp;&nbsp;";
+                                        }
                                     }
                                 }?>
                             </td>
                         </tr>
                         <tr class="small_tr">
                             <td colspan="2" >
-                                <p>시행 : (계약명) <?php echo $const["cmap_name"];?> - <?php echo $msgs["msg_count"];?> (<?php echo date("Y.m.d");?>)호</p>
-                                <?php if($mb["mb_addr1"] || $mb["mb_zip1"]){?><p>우편번호 : <?php echo $mb["mb_zip1"]." ";?> 주소 : <?php echo $mb["mb_addr1"]. " ". $mb["mb_addr2"];?></p><?php }?>
-                                <?php if($mb["mb_tel"]){?><p><?php if($mb["mb_tel"]){?>전화 : <?php echo $mb["mb_tel"]." ";?> <?php } ?></p><?php }?>
+                                <?php
+                                $addrs = explode("//",$msgs["msg_send_addr"]);
+                                ?>
+                                <p>시행 : (계약명) <?php echo $msgs["msg_send_cmap"];?> - <?php echo $msgs["msg_count"];?> (<?php echo date("Y.m.d");?>)호</p>
+                                <p>우편번호 : <?php echo $addrs[0]." ";?> 주소 : <?php echo $addrs[1];?></p>
+                                <p>전화 : <?php echo $msgs["msg_send_hp"]." ";?> </p>
                             </td>
                         </tr>
                     </table>

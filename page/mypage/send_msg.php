@@ -10,16 +10,29 @@ if(!$msg_count){
     $msg_count = 0;
 }
 
+for($i=0;$i<count($mb_id);$i++){
+    $mbinfo = get_member($mb_id[$i]);
+    if($mbinfo["mb_9"]){
+        $mbnames[]=$mbinfo["mb_9"];
+    }else{
+        $mbnames[] = $mbinfo["mb_1"]." ".$mbinfo["mb_4"]." ".$mbinfo["mb_name"];
+    }
+}
+
 $mb_ids = implode(",",$mb_id);
+$mb_names = implode(",",$mbnames);
 
 if($msg_id) {
     $sql = "select * from `cmap_construct_work_msg` where id = '{$msg_id}'";
     $msg_chk = sql_fetch($sql);
     $const_id = $msg_chk["const_id"];
+    $cmap_name = $msg_chk["cmap_name"];
+}else {
+    $const = sql_fetch("select cmap_name from `cmap_my_construct` where id = '{$const_id}'");
+    $cmap_name = $const["cmap_name"];
 }
 
-$sql = "insert into `cmap_construct_work_msg` set send_mb_id = '{$member["mb_id"]}' , read_mb_id = '{$mb_ids}', msg_subject = '{$msg_subject}', msg_content = '{$msg_content}', msg_retype = '{$msg_retype}', send_date = now(), send_time = now(), pk_ids = '{$pk_idss}', delay_view = '{$delay_view}',const_id = '{$const_id}', msg_count='{$msg_count}', msg_group='{$msg_group}', msg_sign_filename = '{$msg_sing_filename}' ";
-
+$sql = "insert into `cmap_construct_work_msg` set send_mb_id = '{$member["mb_id"]}' , read_mb_id = '{$mb_ids}', msg_subject = '{$msg_subject}', msg_content = '{$msg_content}', msg_retype = '{$msg_retype}', send_date = now(), send_time = now(), pk_ids = '{$pk_idss}', delay_view = '{$delay_view}',const_id = '{$const_id}', msg_count='{$msg_count}', msg_group='{$msg_group}', msg_sign_filename = '{$msg_sing_filename}',msg_send_name='{$member["mb_9"]}', msg_send_addr = '{$member["mb_zip1"]}//{$member["mb_addr1"]}{$member["mb_addr2"]}',msg_send_cmap = '{$cmap_name}',msg_read_name = '{$mb_names}', msg_send_hp = '{$member["mb_hp"]}'";
 $msg_count++;
 
 if(!sql_query($sql)){
@@ -32,11 +45,6 @@ if($type=="resend"){//회신 완료 처리
     $retype_chk = $msg_chk["msg_retype_member"];
 
     if($msg_chk["msg_retype_member"]!="") {
-        /*for ($i = 0; $i < count($retype_chk); $i++) {
-            if ($retype_chk[$i] == $member["mb_id"]) {
-
-            }
-        }*/
         $retype_date = date("Y-m-d");
         $retype_time = date("H:i:s");
 

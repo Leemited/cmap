@@ -648,6 +648,8 @@ if($is_member) {
 
             }else if(strpos($_SERVER["REQUEST_URI"],"/ajax/")!==false){
 
+            }else if(strpos($_SERVER["REQUEST_URI"],"/board/inquiry")!==false){
+                //goto_url(G5_URL . "/page/company/");
             }else {
                 goto_url(G5_URL . "/page/company/");
             }
@@ -658,10 +660,16 @@ if($is_member) {
     $todays = date("Y-m-d");
     $sql = "select count(*) as cnt from `cmap_payments` where mb_id = '{$member["mb_id"]}' and '{$todays}' BETWEEN payment_start_date and payment_end_date and order_cancel = 0";
     $chkMembeship = sql_fetch($sql);
-    if(date("Y-m-d",strtotime("+ 5 day", strtotime($member["mb_datetime"]))) < $todays){
-        if($chkMembeship["cnt"]==0){
+    if($chkMembeship["cnt"]==0) {
+        $member["mb_auth"]=false;
+    }else{
+        if(date("Y-m-d",strtotime("+ 5 day", strtotime($member["mb_datetime"]))) >= $todays){
             $member["mb_auth"]=false;
         }
+    }
+
+    if($member["mb_paused_status"]==1){
+        $member["mb_auth"]=false;
     }
 
     if($is_admin){

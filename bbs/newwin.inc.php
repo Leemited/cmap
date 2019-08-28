@@ -21,7 +21,7 @@ for ($i=0; $nw=sql_fetch_array($result); $i++)
 ?>
 
     <div id="hd_pops_<?php echo $nw['nw_id'] ?>" class="hd_pops" style="top:<?php echo $nw['nw_top']?>px;left:<?php echo $nw['nw_left']?>px">
-        <div class="hd_pops_con" style="width:<?php echo $nw['nw_width'] ?>px;height:<?php echo $nw['nw_height'] ?>px">
+        <div class="hd_pops_con" style="width:<?php echo $nw['nw_width'] ?>px;height:<?php echo $nw['nw_height'] ?>px;<?php if($nw["nw_link"]!=""){?>cursor:pointer<?php }?>" <?php if($nw["nw_link"]!=""){?>onclick="location.href='<?php echo $nw["nw_link"];?>'" <?php }?>>
             <?php echo conv_content($nw['nw_content'], 1); ?>
         </div>
         <div class="hd_pops_footer">

@@ -5,7 +5,6 @@ $me_id="6064";
 
 $const = sql_fetch("select * from `cmap_my_construct` where id = '{$constids}'");
 
-
 //평가 항목 가저오기
     $sql = "select * from `cmap_my_pmmode_set` where mb_id='{$member["mb_id"]}' and const_id = '{$constids}'";
     $ss = sql_fetch($sql);
@@ -156,7 +155,7 @@ while($row = sql_fetch_array($res)){
     if($ss!=null) {
         $eval1 = sql_fetch("select * from `cmap_my_construct_eval` where const_id = '{$row["id"]}' and mb_id ='{$ss["set_mb_id"]}'");
     }else{
-        $sql = "select * from `cmap_my_construct` where id = '{$current_const["const_id"]}'";
+        $sql = "select * from `cmap_my_construct` where id = '{$row["id"]}'";
         $ss2 = sql_fetch($sql);
         $eval1 = sql_fetch("select * from `cmap_my_construct_eval` where const_id = '{$row["id"]}' and mb_id ='{$ss2["mb_id"]}'");
     }
@@ -169,7 +168,7 @@ while($row = sql_fetch_array($res)){
 
 
     //기간경과율 계산
-    $chkstart[$c] = new DateTime($row["cmap_construct_start"]);
+    $chkstart[$c] = new DateTime($row["cmap_construct_start_temp"]);
     $chktodayss[$c] = new DateTime($todays);
     $chkend[$c] = new DateTime($row["cmap_construct_finish"]);
     $totaldays = date_diff($chkstart[$c],$chkend[$c]);
@@ -314,10 +313,10 @@ $alls4 = $alltotal4 / $alltot;
             <?php for($i=0;$i<count($worklist);$i++){
                 $constmb = get_member($worklist[$i]["mb_id"]);
                 //기간경과율 계산
-                if(date("Y-m-d") <= $worklist[$i]["cmap_construct_start"]){
+                if(date("Y-m-d") <= $worklist[$i]["cmap_construct_start_temp"]){
                     $dayper = "0%";
                 }else {
-                    $start[$i] = new DateTime($worklist[$i]["cmap_construct_start"]);
+                    $start[$i] = new DateTime($worklist[$i]["cmap_construct_start_temp"]);
                     $todayss[$i] = new DateTime($todays);
                     $end[$i] = new DateTime($worklist[$i]["cmap_construct_finish"]);
                     $totaldays = date_diff($start[$i], $end[$i]);
@@ -337,7 +336,7 @@ $alls4 = $alltotal4 / $alltot;
                 <tr>
                     <td style="text-align: center;border-right:0.25pt solid #000;padding:5px;" ><?php echo $worklist[$i]["cmap_name"];?></td>
                     <td style="text-align: center;border-right:0.25pt solid #000;padding:5px;" ><?php echo $constmb["mb_name"];?></td>
-                    <td style="text-align: center;border-right:0.25pt solid #000;padding:5px;" ><?php echo $worklist[$i]["cmap_construct_start"];?></td>
+                    <td style="text-align: center;border-right:0.25pt solid #000;padding:5px;" ><?php echo $worklist[$i]["cmap_construct_start_temp"];?></td>
                     <td style="text-align: center;border-right:0.25pt solid #000;padding:5px;" ><?php echo $worklist[$i]["cmap_construct_finish"];?></td>
                     <td style="text-align: center;border-right:0.25pt solid #000;padding:5px;" ><?php echo $worklist[$i]["eval_01"];?></td>
                     <td style="text-align: center;border-right:0.25pt solid #000;padding:5px;" ><?php echo $worklist[$i]["eval_02"];?></td>

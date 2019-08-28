@@ -5,10 +5,11 @@ include_once ("../../common.php");
 if(!$is_member){
     alert("로그인이 필요합니다.",G5_BBS_URL."/login");
 }
-
-if($mb_password=="" || !$mb_password){
-    alert("패스워드를 입력해 주세요.");
-    return false;
+if($passChk=="" || $passChk!="false") {
+    if ($mb_password == "" || !$mb_password) {
+        alert("패스워드를 입력해 주세요.");
+        return false;
+    }
 }
 
 $mb = get_member($member["mb_id"]);
@@ -28,7 +29,8 @@ if(function_exists('social_is_login_check')){
 }
 
 if (!$is_social_password_check && (!$mb['mb_id'] || !check_password($mb_password, $mb['mb_password'])) ) {
-    alert('기본 비밀번호가 틀립니다.\\n비밀번호는 대소문자를 구분합니다.');
+    if($passChk=="" || $passChk!="false")
+        alert('기본 비밀번호가 틀립니다.\\n비밀번호는 대소문자를 구분합니다.');
 }
 
 $mb_3 = implode('-',$mb_3);
@@ -71,7 +73,7 @@ if($_FILES["mb_8"]["tmp_name"]){
 
     if (is_uploaded_file($tmp_file)) {
         //파일 사이즈 체크
-        $size = getimagesize($filename);
+        $size = getimagesize($tmp_file);
         if($size[0]!=$size[1]){
             alert("파일 가로와 높이는 1:1로 올려주시기 바랍니다.");
             return false;
@@ -101,7 +103,7 @@ if($_FILES["mb_7"]["tmp_name"]){
 
     if (is_uploaded_file($tmp_file2)) {
         //파일 사이즈 체크
-        $size = getimagesize($filename2);
+        $size = getimagesize($tmp_file2);
         if($size[0]!=$size[1]){
             alert("파일 가로와 높이는 1:1로 올려주시기 바랍니다.");
             return false;

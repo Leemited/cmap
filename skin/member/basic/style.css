@@ -230,7 +230,7 @@ position:absolute;z-index:-1;top:2%;bottom:0;left:10px;right:10px;
 #mb_login #login_info:after {display:block;visibility:hidden;clear:both;content:""}
 #mb_login #login_info h2 {position:absolute;font-size:0;line-height:0;overflow:hidden}
 #mb_login #login_info a{display:inline-block;float:left}
-#login_password_lost{border-right:1px solid #ddd}
+/*#login_password_lost{border-right:1px solid #ddd}*/
 
 #mb_login_notmb{margin:30px auto;padding:20px 30px }
 #mb_login_notmb h2{font-size:1.25em;margin:20px 0 10px}
@@ -372,7 +372,7 @@ margin: 40px 0 0;    background: 0;}
 #mb_login #login_info a{font-size:20px; font-weight:bold; color:#666666;}
 #mb_login #login_info a.registers{float: right; color:#ac162c;}
 /*#mb_login #login_info a{float: right; color:#ac162c;}*/
-#mb_login #login_info span{float:left;margin: 0 13px; height: 17px; background-color: #acacac; width: 1px; display: inline-table;}
+#mb_login #login_info span{float:left;margin: 0 13px; height: 23px; background-color: #acacac; width: 1px; display: inline-table;}
 #login_password_lost{border-right:unset;}
 	
 .agree_box{width:100%;border:1px solid #efefef;height:120px;overflow-y:scroll;padding:10px !important;}

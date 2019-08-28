@@ -19,23 +19,24 @@ if($ss!=null){
     $delaysql_pm = "select * from `cmap_myschedule` where construct_id = '{$constids}' and schedule_date < '{$today}' and pk_id <> '' order by depth4_pk_id asc ";
     $delayres_pm = sql_query($delaysql_pm);
     $a = 0;
+    $delaycount=$delaydate=$totaldates=0;
     while($delayrow_pm = sql_fetch_array($delayres_pm)){ // A. 스케쥴이 지난 일정중
-
+        $delaycount++;
         $pk_ids = explode("``",$delayrow_pm["pk_id"]);
 
         $diff = strtotime($today) - strtotime($delayrow_pm["schedule_date"]);
 
         $days = $diff / (60*60*24);
+        $delaydate += $days;
 
         for($i=0;$i<count($pk_ids);$i++){
             for($j=0;$j<count($map_pk_id_pm);$j++){
                 if($pk_ids[$i]==$map_pk_id_pm[$j]) {
                     if($map_pk_actives_pm[$j]==0) {// B. 미제출
-                        $sql = "select * from `cmap_content` where pk_id = '{$pk_ids[$i]}'";
+                        $sql = "select *,a.pk_id as depth4_pk_id,c.depth1_id as depth1_id,c.depth4_id as depth4_id,c.pk_id from `cmap_content` as c left join `cmap_depth1` as d on c.depth1_id = d.id left join `cmap_depth4` as a on a.depth1_id = d.id where c.pk_id = '{$pk_ids[$i]}'";
                         $pk_con = sql_fetch($sql);
                         $worklistpm[$a] = $pk_con;
                         $worklistpm[$a]["delays"] = $days;
-                        $delaydate += $days;
                         $a++;
                     }
                 }
@@ -56,22 +57,24 @@ if($ss!=null){
     $delaysql_pm = "select * from `cmap_myschedule` where construct_id = '{$constids}' and schedule_date < '{$today}' and pk_id <> '' order by depth4_pk_id asc ";
     $delayres_pm = sql_query($delaysql_pm);
     $a=0;
-    $delaycount[$c]=$delaydate=$totaldates=0;
+    $delaycount=$delaydate=$totaldates=0;
     while($delayrow_pm = sql_fetch_array($delayres_pm)){
+        $delaycount++;
         $pk_ids = explode("``",$delayrow_pm["pk_id"]);
 
         $diff = strtotime($today) - strtotime($delayrow_pm["schedule_date"]);
 
         $days = $diff / (60*60*24);
+        $delaydate += $days;
+
         for($i=0;$i<count($pk_ids);$i++){
             for($j=0;$j<count($map_pk_id_pm);$j++){
                 if($pk_ids[$i]==$map_pk_id_pm[$j]) {
                     if($map_pk_actives_pm[$j]==0) {
-                        $sql = "select * from `cmap_content` where pk_id = '{$pk_ids[$i]}'";
+                        $sql = "select *,a.pk_id as depth4_pk_id,c.depth1_id as depth1_id,c.depth4_id as depth4_id,c.pk_id from `cmap_content` as c left join `cmap_depth1` as d on c.depth1_id = d.id left join `cmap_depth4` as a on a.depth1_id = d.id where c.pk_id = '{$pk_ids[$i]}'";
                         $pk_con = sql_fetch($sql);
                         $worklistpm[$a] = $pk_con;
                         $worklistpm[$a]["delays"] = $days;
-                        $delaydate += $days;
                         $a++;
                     }
                 }
@@ -102,10 +105,6 @@ for($i=0;$i<count($worklistpm);$i++){
     $sql = "select m.menu_code,a.pk_id as pk_ids, e.pk_id as pk_idss, d.pk_id, d.content from `cmap_content` as d left join `cmap_depth4` as e on d.depth4_id = e.id left join `cmap_depth1` as a on d.depth1_id = a.id left join `cmap_menu` as m on m.menu_code = a.me_code where d.pk_id = '{$worklistpm[$i]["pk_id"]}'";
     $res3 = sql_query($sql);
     while($row3 = sql_fetch_array($res3)){
-        if(strpos($pks,$row3["pk_id"]."//")!==false){
-            continue;
-        }
-        $pks .= $row3["pk_id"]."//";
         $worklists[$row3["menu_code"]][$row3["pk_ids"]][$row3["pk_idss"]][$row3["pk_id"]]["content"] = $row3["content"];
         $worklists[$row3["menu_code"]][$row3["pk_ids"]][$row3["pk_idss"]][$row3["pk_id"]]["delaydate"] = $worklistpm[$i]["delays"];
         $worklists[$row3["menu_code"]][$row3["pk_ids"]][$row3["pk_idss"]]["content_pk_id"]= $row3["pk_id"];
@@ -116,7 +115,6 @@ for($i=0;$i<count($worklistpm);$i++){
 }
 
 $const = sql_fetch("select * from `cmap_my_construct` where id = '{$constids}'");
-
 ?>
 <div style="" class="message">
     <div class="msg_title">
@@ -154,14 +152,14 @@ $const = sql_fetch("select * from `cmap_my_construct` where id = '{$constids}'")
         <tr>
             <td style="padding:5px;border-right:0.25pt solid #000;color:#000;text-align: center;">-</td>
             <td style="padding:5px;border-right:0.25pt solid #000;color:#000;"><?php echo $const["cmap_name"];?></td>
-            <td style="padding:5px;border-right:0.25pt solid #000;color:#000;text-align: center;"><?php echo number_format(count($delaycateCount));?> 건</td>
+            <td style="padding:5px;border-right:0.25pt solid #000;color:#000;text-align: center;"><?php echo number_format($delaycount);?> 건</td>
             <td style="padding:5px;border-right:0.25pt solid #000;color:#000;text-align: center;"><?php echo number_format(count($worklistpm));?> 건</td>
             <td style="padding:5px;color:#000;text-align: center;"><?php echo number_format($delaydate);?> 일</td>
         </tr>
         <tr>
             <td style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;text-align: center">소계</td>
             <td style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;text-align: center">계</td>
-            <td style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;text-align: center"><?php echo number_format(count($delaycateCount));?> 건</td>
+            <td style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;text-align: center"><?php echo number_format($delaycount);?> 건</td>
             <td style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;text-align: center"><?php echo number_format(count($worklistpm));?> 건</td>
             <td style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;text-align: center"><?php echo number_format($delaydate);?> 일</td>
         </tr>
@@ -210,7 +208,7 @@ $const = sql_fetch("select * from `cmap_my_construct` where id = '{$constids}'")
                     <?php for($l=0;$l<count($worklists[$i][$pk_idss][$pk_idss2]["content_pk"]);$l++){
                         $pk_idss3 = $worklists4[$l];
                         ?>
-                        <td style="padding:5px;border-right:0.25pt solid #000;border-bottom:0.25pt solid #000;color:#000;text-align: center" ><?php echo $worklists[$i][$pk_idss][$pk_idss2][$pk_idss3]["content"];?></td>
+                        <td style="padding:5px;border-right:0.25pt solid #000;border-bottom:0.25pt solid #000;color:#000;text-align: center" class="contents"><?php echo $worklists[$i][$pk_idss][$pk_idss2][$pk_idss3]["content"];?></td>
                         <td style="padding:5px;border-bottom:0.25pt solid #000;color:#000;text-align: center" >- <?php echo $worklists[$i][$pk_idss][$pk_idss2][$pk_idss3]["delaydate"];?></td>
                         </tr>
                     <?php }?>

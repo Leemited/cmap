@@ -1574,6 +1574,9 @@ function fnWriteMessage(msg_id){
             alert("현장정보가 없습니다.");
         }else if(data==2){
             alert("등록된 현장에 요청서를 보낼 수신자가 없습니다.")
+        }else if(data==4){
+            alert("업무연락서를 사용하기 위해서는 발신표기가 등록되어 있어야 합니다.\r\n발신표기는 개인정보 수정을 통해 등록 가능합니다.\r\n개인정보 수정으로 이동합니다.");
+            location.href=g5_url+'/page/mypage/edit_profile_chkpwd';
         }else{
             $(".etc_view").html(data)
             $(".etc_view_bg").addClass("active");

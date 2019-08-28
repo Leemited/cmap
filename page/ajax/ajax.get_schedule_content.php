@@ -25,6 +25,15 @@ $map_pk_actives_date = explode("``",$activechk["pk_actives_date"]);
 
 $pk_id = str_replace("``",",",$pk_id);
 
+$sql = "select * from `cmap_myschedule` where construct_id = '{$const}'";
+$res = sql_query($sql);
+while($row=sql_fetch_array($res)){
+    if($row["pk_id"]==""){continue;}
+    $pk_ids = explode("``",$row["pk_id"]);
+    for($i=0;$i<count($pk_ids);$i++){
+        $pklist[$pk_ids[$i]] = $row["schedule_date"];
+    }
+}
 $sql = "select * from `cmap_content` where pk_id in ({$pk_id}) order by id";
 $res = sql_query($sql);
 $a = 0;
@@ -34,6 +43,7 @@ while($row = sql_fetch_array($res)){
     for($i=0;$i<count($map_pk_id);$i++){
         if($row["pk_id"]==$map_pk_id[$i]){
             $list[$a]["active_date"] = $map_pk_actives_date[$i];
+            $list[$a]["schedule_date"] = $pklist[$map_pk_id[$i]];
             if($map_pk_actives[$i]==0){
                 $list[$a]["active"] = 1;
                 $list[$a]["active_date"] = "0000-00-00";
@@ -48,7 +58,7 @@ while($row = sql_fetch_array($res)){
     $depth1 = sql_fetch($sql);
     $class = "";
     if($list[$i]["active"]==1){//지연
-        if($list[$i]["schedule_date"] < date("Y-m-d") && $list[$i]["active_date"]=="0000-00-00"){
+        if(strtotime($list[$i]["schedule_date"]) < strtotime(date("Y-m-d")) && $list[$i]["active_date"]=="0000-00-00"){
             $class = "delays";
         }
     }else if($list[$i]["active"]==0){//지연아님

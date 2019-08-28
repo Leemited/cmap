@@ -55,9 +55,9 @@ $holiday8_1 = $thank[0];
 $holiday8_2 = date("Y-m-d",strtotime(" +1 day",strtotime($thank[0])));
 $holiday8_3 = $thank[1];
 
-if($current_const["const_id"] && $constid=="" && $type == ""){
+/*if($current_const["const_id"] && $constid=="" && $type == ""){
     $constid = $current_const["const_id"];
-}
+}*/
 
 //스케쥴 가져오기
 if(isset($_GET["constid"]) && $_GET["constid"]!=""){
@@ -142,15 +142,20 @@ while($activechk = sql_fetch_array($activeres)) {
                 if ($pk_ids[$i] == $map_pk_id[$j]) {
                     $sql = "select *,d.pk_id as pk_id,c.depth1_id as depth1_id,a.pk_id as depth1_pk_id,c.depth2_id as depth2_id ,d.depth_name as depth_name,a.depth_name as depth1_name,c.pk_id as c_pk_id from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$pk_ids[$i]}'";
                     $ddd = sql_fetch($sql);
+                    /*if(strpos($chcccid,$ddd["pk_id"])!==false) {
+                        continue;
+                    }
+                    $chcccid .= ','.$ddd["pk_id"];*/
                     $schdelaylist[$delayrow["construct_id"] . "_" . $pk_ids[$i]] = $ddd;
                     if ($map_pk_actives[$j] == 0) {
                         if($delay_now > $delayrow["schedule_date"]) {
-                            /*if (strpos($chcccid, $ddd["pk_id"]) !== false) {
-                            } else {*/
+                            if (strpos($chcccid, $delayrow["construct_id"] . "_" .$ddd["pk_id"]) !== false) {
+                                //echo $chcccid."//".$delayrow["construct_id"] . "_" .$ddd["pk_id"]."//".$a++."<br>";
+                            } else {
                                 $delaylists[$delayrow["construct_id"] . "_" . $pk_ids[$i]] = $ddd;
                                 $delaylists[$delayrow["construct_id"] . "_" . $pk_ids[$i]]["delay_date"] = "-".$delaydays;
-                                $chcccid .= ',' . $ddd["pk_id"];
-                            //}
+                                $chcccid .= ',' . $delayrow["construct_id"] . "_" .$ddd["pk_id"];
+                            }
                         }
                         $schdelaylist[$delayrow["construct_id"] . "_" . $pk_ids[$i]]["delay_date"] = "-" . $delaydays;
                         $schdelaylist[$delayrow["construct_id"] . "_" . $pk_ids[$i]]["active"] = $map_pk_actives[$j];
@@ -169,12 +174,12 @@ while($activechk = sql_fetch_array($activeres)) {
     unset($map_pk_actives_date);
 }
 //$schdelaylist = $delaylists;
+//print_r2($delaylists);
 $delaylists = array_values($delaylists);
 $delaylists = arr_sort($delaylists,"delay_date","asc");
 
 $delaylists = array_filter($delaylists);
 
-//print_r2($schdelaylist);
 ?>
 <div class="etc_view messages">
 
@@ -286,7 +291,7 @@ $delaylists = array_filter($delaylists);
                                 $key = $year."-".$mon."-".$ndate;
 
                                 ?>
-                                <td onclick="fnScheduleList('<?php echo $key;?>','<?php echo $_REQUEST["constid"];?>')" class="days <?php echo "d_".$key;?> <?php if($cols==6){ echo "sat_tbl"; } ?>" <?php if( date("d") == $nowDayCount && date("m") == $month) {?>id="today"<?php }?>> <!-- 일주일 내의 일을 나누는 for 문 -->
+                                <td onclick="fnScheduleList('<?php echo $key;?>','<?php echo $constid;?>')" class="days <?php echo "d_".$key;?> <?php if($cols==6){ echo "sat_tbl"; } ?>" <?php if( date("d") == $nowDayCount && date("m") == $month) {?>id="today"<?php }?>> <!-- 일주일 내의 일을 나누는 for 문 -->
                                     <?php if ( date( "w", mktime( 0, 0, 0, $month, $nowDayCount, $year ) ) == 6 ) { 	// 토요일
                                         if( date("d") == $nowDayCount  && date("m") == $month ) { ?>
                                             <div><p class="calendar_date sat today" style="color:orange;font-weight:bold"><b><?php echo $nowDayCount++?></b></p></div>
@@ -357,7 +362,7 @@ $delaylists = array_filter($delaylists);
                                     $presmon = (strlen($prevMonth)==1)?"0".$prevMonth:$prevMonth;
                                     $key = $year."-".$presmon."-".$prevDayCount;
                                 ?>
-                                <td <?php if($cols==6){ echo" class='sat_tbl'"; } ?> onclick="fnScheduleList('<?php echo $key;?>','<?php echo $_REQUEST["constid"];?>')">
+                                <td class="days <?php if($cols==6){ echo 'sat_tbl'; } ?>" onclick="fnScheduleList('<?php echo $key;?>','<?php echo $constid;?>')">
                                     <div><p class="calendar_date other_m"><?php echo $prevDayCount++?></p></div>
                                     <?php
                                     if(count($myschedule[$key]) > 0){?>
@@ -411,7 +416,7 @@ $delaylists = array_filter($delaylists);
                                 $nextday = (strlen($nextDayCount)==1)?"0".$nextDayCount:$nextDayCount;
                                 $key = $year."-".$nextmon."-".$nextday;
                                 ?>
-                                <td <?php if($cols==6){ echo" class='sat_tbl'"; } ?> onclick="fnScheduleList('<?php echo $key;?>','<?php echo $_REQUEST["constid"];?>')">
+                                <td <?php if($cols==6){ echo" class='sat_tbl'"; } ?> onclick="fnScheduleList('<?php echo $key;?>','<?php echo $constid;?>')">
                                     <div><p class="calendar_date other_m"><?php echo $nextDayCount++?></p></div>
                                     <?php
                                     if(count($myschedule[$key]) > 0){?>

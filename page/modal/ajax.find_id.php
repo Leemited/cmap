@@ -13,6 +13,8 @@ include_once ("../../common.php");
         <div class="downmenu">
             <h3>휴대폰 번호로 찾기</h3>
             <div class="inmenu">
+                <input type="radio" name="mb_level" value="3" id="normal" checked><label for="normal">개인회원</label>
+                <input type="radio" name="mb_level" value="6" id="company"><label for="company">기업회원</label>
                 <input type="text" class="modal_input width100 mbtm10" name="name" id="hpname" required placeholder="성명">
                 <select name="hp[]" id="hp1" required class="modal_sel width30 groups mbtm10">
                     <option value="010">010</option>
@@ -25,6 +27,8 @@ include_once ("../../common.php");
         <div class="downmenu">
             <h3>이메일 주소로 찾기</h3>
             <div class="inmenu">
+                <input type="radio" name="mb_level2" value="3" id="normal2" checked><label for="normal2">개인회원</label>
+                <input type="radio" name="mb_level2" value="6" id="company2"><label for="company2">기업회원</label>
                 <input type="text" class="modal_input width100 mbtm10" name="name" id="emailname" required placeholder="성명">
                 <input type="text" class="modal_input width30 groups mbtm10" name="email[]" id="email1" required placeholder="이메일아이디">
                 <div class="width10 groups email_mark" ></div>
@@ -42,10 +46,29 @@ include_once ("../../common.php");
     </div>
 </div>
 <script>
+    $(function(){
+        $("input[name=mb_level]").click(function(){
+            if($(this).val()==3){
+                $("#hpname").attr("placeholder","성명");
+                $("#hp2").attr("placeholder","'-'없이 입력");
+            }else{
+                $("#hpname").attr("placeholder","회사명");
+                $("#hp2").attr("placeholder","'-'없이 회사전화번호 입력");
+            }
+        });
+        $("input[name=mb_level2]").click(function(){
+            if($(this).val()==3){
+                $("#emailname").attr("placeholder","성명");
+            }else{
+                $("#emailname").attr("placeholder","회사명");
+            }
+        });
+    });
     function fnFind(type){
         if(type=="hp"){
             var name = $("#hpname").val();
             var hp = $("#hp1").val()+$("#hp2").val();
+            var mb_level = $("input[name=mb_level]:checked").val();
             if(name==""){
                 alert("이름을 입력해주세요.");
                 $("#hpname").focus();
@@ -59,7 +82,7 @@ include_once ("../../common.php");
             $.ajax({
                 url:g5_url+"/page/ajax/ajax.find_id.php",
                 method:"post",
-                data:{name:name,hp:hp,type:type},
+                data:{name:name,hp:hp,type:type,mb_level:mb_level},
                 dataType:"json"
             }).done(function(data){
                 console.log(data);
@@ -85,6 +108,7 @@ include_once ("../../common.php");
         }else if(type=="email"){
             var name = $("#emailname").val();
             var email = $("#email1").val()+"@"+$("#email2").val();
+            var mb_level = $("input[name=mb_level2]:checked").val();
             if(name==""){
                 alert("이름을 입력해주세요.");
                 $("#emailname").focus();
@@ -98,7 +122,7 @@ include_once ("../../common.php");
             $.ajax({
                 url:g5_url+"/page/ajax/ajax.find_id.php",
                 method:"post",
-                data:{name:name,email:email,type:type},
+                data:{name:name,email:email,type:type,mb_level:mb_level},
                 dataType:"json"
             }).done(function(data){
                 console.log(data);

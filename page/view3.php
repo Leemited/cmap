@@ -3,7 +3,7 @@ include_once ("../common.php");
 $sub="sub";
 if($member["mb_auth"]==false){
     if($member["mb_level"]>1){
-        alert("무료 이용기간이 만료 되었거나,\\r맴버쉽 기간이 만료 되었습니다. \\n맴버쉽 구매후 이용바랍니다.",G5_URL);
+        alert("무료 이용기간이 만료 되었거나 맴버쉽 취소 요청,\\r맴버쉽 기간이 만료 되었습니다. \\n맴버쉽 구매후 이용바랍니다.",G5_URL);
     }
 }
 if(strlen($me_id)==2){

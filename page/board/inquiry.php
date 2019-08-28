@@ -5,7 +5,11 @@ $bbody = "board";
 $sub = "sub";
 $mypage = true;
 $menu_id = 'depth_desc_inquiry';
-include_once (G5_PATH."/_head.php");
+if($member["mb_level"]!= 6) {
+    include_once(G5_PATH . "/_head.php");
+}else{
+    include_once (G5_PATH."/head.com.php");
+}
 // FAQ MASTER
 $faq_master_list = array();
 $sql = " select * from {$g5['faq_master_table']} order by fm_order,fm_id ";
@@ -102,6 +106,7 @@ if($payments){
             $ty = "연장결제";
         }
         $text .= $texts[1]. " : ". $texts[2]."개월 [".$ty."]\r\n";
+        $payments_mb_id[] = $texts[1];
     }
 }
 ?>
@@ -151,6 +156,8 @@ if($payments){
     <div class="inquiry_wrap">
         <h3 class="sub_title">문의/제안하기</h3>
         <form action="<?php echo G5_URL?>/page/board/inquiry_update" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="payments" id="payments" value="<?php echo $payments;?>">
+            <input type="hidden" name="payments_mb_id" id="payments_mb_id" value="<?php echo implode(",",$payments_mb_id);?>">
         <table>
             <tr>
                 <th>성명 <span>*</span></th>
@@ -236,5 +243,9 @@ if($payments){
 </script>
 <!-- } FAQ 끝 -->
 <?php
-include_once (G5_PATH."/_tail.php");
+if($member["mb_level"]!=6){
+    include_once (G5_PATH."/_tail.php");
+}else{
+    include_once (G5_PATH."/tail.com.php");
+}
 ?>

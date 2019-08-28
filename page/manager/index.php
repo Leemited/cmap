@@ -35,9 +35,19 @@ $sql = "select * from `cmap_my_construct` where instr(manager_mb_id,'{$member["m
 $res = sql_query($sql);
 $c = 0;
 while($row = sql_fetch_array($res)){
-    $delaycount=$delaydate=$totaldates=0;
+    $mng_mb_id = explode(",",$row["manager_mb_id"]);
+    $mng_chk = false;
+    for($i=0;$i<count($mng_mb_id);$i++){
+        if($member["mb_id"]==$mng_mb_id[$i]){
+            $mng_chk = true;
+            continue;
+        }
+    }
+    if($mng_chk == false){
+        continue;
+    }
 
-    $worklist[$c] = $row;
+    $pmworklist[$c] = $row;
     $sql = "select * from `cmap_my_pmmode_set` where mb_id='{$member["mb_id"]}' and const_id = '{$row["id"]}'";
     $ss = sql_fetch($sql);
     if($ss!=null){
@@ -51,6 +61,8 @@ while($row = sql_fetch_array($res)){
         $delaysql_pm = "select * from `cmap_myschedule` where construct_id = '{$row["id"]}' and schedule_date < '{$today}' and pk_id <> '' ";
         $delayres_pm = sql_query($delaysql_pm);
         $a=0;
+        $delaycount=$delaydate=$totaldates=0;
+
         while($delayrow_pm = sql_fetch_array($delayres_pm)){
             $pk_ids = explode("``",$delayrow_pm["pk_id"]);
 
@@ -63,25 +75,29 @@ while($row = sql_fetch_array($res)){
                         if($map_pk_actives_pm[$j]==0) {
                             $sql = "select *,c.pk_id as pk_id,d.pk_id as depth4_pk_id,c.depth1_id as depth1_id, a.pk_id as depth1_pk_id,a.depth_name as depth1_name,d.depth_name as depth_name from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$pk_ids[$i]}'";
                             $ddd = sql_fetch($sql);
-                            $delaycount++;
-                            $delaydate += $days;
-                            if (strpos($id, $ddd["pk_id"]) !== false) {
-                                continue;
+                            if(substr($ddd["me_code"],0,2)!=10) {
+                                if (strpos($idss[$c], $delayrow_pm["depth4_pk_id"]) !== false) {
+                                    //$delaydate -= $days;
+                                    continue;
+                                }
                             }
-                            $id .= ',' . $ddd["pk_id"];
+                            $delaydate += $days;
+                            $idss[$c] .= ',' . $delayrow_pm["depth4_pk_id"];
+                            $delaycount++;
+                            //$delaydate += $days;
                         }
-                        /*if($map_pk_actives_pm[$j]==1){
-                            $delaycount--;
-                            $delaydate -= $days;
-                        }*/
                     }
                 }
             }
         }
         $totaldates = round($delaydate / $delaycount,2);
-        $worklist[$c]["delaycount"] = $delaycount;
-        $worklist[$c]["delaydate"] = $delaydate;
-        $worklist[$c]["delaytotal"] = $totaldates;
+        $pmworklist[$c]["delaycount"] = $delaycount;
+        $pmworklist[$c]["delaydate"] = $delaydate;
+        $pmworklist[$c]["delaytotal"] = $totaldates;
+
+        unset($map_pk_id_pm);
+        unset($map_pk_actives_pm);
+        unset($map_pk_actives_date_pm);
     }else{
         //등록이 안되어 있으면 개설자 설정
         //등록자 설정
@@ -94,6 +110,8 @@ while($row = sql_fetch_array($res)){
         $delaysql_pm = "select * from `cmap_myschedule` where construct_id = '{$row["id"]}' and schedule_date < '{$today}' and pk_id <> '' ";
         $delayres_pm = sql_query($delaysql_pm);
         $a=0;
+        $delaycount=$delaydate=$totaldates=0;
+
         while($delayrow_pm = sql_fetch_array($delayres_pm)){
             $pk_ids = explode("``",$delayrow_pm["pk_id"]);
 
@@ -107,31 +125,36 @@ while($row = sql_fetch_array($res)){
                         if($map_pk_actives_pm[$j]==0) {
                             $sql = "select *,c.pk_id as pk_id,d.pk_id as depth4_pk_id,c.depth1_id as depth1_id, a.pk_id as depth1_pk_id,a.depth_name as depth1_name,d.depth_name as depth_name from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$pk_ids[$i]}'";
                             $ddd = sql_fetch($sql);
-                            $delaycount++;
-                            $delaydate += $days;
-                            if (strpos($id, $ddd["pk_id"]) !== false) {
-                                continue;
+                            if(substr($ddd["me_code"],0,2)!=10) {
+                                if (strpos($idss[$c], $delayrow_pm["depth4_pk_id"]) !== false) {
+                                    continue;
+                                }
                             }
-                            $id .= ',' . $ddd["pk_id"];
+                            $delaydate += $days;
+                            $idss[$c] .= ',' . $delayrow_pm["depth4_pk_id"];
+                            $delaycount++;
                         }
-                        /*if($map_pk_actives_pm[$j]==1){
-                            $delaycount--;
-                            $delaydate -= $days;
-                        }*/
                     }
                 }
             }
+
+            $a++;
         }
         $totaldates = round($delaydate / $delaycount,'2');
-        $worklist[$c]["delaycount"] = $delaycount;
-        $worklist[$c]["delaydate"] = $delaydate;
-        $worklist[$c]["delaytotal"] = $totaldates;
+        $pmworklist[$c]["delaycount"] = $delaycount;
+        $pmworklist[$c]["delaydate"] = $delaydate;
+        $pmworklist[$c]["delaytotal"] = $totaldates;
+
+        unset($map_pk_id_pm);
+        unset($map_pk_actives_pm);
+        unset($map_pk_actives_date_pm);
     }
-    $totalDelay += $worklist[$c]["delaycount"];
-    $totalDelayDate += $worklist[$c]["delaydate"];
+    $totalDelay += $pmworklist[$c]["delaycount"];
+    $totalDelayDate += $pmworklist[$c]["delaydate"];
 
     $c++;
 }
+
 $totalDelayDatePer = round($totalDelayDate / $totalDelay,2) ;
 ?>
 <div class="etc_view messages">
@@ -193,15 +216,15 @@ $totalDelayDatePer = round($totalDelayDate / $totalDelay,2) ;
                     <col width="10%">
                     <col width="10%">
                 </colgroup>
-                <?php for($i=0;$i<count($worklist);$i++){
-                        $constmb = get_member($worklist[$i]["mb_id"]);
+                <?php for($i=0;$i<count($pmworklist);$i++){
+                        $constmb = get_member($pmworklist[$i]["mb_id"]);
                         //기간경과율 계산
-                        if(date("Y-m-d") <= $worklist[$i]["cmap_construct_start"]){
+                        if(date("Y-m-d") <= $pmworklist[$i]["cmap_construct_start_temp"]){
                             $dayper = "0%";
                         }else {
-                            $start[$i] = new DateTime($worklist[$i]["cmap_construct_start"]);
+                            $start[$i] = new DateTime($pmworklist[$i]["cmap_construct_start_temp"]);
                             $todayss[$i] = new DateTime($todays);
-                            $end[$i] = new DateTime($worklist[$i]["cmap_construct_finish"]);
+                            $end[$i] = new DateTime($pmworklist[$i]["cmap_construct_finish"]);
                             $totaldays = date_diff($start[$i], $end[$i]);
                             $nows = date_diff($start[$i], $todayss[$i]);
                             $totals = $totaldays->days;
@@ -222,20 +245,20 @@ $totalDelayDatePer = round($totalDelayDate / $totalDelay,2) ;
                             <label for="const_<?php /*echo $worklist[$i]["id"];*/?>"></label>
                         </td>-->
                         <td class="td_center">
-                            <input type="button" value="보고서" class="basic_btn02" style="padding:5px 10px;" onclick="fnPmPreview(1,'<?php echo $worklist[$i]["id"];?>')">
+                            <input type="button" value="보고서" class="basic_btn02" style="padding:5px 10px;" onclick="fnPmPreview(1,'<?php echo $pmworklist[$i]["id"];?>')">
                         </td>
-                        <td class="td_center" onclick="location.href=g5_url+'/page/mylocation/mylocation_view?constid=<?php echo $worklist[$i]["id"];?>'" ><?php echo $worklist[$i]["cmap_name"];?></td>
+                        <td class="td_center" onclick="location.href=g5_url+'/page/mylocation/mylocation_view?constid=<?php echo $pmworklist[$i]["id"];?>'" ><?php echo $pmworklist[$i]["cmap_name"];?></td>
                         <td class="td_center" style=""><?php echo $constmb["mb_name"];?></td>
-                        <td class="td_center"><?php echo $worklist[$i]["cmap_construct_start"];?></td>
-                        <td class="td_center"><?php echo $worklist[$i]["cmap_construct_finish"];?></td>
+                        <td class="td_center"><?php echo $pmworklist[$i]["cmap_construct_start_temp"];?></td>
+                        <td class="td_center"><?php echo $pmworklist[$i]["cmap_construct_finish"];?></td>
                         <td class="td_center"><?php echo $dayper;?></td>
-                        <td class="td_center"><?php echo number_format($worklist[$i]["delaycount"]);?> 건</td>
-                        <td class="td_center"><?php echo number_format($worklist[$i]["delaydate"]);?> 일</td>
-                        <td class="td_center"><?php echo number_format($worklist[$i]["delaytotal"]);?> 일</td>
+                        <td class="td_center"><?php echo number_format($pmworklist[$i]["delaycount"]);?> 건</td>
+                        <td class="td_center"><?php echo number_format($pmworklist[$i]["delaydate"]);?> 일</td>
+                        <td class="td_center"><?php echo number_format($pmworklist[$i]["delaytotal"]);?> 일</td>
                     </tr>
                     <?php
                 } ?>
-                <?php if(count($worklist)==0){?>
+                <?php if(count($pmworklist)==0){?>
                     <tr>
                         <td colspan="7" class="td_center">등록된 PM현장이 없습니다.</td>
                     </tr>
@@ -257,8 +280,8 @@ $totalDelayDatePer = round($totalDelayDate / $totalDelay,2) ;
             <tr>
                 <td colspan="5">소계</td>
                 <td>계</td>
-                <td><?php echo $totalDelay;?> 건</td>
-                <td><?php echo $totalDelayDate;?> 일</td>
+                <td><?php echo number_format($totalDelay);?> 건</td>
+                <td><?php echo number_format($totalDelayDate);?> 일</td>
                 <td><?php echo $totalDelayDatePer;?> 일</td>
             </tr>
         </table>

@@ -241,10 +241,10 @@ $const = sql_fetch("select * from `cmap_my_construct` where id = '{$constids}'")
                 $total1 = round((double)$eval2_total[0]+(double)$eval2_total[1]+(double)$eval2_total[2],2);
                 $total2 = round((((double)$eval2_total[3]+(double)$eval2_total[4]+(double)$eval2_total[5])*0.8) + (double)$eval2_total[6]+(double)$eval2_total[7],2);
                 //기간경과율 계산
-                if(date("Y-m-d") <= $const["cmap_construct_start"]){
+                if(date("Y-m-d") <= $const["cmap_construct_start_temp"]){
                     $dayper = "0%";
                 }else {
-                    $start[$i] = new DateTime($const["cmap_construct_start"]);
+                    $start[$i] = new DateTime($const["cmap_construct_start_temp"]);
                     $todayss[$i] = new DateTime($todays);
                     $end[$i] = new DateTime($const["cmap_construct_finish"]);
                     $totaldays = date_diff($start[$i], $end[$i]);

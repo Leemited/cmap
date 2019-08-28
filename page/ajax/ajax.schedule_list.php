@@ -3,6 +3,9 @@ include_once ("../../common.php");
 
 if($const){
     $where = " and construct_id = '{$const}'";
+    if(strpos($const,",")!==false){
+        $where = " and construct_id in ({$const})";
+    }
 }else{
     //if($current_const["const_id"]){
     //    $where = " and construct_id = '{$current_const["const_id"]}'";

@@ -117,6 +117,8 @@ while($row = sql_fetch_array($res)){
             </table>
             <div style="text-align: right;padding:30px 0 0;">
                 <input type="hidden" name="payments" id="payments" value="">
+                <input type="hidden" name="amount" id="amount" value="">
+                <input type="button" value="문의하기" class="basic_btn01" onclick="location.href=g5_url+'/page/board/inquiry'">
                 <input type="button" value="선택일괄결제" class="basic_btn01" onclick="fnAllPayment();">
             </div>
         </div>

@@ -59,7 +59,6 @@ if(count($getdelaylist)>0) {
     $getdelaylist = array_values($getdelaylist);
     $getdelaylist = arr_sort($getdelaylist, "delay_date", "asc");
 }
-echo count($getdelaylist);
 ?>
 <style>
     .detail_list{width: calc(100% + 5px);}

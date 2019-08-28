@@ -20,7 +20,6 @@ $sql = "select * from `cmap_my_construct` where instr(manager_mb_id,'{$member["m
 $res = sql_query($sql);
 $c = 0;
 while($row = sql_fetch_array($res)){
-    $delaycount=$delaydate=$totaldates=0;
 
     $worklist[$c] = $row;
     $sql = "select * from `cmap_my_pmmode_set` where mb_id='{$member["mb_id"]}' and const_id = '{$row["id"]}'";
@@ -36,6 +35,7 @@ while($row = sql_fetch_array($res)){
         $delaysql_pm = "select * from `cmap_myschedule` where construct_id = '{$row["id"]}' and schedule_date < '{$today}' and pk_id <> '' ";
         $delayres_pm = sql_query($delaysql_pm);
         $a=0;
+        $delaycount=$delaydate=$totaldates=0;
         while($delayrow_pm = sql_fetch_array($delayres_pm)){
             $pk_ids = explode("``",$delayrow_pm["pk_id"]);
 
@@ -48,12 +48,14 @@ while($row = sql_fetch_array($res)){
                         if($map_pk_actives_pm[$j]==0) {
                             $sql = "select *,c.pk_id as pk_id,d.pk_id as depth4_pk_id,c.depth1_id as depth1_id, a.pk_id as depth1_pk_id,a.depth_name as depth1_name,d.depth_name as depth_name from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$pk_ids[$i]}'";
                             $ddd = sql_fetch($sql);
+                            if(substr($ddd["me_code"],0,2)!=10) {
+                                if (strpos($id[$c], $delayrow_pm["depth4_pk_id"]) !== false) {
+                                    continue;
+                                }
+                            }
+                            $id[$c] .= ',' . $delayrow_pm["depth4_pk_id"];
                             $delaycount++;
                             $delaydate += $days;
-                            if (strpos($id, $ddd["pk_id"]) !== false) {
-                                continue;
-                            }
-                            $id .= ',' . $ddd["pk_id"];
                         }
                         /*if($map_pk_actives_pm[$j]==1){
                             $delaycount--;
@@ -79,6 +81,7 @@ while($row = sql_fetch_array($res)){
         $delaysql_pm = "select * from `cmap_myschedule` where construct_id = '{$row["id"]}' and schedule_date < '{$today}' and pk_id <> '' ";
         $delayres_pm = sql_query($delaysql_pm);
         $a=0;
+        $delaycount=$delaydate=$totaldates=0;
         while($delayrow_pm = sql_fetch_array($delayres_pm)){
             $pk_ids = explode("``",$delayrow_pm["pk_id"]);
 
@@ -92,12 +95,15 @@ while($row = sql_fetch_array($res)){
                         if($map_pk_actives_pm[$j]==0) {
                             $sql = "select *,c.pk_id as pk_id,d.pk_id as depth4_pk_id,c.depth1_id as depth1_id, a.pk_id as depth1_pk_id,a.depth_name as depth1_name,d.depth_name as depth_name from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$pk_ids[$i]}'";
                             $ddd = sql_fetch($sql);
-                            $delaycount++;
-                            $delaydate += $days;
-                            if (strpos($id, $ddd["pk_id"]) !== false) {
-                                continue;
+                            if(substr($ddd["me_code"],0,2)!=10) {
+                                if (strpos($id[$c], $delayrow_pm["depth4_pk_id"]) !== false) {
+                                    continue;
+                                }
                             }
-                            $id .= ',' . $ddd["pk_id"];
+                            $id[$c] .= ',' . $delayrow_pm["depth4_pk_id"];
+                            $delaydate += $days;
+                            $delaycount++;
+
                         }
                         /*if($map_pk_actives_pm[$j]==1){
                             $delaycount--;
@@ -119,9 +125,23 @@ while($row = sql_fetch_array($res)){
 }
 $totalDelayDatePer = round($totalDelayDate / $totalDelay,2) ;
 
+$userAgent = $_SERVER["HTTP_USER_AGENT"];
+if ( preg_match("/MSIE*/", $userAgent) ) {
+    // 익스플로러
+    $ie = "ie";
+} elseif ( preg_match("/Trident*/", $userAgent) &&  preg_match("/rv:11.0*/", $userAgent) &&  preg_match("/Gecko*/", $userAgent)) {
+    $ie = "ie 11";
+}
+
+if($ie){
+    $filename = iconv("utf-8","euc-kr","공무행정 제출 지연 총괄표".date('Ymdhis').".xls");
+}else{
+    $filename = "공무행정 제출 지연 총괄표".date('Ymdhis').".xls";
+}
+
 header( "Content-type: application/vnd.ms-excel" );
 header( "Content-type: application/vnd.ms-excel; charset=utf-8");
-header( "Content-Disposition: attachment; filename = 공무행정 제출 지연 총괄표".date('Ymdhis').".xls" );
+header( "Content-Disposition: attachment; filename = ".$filename );
 header( "Content-Description: PHP4 Generated Data" );
 ?>
 
@@ -159,10 +179,10 @@ header( "Content-Description: PHP4 Generated Data" );
     <?php for($i=0;$i<count($worklist);$i++){
         $constmb = get_member($worklist[$i]["mb_id"]);
         //기간경과율 계산
-        if(date("Y-m-d") <= $worklist[$i]["cmap_construct_start"]){
+        if(date("Y-m-d") <= $worklist[$i]["cmap_construct_start_temp"]){
             $dayper = "0%";
         }else {
-            $start[$i] = new DateTime($worklist[$i]["cmap_construct_start"]);
+            $start[$i] = new DateTime($worklist[$i]["cmap_construct_start_temp"]);
             $todayss[$i] = new DateTime($todays);
             $end[$i] = new DateTime($worklist[$i]["cmap_construct_finish"]);
             $totaldays = date_diff($start[$i], $end[$i]);
@@ -189,11 +209,11 @@ header( "Content-Description: PHP4 Generated Data" );
             </td>
             <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="td_center" onclick="location.href=g5_url+'/page/mylocation/mylocation_view?constid=<?php echo $worklist[$i]["id"];?>'" ><?php echo $worklist[$i]["cmap_name"];?></td>
             <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="td_center" style=""><?php echo $constmb["mb_name"];?></td>
-            <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="td_center"><?php echo $worklist[$i]["cmap_construct_start"];?></td>
+            <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="td_center"><?php echo $worklist[$i]["cmap_construct_start_temp"];?></td>
             <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="td_center"><?php echo $worklist[$i]["cmap_construct_finish"];?></td>
             <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="td_center"><?php echo $dayper;?></td>
-            <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="td_center"><?php echo $worklist[$i]["delaycount"];?> 건</td>
-            <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="td_center"><?php echo $worklist[$i]["delaydate"];?> 일</td>
+            <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="td_center"><?php echo number_format($worklist[$i]["delaycount"]);?> 건</td>
+            <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="td_center"><?php echo number_format($worklist[$i]["delaydate"]);?> 일</td>
             <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="td_center"><?php echo $worklist[$i]["delaytotal"];?> 일</td>
         </tr>
         <?php
@@ -201,8 +221,8 @@ header( "Content-Description: PHP4 Generated Data" );
 <tr>
     <td style="background-color: #9ca0ae;text-align: center;color: #fff;font-weight: bold;border:0.25pt solid #000" colspan="5">소계</td>
     <td style="background-color: #9ca0ae;text-align: center;color: #fff;font-weight: bold;border:0.25pt solid #000">계</td>
-    <td style="background-color: #9ca0ae;text-align: center;color: #fff;font-weight: bold;border:0.25pt solid #000"><?php echo $totalDelay;?> 건</td>
-    <td style="background-color: #9ca0ae;text-align: center;color: #fff;font-weight: bold;border:0.25pt solid #000"><?php echo $totalDelayDate;?> 일</td>
+    <td style="background-color: #9ca0ae;text-align: center;color: #fff;font-weight: bold;border:0.25pt solid #000"><?php echo number_format($totalDelay);?> 건</td>
+    <td style="background-color: #9ca0ae;text-align: center;color: #fff;font-weight: bold;border:0.25pt solid #000"><?php echo number_format($totalDelayDate);?> 일</td>
     <td style="background-color: #9ca0ae;text-align: center;color: #fff;font-weight: bold;border:0.25pt solid #000"><?php echo $totalDelayDatePer;?> 일</td>
 </tr>
 </table>

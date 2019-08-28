@@ -42,6 +42,12 @@ add_javascript(G5_POSTCODE_JS, 0);
                         <input type="hidden" name="cert_no" value="">
                         <table>
                             <tr>
+                                <th>계정관리자 아이디 </th>
+                                <td>
+                                    <input type="text" name="mb_name" id="mb_name" value="<?php echo $mb["mb_id"];?>" class="basic_input01 width70" readonly>
+                                </td>
+                            </tr>
+                            <tr>
                                 <th>계정관리자 성명 </th>
                                 <td>
                                     <input type="text" name="mb_name" id="mb_name" value="<?php echo $mb["mb_name"];?>" class="basic_input01 width70">
@@ -107,6 +113,10 @@ add_javascript(G5_POSTCODE_JS, 0);
                                     <input type="text" name="mb_3[]" id="mb_3_2" value="<?php echo $mb_3[1];?>" class="basic_input01 width20">
                                     -
                                     <input type="text" name="mb_3[]" id="mb_3_3" value="<?php echo $mb_3[2];?>" class="basic_input01 width20">
+                                    <?php if($mb["mb_id"]==$member["mb_id"]){?>
+                                        <input type="button" value="인증하기" class="basic_btn02" >
+                                        <input type="hidden" name="company_num_confirm" value="N" id="company_num_confirm">
+                                    <?php }?>
                                 </td>
                             </tr>
                             <tr>
@@ -236,16 +246,22 @@ add_javascript(G5_POSTCODE_JS, 0);
                                 <td>
                                     <div style="font-size:16px">맴버쉽기한 : <?php echo $mypayments["payment_end_date"];?></div>
                                     <div style="position: absolute;right:10px;top:11px;">
-                                        <input type="button" value="맴버쉽 취소" class="basic_btn01" onclick="fnMemberCancel('<?php echo $mypayments["order_id"];?>');">
+                                        <input type="button" value="맴버쉽 취소" class="basic_btn01" onclick="fnMemberRefund('<?php echo $mb["mb_id"];?>');">
                                     </div>
                                 </td>
                             </tr>
                             <?php }else{?>
                                 <tr>
-                                    <th>회원삭제</th>
+                                    <th>회원<?php if($mb["mb_id"]==$member["mb_id"]){?>탈퇴<?php }else{?>삭제<?php }?></th>
                                     <td>
-                                        <input type="button" value="회원 삭제" class="basic_btn01" onclick="fnMemberDelete('<?php echo $mb_id;?>');">
-                                        <div class="msg">* 회원 삭제는 결제 전 또는 결제 취소 후 가능합니다.</div>
+                                        <input type="button" value="회원 <?php if($mb["mb_id"]==$member["mb_id"]){?>탈퇴<?php }else{?>삭제<?php }?>" class="basic_btn01" onclick="fnMemberDelete('<?php echo $mb_id;?>');">
+                                        <div class="msg">
+                                            <?php if($mb["mb_id"]==$member["mb_id"]){?>
+                                            * 회원 탈퇴시 구매 했던 아이디는 환불 되며 사용이 불가능합니다.
+                                            <?php }else{?>
+                                            * 회원 삭제는 결제 전 또는 결제 취소 후 가능합니다.
+                                            <?php }?>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php }?>
@@ -371,6 +387,16 @@ add_javascript(G5_POSTCODE_JS, 0);
         /*if(confirm('해당 회원을 삭제하시겠습니까?')){
             location.href=g5_url+'/page/company/member_delete?mb_id='+mb_id;
         }*/
+    }
+
+    function fnMemberRefund(mb_id){
+        $.ajax({
+            url:g5_url+'/page/modal/ajax.alert.php',
+            method:"post",
+            data:{title:"맴버쉽 취소",msg:"맴버쉽 취소요청시 요청시 바로 사용이 금지되며 요청일로 부터 7일이내에 환불처리됩니다.",btns:"맵버쉽해지",link:g5_url+"/page/mypage/member_refund.php?mb_id="+mb_id}
+        }).done(function(data){
+            fnShowModal(data);
+        })
     }
 </script>
 <?php

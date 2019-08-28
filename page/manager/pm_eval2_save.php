@@ -25,7 +25,7 @@ while($row = sql_fetch_array($res)){
     if($ss!=null) {
         $eval1 = sql_fetch("select * from `cmap_my_construct_eval` where const_id = '{$row["id"]}' and mb_id ='{$ss["set_mb_id"]}'");
     }else{
-        $sql = "select * from `cmap_my_construct` where id = '{$current_const["const_id"]}'";
+        $sql = "select * from `cmap_my_construct` where id = '{$row["id"]}'";
         $ss2 = sql_fetch($sql);
         $eval1 = sql_fetch("select * from `cmap_my_construct_eval` where const_id = '{$row["id"]}' and mb_id ='{$ss2["mb_id"]}'");
     }
@@ -46,7 +46,7 @@ while($row = sql_fetch_array($res)){
 
 
     //기간경과율 계산
-    $chkstart[$c] = new DateTime($row["cmap_construct_start"]);
+    $chkstart[$c] = new DateTime($row["cmap_construct_start_temp"]);
     $chktodayss[$c] = new DateTime($todays);
     $chkend[$c] = new DateTime($row["cmap_construct_finish"]);
     $totaldays = date_diff($chkstart[$c],$chkend[$c]);
@@ -242,9 +242,23 @@ $yearPMPer3 = round($totaleval3_save/$totaleval3_save_cal,2);
 $yearPMPer4 = round($totaleval4_save/$totaleval4_save_cal,2);
 $yearPMPer5 = round($totaleval5_save/$totaleval5_save_cal,2);
 
+$userAgent = $_SERVER["HTTP_USER_AGENT"];
+if ( preg_match("/MSIE*/", $userAgent) ) {
+    // 익스플로러
+    $ie = "ie";
+} elseif ( preg_match("/Trident*/", $userAgent) &&  preg_match("/rv:11.0*/", $userAgent) &&  preg_match("/Gecko*/", $userAgent)) {
+    $ie = "ie 11";
+}
+
+if($ie){
+    $filename = iconv("utf-8","euc-kr","건설사업관리용역 평가 총괄표".date('Ymdhis').".xls");
+}else{
+    $filename = "건설사업관리용역 평가 총괄표".date('Ymdhis').".xls";
+}
+
 header( "Content-type: application/vnd.ms-excel" );
 header( "Content-type: application/vnd.ms-excel; charset=utf-8");
-header( "Content-Disposition: attachment; filename = 건설사업관리용역 평가 총괄표".date('Ymdhis').".xls" );
+header( "Content-Disposition: attachment; filename = ".$filename);
 header( "Content-Description: PHP4 Generated Data" );
 ?>
 <table class="view_table eval2_table" >
@@ -303,10 +317,10 @@ header( "Content-Description: PHP4 Generated Data" );
     <?php for($i=0;$i<count($worklist);$i++){
         $constmb = get_member($worklist[$i]["mb_id"]);
         //기간경과율 계산
-        if(date("Y-m-d") <= $worklist[$i]["cmap_construct_start"]){
+        if(date("Y-m-d") <= $worklist[$i]["cmap_construct_start_temp"]){
             $dayper = "0%";
         }else {
-            $start[$i] = new DateTime($worklist[$i]["cmap_construct_start"]);
+            $start[$i] = new DateTime($worklist[$i]["cmap_construct_start_temp"]);
             $todayss[$i] = new DateTime($todays);
             $end[$i] = new DateTime($worklist[$i]["cmap_construct_finish"]);
             $totaldays = date_diff($start[$i], $end[$i]);
@@ -327,7 +341,7 @@ header( "Content-Description: PHP4 Generated Data" );
             <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="td_center"><?php echo ($i+1);?></td>
             <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="td_center" onclick="location.href=g5_url+'/page/mylocation/mylocation_view?constid=<?php echo $worklist[$i]["id"];?>'"><?php echo $worklist[$i]["cmap_name"];?></td>
             <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="td_center"><?php echo $constmb["mb_name"];?></td>
-            <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="td_center"><?php echo $worklist[$i]["cmap_construct_start"];?></td>
+            <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="td_center"><?php echo $worklist[$i]["cmap_construct_start_temp"];?></td>
             <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="td_center"><?php echo $worklist[$i]["cmap_construct_finish"];?></td>
             <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="td_center"><?php echo $dayper;?></td>
             <td style="background-color:#ADD8E6;border:0.25pt solid #000;color:#000;text-align: center;" class="td_center"><?php echo ($worklist[$i]["pm_price"])?$worklist[$i]["pm_price"]:"";?></td>
@@ -429,30 +443,30 @@ header( "Content-Description: PHP4 Generated Data" );
         <td style="background-color: #9ca0ae;text-align: center;color: #fff;font-weight: bold;border:0.25pt solid #000"><?php echo date("Y",strtotime("- 3 year"));?></td>
         <td style="background-color:#ADD8E6;text-align: center;color: #000;font-weight: bold;border:0.25pt solid #000" colspan="2"><?php echo $yearPMPer4;?></td>
         <td style="background-color:#ADD8E6;border:0.25pt solid #000;color:#000;text-align: center;"><?php echo $alltotal13;?></td>
-        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear3[0],2);?></td>
-        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear3[1],2);?></td>
-        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear3[2],2);?></td>
-        <td style="background-color:#ADD8E6;border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear3[8],2);?></td>
-        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear3[3],2);?></td>
-        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear3[4],2);?></td>
-        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear3[5],2);?></td>
-        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear3[6],2);?></td>
-        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear3[7],2);?></td>
-        <td style="background-color:#ADD8E6;border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear3[9],2);?></td>
+        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear4[0],2);?></td>
+        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear4[1],2);?></td>
+        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear4[2],2);?></td>
+        <td style="background-color:#ADD8E6;border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear4[8],2);?></td>
+        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear4[3],2);?></td>
+        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear4[4],2);?></td>
+        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear4[5],2);?></td>
+        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear4[6],2);?></td>
+        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear4[7],2);?></td>
+        <td style="background-color:#ADD8E6;border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear4[9],2);?></td>
     </tr>
     <tr class="years">
         <td style="background-color: #9ca0ae;text-align: center;color: #fff;font-weight: bold;border:0.25pt solid #000"><?php echo date("Y",strtotime("- 4 year"));?></td>
         <td style="background-color:#ADD8E6;text-align: center;color: #000;font-weight: bold;border:0.25pt solid #000" colspan="2"><?php echo $yearPMPer5;?></td>
         <td style="background-color:#ADD8E6;border:0.25pt solid #000;color:#000;text-align: center;"><?php echo $alltotal13;?></td>
-        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear3[0],2);?></td>
-        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear3[1],2);?></td>
-        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear3[2],2);?></td>
-        <td style="background-color:#ADD8E6;border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear3[8],2);?></td>
-        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear3[3],2);?></td>
-        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear3[4],2);?></td>
-        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear3[5],2);?></td>
-        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear3[6],2);?></td>
-        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear3[7],2);?></td>
-        <td style="background-color:#ADD8E6;border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear3[9],2);?></td>
+        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear5[0],2);?></td>
+        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear5[1],2);?></td>
+        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear5[2],2);?></td>
+        <td style="background-color:#ADD8E6;border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear5[8],2);?></td>
+        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear5[3],2);?></td>
+        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear5[4],2);?></td>
+        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear5[5],2);?></td>
+        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear5[6],2);?></td>
+        <td style="border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear5[7],2);?></td>
+        <td style="background-color:#ADD8E6;border:0.25pt solid #000;color:#000;text-align: center;" class="eval_point_td"><?php echo round($totaltoyear5[9],2);?></td>
     </tr>
 </table>

@@ -28,6 +28,9 @@ include_once (G5_PATH."/_head.php");
                     <?php }?>
                     <!--<li onclick="location.href=g5_url+'/page/mypage/guide'"><i></i>사용자 가이드 설정</li>-->
                     <li class="active"><i></i>개인정보 수정</li>
+                    <?php if($member["mb_level"]==5 && $member["parent_mb_id"]==""){?>
+                        <li onclick="location.href=g5_url+'/page/mypage/submember_list'"><i></i>부계정 등록</li>
+                    <?php }?>
                     <li onclick="location.href=g5_url+'/page/mypage/member_leave'"><i></i>회원탈퇴</li>
                 </ul>
             </div>

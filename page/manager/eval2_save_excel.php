@@ -168,9 +168,23 @@ while ($row = sql_fetch_array($res)) {
 
 $const = sql_fetch("select * from `cmap_my_construct` where id = '{$constids}'");
 
+$userAgent = $_SERVER["HTTP_USER_AGENT"];
+if ( preg_match("/MSIE*/", $userAgent) ) {
+    // 익스플로러
+    $ie = "ie";
+} elseif ( preg_match("/Trident*/", $userAgent) &&  preg_match("/rv:11.0*/", $userAgent) &&  preg_match("/Gecko*/", $userAgent)) {
+    $ie = "ie 11";
+}
+
+if($ie){
+    $filename = iconv("utf-8","euc-kr",$const["cmap_name"]."건설사업관리용역 평가표".date('Ymdhis').".xls");
+}else{
+    $filename = $const["cmap_name"]."건설사업관리용역 평가표".date('Ymdhis').".xls";
+}
+
 header( "Content-type: application/vnd.ms-excel" );
 header( "Content-type: application/vnd.ms-excel; charset=utf-8");
-header( "Content-Disposition: attachment; filename = \"".$const["cmap_name"]."건설사업관리용역 평가표".date('Ymdhis').".xls\"" );
+header( "Content-Disposition: attachment; filename = ".$filename );
 header( "Content-Description: PHP4 Generated Data" );
 ?>
 
@@ -231,10 +245,10 @@ header( "Content-Description: PHP4 Generated Data" );
             <?php for($i=0;$i<count($worklist);$i++){
                 $constmb = get_member($worklist[$i]["mb_id"]);
                 //기간경과율 계산
-                if(date("Y-m-d") <= $worklist[$i]["cmap_construct_start"]){
+                if(date("Y-m-d") <= $worklist[$i]["cmap_construct_start_temp"]){
                     $dayper = "0%";
                 }else {
-                    $start[$i] = new DateTime($worklist[$i]["cmap_construct_start"]);
+                    $start[$i] = new DateTime($worklist[$i]["cmap_construct_start_temp"]);
                     $todayss[$i] = new DateTime($todays);
                     $end[$i] = new DateTime($worklist[$i]["cmap_construct_finish"]);
                     $totaldays = date_diff($start[$i], $end[$i]);

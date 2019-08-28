@@ -84,6 +84,7 @@ while($row = sql_fetch_array($res)){
                             <div><a href="<?php echo G5_URL."/admin/navigator"; ?>">사용자 가이드</a></div>
                             <div><a href="<?php echo G5_URL."/admin/holidays"; ?>">공휴일 관리</a></div>
                             <div><a href="<?php echo G5_URL."/admin/main_image"; ?>">메인이미지 관리</a></div>
+                            <div><a href="<?php echo G5_URL."/admin/newwinlist"; ?>">팝업레이어 관리</a></div>
                         </div>
                     </li>
                     <li class="accordion" data-accordion>
@@ -98,6 +99,8 @@ while($row = sql_fetch_array($res)){
                         <div data-control class="list-title">회원관리</div>
                         <div data-content class="list-item">
                             <div><a href="<?php echo G5_URL."/admin/member_list"; ?>">회원관리</a></div>
+                            <div><a href="<?php echo G5_URL."/admin/payment_list"; ?>">결제관리</a></div>
+                            <div><a href="<?php echo G5_URL."/admin/member_cancel_list"; ?>">맴버쉽 취소요청</a></div>
                         </div>
                     </li>
                 </ul>

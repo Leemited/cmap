@@ -37,6 +37,16 @@ $sql = "select * from `cmap_my_construct` where instr(manager_mb_id,'{$member["m
 $res = sql_query($sql);
 $c=0;
 while($row = sql_fetch_array($res)){
+    $manger = explode(",",$row["manager_mb_id"]);
+    $chkManger = 0;
+    for($i=0;$i<count($manger);$i++){
+        if($manger[$i]==$member["mb_id"]){
+            $chkManger = 1;
+        }
+    }
+    if($chkManger==0){
+        continue;
+    }
     $sql = "select * from `cmap_pmmode_save` where mb_id = '{$member["mb_id"]}' and constid = '{$row["id"]}' and eval_type = 2";
     $pmmd = sql_fetch($sql);
 
@@ -48,12 +58,16 @@ while($row = sql_fetch_array($res)){
     if($ss!=null) {
         $eval1 = sql_fetch("select * from `cmap_my_construct_eval` where const_id = '{$row["id"]}' and mb_id ='{$ss["set_mb_id"]}'");
     }else{
-        $sql = "select * from `cmap_my_construct` where id = '{$current_const["const_id"]}'";
+        $sql = "select * from `cmap_my_construct` where id = '{$row["id"]}'";
         $ss2 = sql_fetch($sql);
         $eval1 = sql_fetch("select * from `cmap_my_construct_eval` where const_id = '{$row["id"]}' and mb_id ='{$ss2["mb_id"]}'");
     }
-    //echo $eval1["pk_score2_total"];
-    $diveval = explode("``",$eval1["pk_score2_total"]);
+
+    if($eval1==null){
+        $diveval = array("0","0","0","0","0","0","0","0");
+    }else {
+        $diveval = explode("``", $eval1["pk_score2_total"]);
+    }
     $worklist[$c]["eval_01"] = $diveval[0];
     $worklist[$c]["eval_02"] = $diveval[1];
     $worklist[$c]["eval_03"] = $diveval[2];
@@ -67,9 +81,8 @@ while($row = sql_fetch_array($res)){
     $worklist[$c]["sum1"] = round($sum1,2);
     $worklist[$c]["sum2"] = round($sum2,2);
 
-
     //기간경과율 계산
-    $chkstart[$c] = new DateTime($row["cmap_construct_start"]);
+    $chkstart[$c] = new DateTime($row["cmap_construct_start_temp"]);
     $chktodayss[$c] = new DateTime($todays);
     $chkend[$c] = new DateTime($row["cmap_construct_finish"]);
     $totaldays = date_diff($chkstart[$c],$chkend[$c]);
@@ -178,8 +191,6 @@ while($row = sql_fetch_array($res)){
         $alls = round(((($totaleval1_09 + $totaleval2_09 + $totaleval3_09) *0.8) + (($totaleval1_10 + $totaleval2_10 + $totaleval3_10)*0.2)) / ($totaleval1_cnt + $totaleval2_cnt + $totaleval3_cnt),2);
 
     }
-
-
     $c++;
 }
 if($totaleval1_01>0){
@@ -381,10 +392,10 @@ $yearPMPer5 = round($totaleval5_save/$totaleval5_save_cal,2);
                         <?php for($i=0;$i<count($worklist);$i++){
                             $constmb = get_member($worklist[$i]["mb_id"]);
                             //기간경과율 계산
-                            if(date("Y-m-d") <= $worklist[$i]["cmap_construct_start"]){
+                            if(date("Y-m-d") <= $worklist[$i]["cmap_construct_start_temp"]){
                                 $dayper = "0%";
                             }else {
-                                $start[$i] = new DateTime($worklist[$i]["cmap_construct_start"]);
+                                $start[$i] = new DateTime($worklist[$i]["cmap_construct_start_temp"]);
                                 $todayss[$i] = new DateTime($todays);
                                 $end[$i] = new DateTime($worklist[$i]["cmap_construct_finish"]);
                                 $totaldays = date_diff($start[$i], $end[$i]);
@@ -409,7 +420,7 @@ $yearPMPer5 = round($totaleval5_save/$totaleval5_save_cal,2);
                                 </td>
                                 <td class="td_center" onclick="location.href=g5_url+'/page/mylocation/mylocation_view?constid=<?php echo $worklist[$i]["id"];?>'" title="<?php echo $worklist[$i]["cmap_name"];?>"  style="text-overflow: ellipsis;overflow: hidden;white-space: nowrap;"><?php echo $worklist[$i]["cmap_name"];?></td>
                                 <td class="td_center"><?php echo $constmb["mb_name"];?></td>
-                                <td class="td_center"><?php echo $worklist[$i]["cmap_construct_start"];?></td>
+                                <td class="td_center"><?php echo $worklist[$i]["cmap_construct_start_temp"];?></td>
                                 <td class="td_center"><?php echo $worklist[$i]["cmap_construct_finish"];?></td>
                                 <td class="td_center"><?php echo $dayper;?></td>
                                 <td class="td_center "><input type="text" class="basic_input01 width100 td_center" onchange="fnEvalPm('<?php echo $worklist[$i]["id"];?>',this.value,'const_price')" value="<?php echo ($worklist[$i]["pm_price"])?$worklist[$i]["pm_price"]:"";?>" <?php if($worklist[$i]["pm_price"]==""){?>placeholder="계약금액입력" <?php }?>></td>

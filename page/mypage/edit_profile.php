@@ -8,10 +8,10 @@ $mypage = true;
 $menu_id = "depth_desc_edit";
 include_once (G5_PATH."/page/mypage/confirm.php");
 include_once (G5_PATH."/_head.php");
-
-if(!$_REQUEST["chk"]){
-    alert("비밀번호 인증이 필요합니다. ",G5_URL."/page/mypage/edit_profile_chkpwd");
+if (!$_REQUEST["chk"]) {
+    alert("비밀번호 인증이 필요합니다. ", G5_URL . "/page/mypage/edit_profile_chkpwd");
 }
+
 
 $mb_3 = explode("-",$member["mb_3"]);
 $tel = explode("-",$member["mb_tel"]);
@@ -49,6 +49,9 @@ add_javascript(G5_POSTCODE_JS, 0);
                     <?php }?>
                     <!--<li onclick="location.href=g5_url+'/page/mypage/guide'"><i></i>사용자 가이드 설정</li>-->
                     <li class="active"><i></i>개인정보 수정</li>
+                    <?php if($member["mb_level"]==5 && $member["parent_mb_id"]==""){?>
+                        <li onclick="location.href=g5_url+'/page/mypage/submember_list'"><i></i>부계정 등록</li>
+                    <?php }?>
                     <li onclick="location.href=g5_url+'/page/mypage/member_leave'"><i></i>회원탈퇴</li>
                 </ul>
             </div>
@@ -242,17 +245,21 @@ add_javascript(G5_POSTCODE_JS, 0);
                                 </td>
                             </tr>
                             <?php if($member["parent_mb_id"]==""){?>
-                            <?php if($member["mb_level"]==3 || $member["mb_level"]==5){?>
-                            <tr>
-                                <th>맴버쉽</th>
-                                <td>
-                                    <div style="font-size:16px">맴버쉽기한 : <?php echo $mypayments["payment_end_date"];?></div>
-                                    <div style="position: absolute;right:10px;top:11px;">
-                                    <input type="button" value="맴버쉽 취소" class="basic_btn01">
-                                    </div>
-                                </td>
-                            </tr>
-                            <?php }?>
+                                <?php if($member["mb_level"]==3 || $member["mb_level"]==5){?>
+                                <tr>
+                                    <th>맴버쉽</th>
+                                    <td>
+                                        <?php if($member["mb_paused_status"]==1){?>
+                                            <div style="font-size:16px">맵버쉽 취소 처리중</div>
+                                        <?php }else{?>
+                                        <div style="font-size:16px">맴버쉽기한 : <?php echo $mypayments["payment_end_date"];?></div>
+                                        <div style="position: absolute;right:10px;top:11px;">
+                                        <input type="button" value="맴버쉽 취소" class="basic_btn01" onclick="fnMemberRefund('<?php echo $member["mb_id"];?>');">
+                                        </div>
+                                        <?php }?>
+                                    </td>
+                                </tr>
+                                <?php }?>
                             <?php }?>
                         </table>
                         <div class="mypage_btns">
@@ -396,6 +403,16 @@ add_javascript(G5_POSTCODE_JS, 0);
         }
         <?php } ?>
         <?php } ?>
+    }
+
+    function fnMemberRefund(mb_id){
+        $.ajax({
+            url:g5_url+'/page/modal/ajax.refund.php',
+            method:"post",
+            data:{title:"맴버쉽 취소",msg:"맴버쉽 취소요청시 요청시 바로 사용이 금지되며 요청일로 부터 7일이내에 환불처리됩니다.<br><br>환불정보는 환불완료후 삭제되며, 정확한 정보를 입력바랍니다.<br><br>",btns:"맵버쉽해지",mb_id:mb_id}
+        }).done(function(data){
+            fnShowModal(data);
+        })
     }
 </script>
 <?php

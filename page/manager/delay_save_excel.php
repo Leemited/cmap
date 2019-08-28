@@ -1,11 +1,24 @@
 <?php
 include_once ("../../common.php");
-//include_once ("./excel/PHPExcel.php");
+
+$userAgent = $_SERVER["HTTP_USER_AGENT"];
+if ( preg_match("/MSIE*/", $userAgent) ) {
+    // 익스플로러
+    $ie = "ie";
+} elseif ( preg_match("/Trident*/", $userAgent) &&  preg_match("/rv:11.0*/", $userAgent) &&  preg_match("/Gecko*/", $userAgent)) {
+    $ie = "ie 11";
+}
+
+if($ie){
+    $filename = iconv("utf-8","euc-kr","공무행정 제출 지연 현황".date('Ymdhis').".xls");
+}else{
+    $filename = "공무행정 제출 지연 현황".date('Ymdhis').".xls";
+}
+
 header( "Content-type: application/vnd.ms-excel" );
 header( "Content-type: application/vnd.ms-excel; charset=utf-8");
-header( "Content-Disposition: attachment; filename = 공무행정 제출 지연 현황".date('Ymdhis').".xls" );
+header( "Content-Disposition: attachment; filename = ".$filename );
 header( "Content-Description: PHP4 Generated Data" );
-
 
 $today = date("Y-m-d");
 
@@ -24,13 +37,16 @@ if($ss!=null){
     $delaysql_pm = "select * from `cmap_myschedule` where construct_id = '{$constids}' and schedule_date < '{$today}' and pk_id <> '' order by depth4_pk_id asc ";
     $delayres_pm = sql_query($delaysql_pm);
     $a = 0;
+    $delaycount=$delaydate=$totaldates=0;
     while($delayrow_pm = sql_fetch_array($delayres_pm)){ // A. 스케쥴이 지난 일정중
+        $delaycount++;
 
         $pk_ids = explode("``",$delayrow_pm["pk_id"]);
 
         $diff = strtotime($today) - strtotime($delayrow_pm["schedule_date"]);
 
         $days = $diff / (60*60*24);
+        $delaydate += $days;
 
         for($i=0;$i<count($pk_ids);$i++){
             for($j=0;$j<count($map_pk_id_pm);$j++){
@@ -40,7 +56,6 @@ if($ss!=null){
                         $pk_con = sql_fetch($sql);
                         $worklistpm[$a] = $pk_con;
                         $worklistpm[$a]["delays"] = $days;
-                        $delaydate += $days;
                         $a++;
                     }
                 }
@@ -61,13 +76,16 @@ if($ss!=null){
     $delaysql_pm = "select * from `cmap_myschedule` where construct_id = '{$constids}' and schedule_date < '{$today}' and pk_id <> '' order by depth4_pk_id asc ";
     $delayres_pm = sql_query($delaysql_pm);
     $a=0;
-    $delaycount[$c]=$delaydate=$totaldates=0;
+    $delaycount=$delaydate=$totaldates=0;
     while($delayrow_pm = sql_fetch_array($delayres_pm)){
+        $delaycount++;
         $pk_ids = explode("``",$delayrow_pm["pk_id"]);
 
         $diff = strtotime($today) - strtotime($delayrow_pm["schedule_date"]);
 
         $days = $diff / (60*60*24);
+        $delaydate += $days;
+
         for($i=0;$i<count($pk_ids);$i++){
             for($j=0;$j<count($map_pk_id_pm);$j++){
                 if($pk_ids[$i]==$map_pk_id_pm[$j]) {
@@ -76,7 +94,7 @@ if($ss!=null){
                         $pk_con = sql_fetch($sql);
                         $worklistpm[$a] = $pk_con;
                         $worklistpm[$a]["delays"] = $days;
-                        $delaydate += $days;
+                        $worklistpm[$a]["depth4_pk_id"] = $delayrow_pm["depth4_pk_id"];
                         $a++;
                     }
                 }
@@ -110,6 +128,7 @@ for($i=0;$i<count($worklistpm);$i++){
     while($row3 = sql_fetch_array($res3)){
         $worklists[$row3["menu_code"]][$row3["pk_ids"]][$row3["pk_idss"]][$row3["pk_id"]]["content"] = $row3["content"];
         $worklists[$row3["menu_code"]][$row3["pk_ids"]][$row3["pk_idss"]][$row3["pk_id"]]["delaydate"] = $worklistpm[$i]["delays"];
+        $worklists[$row3["menu_code"]][$row3["pk_ids"]][$row3["pk_idss"]][$row3["pk_id"]]["depth4_pk_id"] = $row3["pk_idss"];
         $worklists[$row3["menu_code"]][$row3["pk_ids"]][$row3["pk_idss"]]["content_pk_id"]= $row3["pk_id"];
         $worklists[$row3["menu_code"]][$row3["pk_ids"]][$row3["pk_idss"]]["content_pk"][$row3["pk_id"]]= $row3["pk_id"];
         $worklists[$row3["menu_code"]][$row3["pk_ids"]]["depth2_pk"]["count"]++;
@@ -144,14 +163,14 @@ $const = sql_fetch("select * from `cmap_my_construct` where id = '{$constids}'")
     <tr>
         <td style="padding:5px;border-right:0.25pt solid #000;color:#000;text-align: center;">-</td>
         <td style="padding:5px;border-right:0.25pt solid #000;color:#000;"><?php echo $const["cmap_name"];?></td>
-        <td style="padding:5px;border-right:0.25pt solid #000;color:#000;text-align: center;"><?php echo number_format(count($delaycateCount));?> 건</td>
+        <td style="padding:5px;border-right:0.25pt solid #000;color:#000;text-align: center;"><?php echo number_format($delaycount);?> 건</td>
         <td style="padding:5px;border-right:0.25pt solid #000;color:#000;text-align: center;"><?php echo number_format(count($worklistpm));?> 건</td>
         <td style="padding:5px;color:#000;text-align: center;"><?php echo number_format($delaydate);?> 일</td>
     </tr>
     <tr>
         <td style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;text-align: center">소계</td>
         <td style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;text-align: center">계</td>
-        <td style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;text-align: center"><?php echo number_format(count($delaycateCount));?> 건</td>
+        <td style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;text-align: center"><?php echo number_format($delaycount);?> 건</td>
         <td style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;text-align: center"><?php echo number_format(count($worklistpm));?> 건</td>
         <td style="padding:5px;border:0.25pt solid #fff;background-color:#002060;color:#fff;text-align: center"><?php echo number_format($delaydate);?> 일</td>
     </tr>
