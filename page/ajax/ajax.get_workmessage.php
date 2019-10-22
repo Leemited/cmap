@@ -27,7 +27,7 @@ while($row = sql_fetch_array($res)){
 <table style="table-layout:fixed">
     <colgroup>
         <col width="15%">
-        <col width="25%">
+        <col width="*">
         <col width="60%">
     </colgroup>
     <tr>

@@ -106,7 +106,7 @@ if($payments){
             $ty = "연장결제";
         }
         $text .= $texts[1]. " : ". $texts[2]."개월 [".$ty."]\r\n";
-        $payments_mb_id[] = $texts[1];
+        $payments_mb_id[] = $texts[1]."||".$texts[2]."||0";
     }
 }
 ?>
@@ -157,6 +157,7 @@ if($payments){
         <h3 class="sub_title">문의/제안하기</h3>
         <form action="<?php echo G5_URL?>/page/board/inquiry_update" method="post" enctype="multipart/form-data">
             <input type="hidden" name="payments" id="payments" value="<?php echo $payments;?>">
+            <input type="hidden" name="mb_id" id="mb_id" value="<?php echo $member["mb_id"];?>">
             <input type="hidden" name="payments_mb_id" id="payments_mb_id" value="<?php echo implode(",",$payments_mb_id);?>">
         <table>
             <tr>

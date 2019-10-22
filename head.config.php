@@ -10,20 +10,38 @@ if($is_member && $member["mb_auth"]==true) {
         $res = sql_query("select * from `cmap_my_construct` where (mb_id ='{$member["mb_id"]}' or instr(members,'{$member["mb_id"]}') != 0 ) and status = 0 order by id desc");
     }
     while ($row = sql_fetch_array($res)) {
-        if($row["members"]!="" && $row["mb_id"]!=$member["mb_id"]) {//내가 등록한게 아니고 맴버로 등록되었을 경우
-            $mems = explode(",", $row["members"]);
-            $chkMem = 0;//기본 등록아닌상태에서
-            for($i=0;$i<count($mems);$i++){
-                if($mems[$i]==$member["mb_id"]){
-                    $chkMem = 1;//등록된상태 업데이트
+        if($member["mb_level"]==5){
+            if ($row["manager_mb_id"] != "" && $row["mb_id"] != $member["mb_id"]) {//내가 등록한게 아니고 매니저로 등록되었을 경우
+                $mems = explode(",", $row["manager_mb_id"]);
+                $chkMem = 0;//기본 등록아닌상태에서
+                for ($i = 0; $i < count($mems); $i++) {
+                    if ($mems[$i] == $member["mb_id"]) {
+                        $chkMem = 1;//등록된상태 업데이트
+                        continue;
+                    }
+                }
+
+                if ($chkMem == 0) {//최종 등록이 아니므로 while문 패스
                     continue;
                 }
             }
+        }else {
+            if ($row["members"] != "" && $row["mb_id"] != $member["mb_id"]) {//내가 등록한게 아니고 맴버로 등록되었을 경우
+                $mems = explode(",", $row["members"]);
+                $chkMem = 0;//기본 등록아닌상태에서
+                for ($i = 0; $i < count($mems); $i++) {
+                    if ($mems[$i] == $member["mb_id"]) {
+                        $chkMem = 1;//등록된상태 업데이트
+                        continue;
+                    }
+                }
 
-            if($chkMem == 0){//최종 등록이 아니므로 while문 패스
-                continue;
+                if ($chkMem == 0) {//최종 등록이 아니므로 while문 패스
+                    continue;
+                }
             }
         }
+
         $mycont[] = $row;
         $mycontid[] = $row["id"];
         if($row["manager_mb_id"]==$member["mb_id"]){
@@ -50,6 +68,12 @@ if($is_member && $member["mb_auth"]==true) {
 
     while ($row = sql_fetch_array($res)) {
         $myschedule[] = $row;
+    }
+    $sch_tomorow = date("Y-m-d",strtotime("+ 1 day"));
+    //echo "select * from `cmap_myschedule` as s left join `cmap_my_construct` as c on s.construct_id = c.id where schedule_date = '{$sch_tomorow}' and (c.mb_id = '{$member["mb_id"]}' or instr(c.members,'{$member["mb_id"]}') > 0 or instr(c.manager_mb_id,'{$member["mb_id"]}') > 0) {$com_where2} order by s.id limit 0, 6";
+    $res2 = sql_query("select * from `cmap_myschedule` as s left join `cmap_my_construct` as c on s.construct_id = c.id where schedule_date = '{$sch_tomorow}' and (c.mb_id = '{$member["mb_id"]}' or instr(c.members,'{$member["mb_id"]}') > 0 or instr(c.manager_mb_id,'{$member["mb_id"]}') > 0) {$com_where2} order by s.id limit 0, 6");
+    while ($row = sql_fetch_array($res2)) {
+        $myschedule2[] = $row;
     }
 
     //my현장 신청 관리

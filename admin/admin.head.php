@@ -100,6 +100,7 @@ while($row = sql_fetch_array($res)){
                         <div data-content class="list-item">
                             <div><a href="<?php echo G5_URL."/admin/member_list"; ?>">회원관리</a></div>
                             <div><a href="<?php echo G5_URL."/admin/payment_list"; ?>">결제관리</a></div>
+                            <div><a href="<?php echo G5_URL."/admin/inquiry_payment"; ?>">결제문의</a></div>
                             <div><a href="<?php echo G5_URL."/admin/member_cancel_list"; ?>">맴버쉽 취소요청</a></div>
                         </div>
                     </li>

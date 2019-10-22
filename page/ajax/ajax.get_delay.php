@@ -43,8 +43,10 @@ if(!$const_id){
                     if($map_pk_actives[$j]==0){
                         $sql = "select *,d.pk_id as pk_id,c.depth1_id as depth1_id,a.pk_id as depth1_pk_id,c.depth2_id as depth2_id ,d.depth_name as depth_name,a.depth_name as depth1_name from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$pk_ids[$i]}'";
                         $ddds = sql_fetch($sql);
-                        if(strpos($chcccid,$ddds["pk_id"])!==false) {
-                            continue;
+                        if(substr($ddds["me_code"],0,2) != 10) {
+                            if (strpos($chcccid, $ddds["pk_id"]) !== false) {
+                                continue;
+                            }
                         }
                         $chcccid .= ','.$ddds["pk_id"];
                         $getdelaylist[$pk_ids[$i]] = $ddds;

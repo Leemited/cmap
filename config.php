@@ -27,7 +27,7 @@ if (PHP_VERSION >= '5.1.0') {
 입력예) https://www.domain.com:443/gnuboard5
 */
 define('G5_DOMAIN', '');
-define('G5_HTTPS_DOMAIN', 'https://xn--z69akkg7o1wgdnk53m.com:443');
+define('G5_HTTPS_DOMAIN', '');
 
 /*
 www.sir.kr 과 sir.kr 도메인은 서로 다른 도메인으로 인식합니다. 쿠키를 공유하려면 .sir.kr 과 같이 입력하세요.

@@ -33,6 +33,19 @@ $prevDayCount    = date( "t", mktime( 0, 0, 0, $month, 0, $year ) ) - $startDay 
 $nowDayCount    = 1;                                            // 이번달 일자 카운팅
 $nextDayCount    = 1;                                          // 다음달 일자 카운팅
 
+// 지난달 일수 구하기
+$prevDayCountMini    = date( "t", mktime( 0, 0, 0, $month, 0, $year ) ) - $startDay + 1;
+
+$nowDayCountMini    = 1;                                            // 이번달 일자 카운팅
+$nextDayCountMini    = 1;                                          // 다음달 일자 카운팅
+
+// 지난달 일수 구하기
+$prevDayCountMini2    = date( "t", mktime( 0, 0, 0, $month, 0, $year ) ) - $startDay + 1;
+
+$nowDayCountMini2    = 1;                                            // 이번달 일자 카운팅
+$nextDayCountMini2   = 1;                                          // 다음달 일자 카운팅
+
+
 // 이전, 다음 만들기
 $prevYear        = ( $month == 1 )? ( $year - 1 ) : $year;
 $prevMonth        = ( $month == 1 )? 12 : ( $month - 1 );
@@ -140,21 +153,24 @@ while($activechk = sql_fetch_array($activeres)) {
         for ($i = 0; $i < count($pk_ids); $i++) {
             for ($j = 0; $j < count($map_pk_id); $j++) {
                 if ($pk_ids[$i] == $map_pk_id[$j]) {
-                    $sql = "select *,d.pk_id as pk_id,c.depth1_id as depth1_id,a.pk_id as depth1_pk_id,c.depth2_id as depth2_id ,d.depth_name as depth_name,a.depth_name as depth1_name,c.pk_id as c_pk_id from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$pk_ids[$i]}'";
+                    $sql = "select *,d.pk_id as pk_id,c.depth1_id as depth1_id,a.pk_id as depth1_pk_id,c.depth2_id as depth2_id ,d.depth_name as depth_name,a.depth_name as depth1_name,c.pk_id as c_pk_id,a.me_code  from `cmap_depth4` as d left join `cmap_content` as c on d.id = c.depth4_id left join `cmap_depth1` as a on a.id = c.depth1_id where c.pk_id = '{$pk_ids[$i]}'";
                     $ddd = sql_fetch($sql);
-                    /*if(strpos($chcccid,$ddd["pk_id"])!==false) {
-                        continue;
-                    }
-                    $chcccid .= ','.$ddd["pk_id"];*/
-                    $schdelaylist[$delayrow["construct_id"] . "_" . $pk_ids[$i]] = $ddd;
+
                     if ($map_pk_actives[$j] == 0) {
+                        if(substr($ddd["me_code"],0,2) != 10) {
+                            if (strpos($chcccid, $ddd["pk_id"]) !== false) {
+                                continue;
+                            }
+                        }
+                        $chcccid .= ','.$ddd["pk_id"];
+                        $schdelaylist[$delayrow["construct_id"] . "_" . $pk_ids[$i]] = $ddd;
                         if($delay_now > $delayrow["schedule_date"]) {
                             if (strpos($chcccid, $delayrow["construct_id"] . "_" .$ddd["pk_id"]) !== false) {
-                                //echo $chcccid."//".$delayrow["construct_id"] . "_" .$ddd["pk_id"]."//".$a++."<br>";
+
                             } else {
                                 $delaylists[$delayrow["construct_id"] . "_" . $pk_ids[$i]] = $ddd;
                                 $delaylists[$delayrow["construct_id"] . "_" . $pk_ids[$i]]["delay_date"] = "-".$delaydays;
-                                $chcccid .= ',' . $delayrow["construct_id"] . "_" .$ddd["pk_id"];
+                                //$chcccid .= ',' . $delayrow["construct_id"] . "_" .$ddd["pk_id"];
                             }
                         }
                         $schdelaylist[$delayrow["construct_id"] . "_" . $pk_ids[$i]]["delay_date"] = "-" . $delaydays;
@@ -185,11 +201,11 @@ $delaylists = array_filter($delaylists);
 
 </div>
 <span class="etc_view_bg"></span>
-<div class="full-width" style="padding-left:20px;padding-right:20px;">
+<div class="full-width cal-padding" style="">
     <div class="backbg"></div>
     <section class="cal">
         <header class="sub schedule_titles">
-            <h2>스케쥴</h2>
+            <h2>스케쥴 <span class="years"><?php echo $year.". ";?></span><span class="months"><?php echo $month.". ";?></span><span class="days"><?php echo $today;?></span><img src="<?php echo G5_IMG_URL;?>/ic_calendar.svg" alt="" onclick="fnCalOn();"></h2>
             <div class="big_month">
                 <a class="prev_year" href="<?php echo G5_URL?>/page/mypage/schedule?toYear=<?php echo ($month != 1)?($prevYear - 1):$prevYear?>&toMonth=<?php echo $month ?>&constid=<?php echo $_REQUEST["constid"];?>">
                     <img src="<?php echo G5_IMG_URL?>/cal_arrow_year_prev.png" alt=""> </a>
@@ -209,6 +225,14 @@ $delaylists = array_filter($delaylists);
                     <li class="lateconfirm"> 지연제출</li>
                     <li class="late"> 제출지연</li>
                 </ul>
+            </div>
+            <div class="contruct_sel_m">
+                <select name="cons_id" id="cons_id" onchange="fnScheduleConst(this.value)">
+                    <option value="">현장선택</option>
+                    <?php for($i=0;$i<count($mycont);$i++){?>
+                        <option value="<?php echo $mycont[$i]["id"];?>" <?php if($constid==$mycont[$i]["id"]){?>selected<?php }?>><?php echo $mycont[$i]["cmap_name"];?></option>
+                    <?php }?>
+                </select>
             </div>
         </header>
 
@@ -473,7 +497,201 @@ $delaylists = array_filter($delaylists);
             </table>
         </div>
     </section>
+    <div class="mini_calendar">
+        <div class="mini_dates">
+            <div class="mini_day_big">
+                <div class="round_box">
+                    <div class="sel_days">
+                        <?php echo $days;?>
+                    </div>
+                    <div class="sel_months">
+                        <?php echo strtoupper(date("M",strtotime($month)));?>
+                    </div>
+                </div>
+            </div>
+            <div class="mini_month">
+                <a class="prev_year" href="<?php echo G5_URL?>/page/mypage/schedule?toYear=<?php echo ($month != 1)?($prevYear - 1):$prevYear?>&toMonth=<?php echo $month ?>&constid=<?php echo $_REQUEST["constid"];?>">
+                    <img src="<?php echo G5_IMG_URL?>/cal_arrow_year_prev.png" alt=""> </a>
+                <a class="prev_month" href="<?php echo G5_URL?>/page/mypage/schedule?toYear=<?php echo $prevYear?>&toMonth=<?php echo $prevMonth?>&constid=<?php echo $_REQUEST["constid"];?>">
+                    <img src="<?php echo G5_IMG_URL?>/cal_arrow_m_prev.png" alt=""> </a>
+                <span ><?php echo $year;?>. <?php echo (strlen($month)==1)?"0".$month:$month;?></span>
+                <a class="next_month" href="<?php echo G5_URL?>/page/mypage/schedule?toYear=<?php echo $nextYear?>&toMonth=<?php echo $nextMonth?>&constid=<?php echo $_REQUEST["constid"];?>">
+                    <img src="<?php echo G5_IMG_URL?>/cal_arrow_m_next.png" alt=""> </a>
+                <a class="next_year" href="<?php echo G5_URL?>/page/mypage/schedule?toYear=<?php echo ($month != 12)?($nextYear + 1):$nextYear?>&toMonth=<?php echo $month?>&constid=<?php echo $_REQUEST["constid"];?>">
+                    <img src="<?php echo G5_IMG_URL?>/cal_arrow_year_next.png" alt=""> </a>
+            </div>
+        </div>
+        <div class="mini_cals">
+            <div class="mini_month">
+                <?php for( $i = 0; $i < count( $doms ); $i++ ) { ?>
+                    <div>
+                        <?php
+                        switch($i){
+                            case 0 : echo "<span class='sun'>S</span>";break;
+                            case 1 : echo "<span>M</span>";break;
+                            case 2 : echo "<span>T</span>";break;
+                            case 3 : echo "<span>W</span>";break;
+                            case 4 : echo "<span>T</span>";break;
+                            case 5 : echo "<span>F</span>";break;
+                            case 6 : echo "<span class='sat'>S</span>";break;
+                        }
+                        ?>
+                    </div>
+                <?php }?>
+            </div>
+            <div class="mini_days">
+                <?php for( $rows = 0; $rows < $setRows; $rows++ ) { ?> <!-- 주차를 나누는 for 문 -->
+                    <div>
+                        <?php for( $cols = 0; $cols < 7; $cols++ )  {
+                            // 셀 인덱스 만들자
+                            $cellIndex    = ( 7 * $rows ) + $cols;
+                            // 이번달이라면
+                            if ( $startDay <= $cellIndex && $nowDayCountMini <= $days ) {
+                                if(strlen($nowDayCountMini)==1){
+                                    $ndate = "0".$nowDayCountMini;
+                                }else{
+                                    $ndate = $nowDayCountMini;
+                                }
+                                if(strlen($month)==1){
+                                    $mon = "0".$month;
+                                }else{
+                                    $mon = $month;
+                                }
+                                $key = $year."-".$mon."-".$ndate;
+
+                                ?>
+                                <div >
+                                    <!-- 일주일 내의 일을 나누는 for 문 -->
+                                    <?php if ( date( "w", mktime( 0, 0, 0, $month, $nowDayCountMini, $year ) ) == 6 ) { 	// 토요일
+                                        if( date("d") == $nowDayCountMini  && date("m") == $month ) { ?>
+                                            <a href='#list_<?php echo (strlen($nowDayCountMini)==1)?"0".$nowDayCountMini:$nowDayCountMini;?>' class="calendar_date sat today" id="cal_<?php echo (strlen($nowDayCountMini)==1)?"0".$nowDayCountMini:$nowDayCountMini;?>"><p style="color:orange;font-weight:bold"><b><?php echo $nowDayCountMini++?></b></p></a>
+                                        <?php	} else {	?>
+                                            <a href='#list_<?php echo (strlen($nowDayCountMini)==1)?"0".$nowDayCountMini:$nowDayCountMini;?>' class="calendar_date sat" id="cal_<?php echo (strlen($nowDayCountMini)==1)?"0".$nowDayCountMini:$nowDayCountMini;?>"><p ><?php echo $nowDayCountMini++?></p></a>
+                                        <?php	}
+                                    } else if ( date( "w", mktime( 0, 0, 0, $month, $nowDayCountMini, $year ) ) == 0 ) { 	// 일요일
+                                        if( date("d") == $nowDayCountMini && date("m") == $month) { ?>
+                                            <a href='#list_<?php echo (strlen($nowDayCountMini)==1)?"0".$nowDayCountMini:$nowDayCountMini;?>' class="calendar_date sun today" id="cal_<?php echo (strlen($nowDayCountMini)==1)?"0".$nowDayCountMini:$nowDayCountMini;?>"><p style="color:orange;font-weight:bold"><b><?php echo $nowDayCountMini++?></b></p></a>
+                                        <?php	} else {	?>
+                                            <a href='#list_<?php echo (strlen($nowDayCountMini)==1)?"0".$nowDayCountMini:$nowDayCountMini;?>' class="calendar_date sun" id="cal_<?php echo (strlen($nowDayCountMini)==1)?"0".$nowDayCountMini:$nowDayCountMini;?>"><p ><?php echo $nowDayCountMini++?></p></a>
+                                        <?php	}
+                                    } else { 	// 평일
+                                        if( strtotime(date( "Y-m-d", mktime( 0, 0, 0, $month, $nowDayCountMini, $year ))) == strtotime($holiday8_1) || strtotime(date( "Y-m-d", mktime( 0, 0, 0, $month, $nowDayCountMini, $year ))) == strtotime($holiday8_2) || strtotime(date( "Y-m-d", mktime( 0, 0, 0, $month, $nowDayCountMini, $year ))) == strtotime($holiday8_3) || strtotime(date( "Y-m-d", mktime( 0, 0, 0, $month, $nowDayCountMini, $year ))) == strtotime($holiday["holidays1"]) || strtotime(date( "Y-m-d", mktime( 0, 0, 0, $month, $nowDayCountMini, $year ))) == strtotime($holiday["holidays3"]) || strtotime(date( "Y-m-d", mktime( 0, 0, 0, $month, $nowDayCountMini, $year ))) == strtotime($holiday["holidays4"]) || strtotime(date( "Y-m-d", mktime( 0, 0, 0, $month, $nowDayCountMini, $year ))) == strtotime($holiday["holidays5"]) || strtotime(date( "Y-m-d", mktime( 0, 0, 0, $month, $nowDayCountMini, $year ))) == strtotime($holiday["holidays6"]) || strtotime(date( "Y-m-d", mktime( 0, 0, 0, $month, $nowDayCountMini, $year ))) == strtotime($holiday["holidays7"]) || strtotime(date( "Y-m-d", mktime( 0, 0, 0, $month, $nowDayCountMini, $year ))) == strtotime($holiday["holidays9"]) || strtotime(date( "Y-m-d", mktime( 0, 0, 0, $month, $nowDayCountMini, $year ))) == strtotime($holiday["holidays10"]) || strtotime(date( "Y-m-d", mktime( 0, 0, 0, $month, $nowDayCountMini, $year ))) == strtotime($holiday["holidays11"]) || strtotime(date( "Y-m-d", mktime( 0, 0, 0, $month, $nowDayCountMini, $year ))) == strtotime($holiday2_1) || strtotime(date( "Y-m-d", mktime( 0, 0, 0, $month, $nowDayCountMini, $year ))) == strtotime($holiday2_2) || strtotime(date( "Y-m-d", mktime( 0, 0, 0, $month, $nowDayCountMini, $year ))) == strtotime($holiday2_3)){//공휴일?>
+                                            <a href='#list_<?php echo (strlen($nowDayCountMini)==1)?"0".$nowDayCountMini:$nowDayCountMini;?>' class="calendar_date sun today" id="cal_<?php echo (strlen($nowDayCountMini)==1)?"0".$nowDayCountMini:$nowDayCountMini;?>"><p ><b><?php echo $nowDayCountMini++?></b></p></a>
+                                        <?php }else {
+                                            if (date("d") == $nowDayCountMini && date("m") == $month) { ?>
+                                                <a href='#list_<?php echo (strlen($nowDayCountMini)==1)?"0".$nowDayCountMini:$nowDayCountMini;?>' class="calendar_date today" id="cal_<?php echo (strlen($nowDayCountMini)==1)?"0".$nowDayCountMini:$nowDayCountMini;?>"><p style="font-weight:bold"><?php echo $nowDayCountMini++ ?></p></a>
+                                            <?php } else { ?>
+                                                <a href='#list_<?php echo (strlen($nowDayCountMini)==1)?"0".$nowDayCountMini:$nowDayCountMini;?>' class="calendar_date" id="cal_<?php echo (strlen($nowDayCountMini)==1)?"0".$nowDayCountMini:$nowDayCountMini;?>"><p><?php echo $nowDayCountMini++ ?></p></a>
+                                            <?php }
+                                        }
+                                    }
+                                    if(count($myschedule[$key]) >0){ echo "<span class='schedule_mores'></span>";}
+                                    ?>
+                                </div>
+                                <?php	// 이전달이라면
+                            } else if ( $cellIndex < $startDay ) {
+                                $presmonMini = (strlen($prevMonthMini)==1)?"0".$prevMonthMini:$prevMonthMini;
+                                $key = $year."-".$presmonMini."-".$prevDayCountMini;
+                                ?>
+                                <div >
+                                    <div><p class="calendar_date other_m"><?php echo $prevDayCountMini++?></p></div>
+                                    <?php
+                                    if(count($myschedule[$key]) > 0){ echo "<span class=''></span>";}
+                                    ?>
+                                </div>
+                                <?php 	// 다음달 이라면
+                            } else if ( $cellIndex >= $days ) {
+                                $nextmonMini = (strlen($nextMonthMini)==1)?"0".$nextMonthMini:$nextMonthMini;
+                                $nextdayMini = (strlen($nextDayCountMini)==1)?"0".$nextDayCountMini:$nextDayCountMini;
+                                $key = $year."-".$nextmonMini."-".$nextdayMini;
+                                ?>
+                                <div >
+                                    <div><p class="calendar_date other_m"><?php echo $nextDayCountMini++?></p></div>
+                                    <?php
+                                    if(count($myschedule[$key]) > 0){ echo "<span class='schedule_mores'></span>";}
+                                    ?>
+                                </div>
+                            <?php }
+                        }
+                        ?>
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+    <div class="schedule_list_m schedules">
+        <ul>
+            <?php for( $rows = 0; $rows < $setRows; $rows++ ) { //주차를 나누는 for 문
+                for( $cols = 0; $cols < 7; $cols++ )  {
+                // 이번달이라면
+                if ( $nowDayCountMini2 <= $days ) {
+                    if(strlen($nowDayCountMini2)==1){
+                        $ndate = "0".$nowDayCountMini2;
+                    }else{
+                        $ndate = $nowDayCountMini2;
+                    }
+                    if(strlen($month)==1){
+                        $mon = "0".$month;
+                    }else{
+                        $mon = $month;
+                    }
+                    $key = $year."-".$mon."-".$ndate;
+                    $dayMini2 = $year."-".$mon."-".$nowDayCountMini2++;
+                    ?>
+                    <li onclick="fnScheduleList('<?php echo $key;?>','<?php echo $constid;?>','m')" id="list_<?php echo $ndate;?>" class="<?php if(date("D",strtotime($dayMini2))=="Sun"){?>sun<?php }if(date("D",strtotime($dayMini2))=="Sat"){?>sat<?php }?> <?php if(count($myschedule)>=4){?>more<?php }?>">
+                        <div>
+                            <h2><?php echo date("d",strtotime($dayMini2));?></h2>
+                            <h3><?php echo date("D",strtotime($dayMini2));?></h3>
+                        </div>
+                        <div>
+                            <?php
+                            if(count($myschedule[$key]) > 0){ ?>
+                                <?php for($item = 0; $item <count($myschedule[$key]);$item++){
+                                    $chkActive = 0;
+                                    // 0 = 제출완료 , 1 = 제출지연, 3 = 지연제출, 2 = 제출예정
+                                    if($myschedule[$key][$item]["pk_id"]!=""){
+                                        $sch_pk_id = explode("``",$myschedule[$key][$item]["pk_id"]);
+                                        for($chk=0;$chk<count($sch_pk_id);$chk++) {
+                                            if ($schdelaylist[$myschedule[$key][$item]["construct_id"]."_".$sch_pk_id[$chk]]["active_date"] != "0000-00-00") { //제출했음
+                                                if($schdelaylist[$myschedule[$key][$item]["construct_id"]."_".$sch_pk_id[$chk]]["active"]==1) {
+                                                    if ($schdelaylist[$myschedule[$key][$item]["construct_id"] . "_" . $sch_pk_id[$chk]]["active_date"] > $key) { // 지연일때
+                                                        $chkActive = 3;
+                                                    } else { //지연이 아닐때
+                                                        $chkActive = 0;
+                                                    }
+                                                }
+                                            }else{ //제출안함
+                                                if($schdelaylist[$myschedule[$key][$item]["construct_id"]."_".$sch_pk_id[$chk]]["active"]==0) {//0 = 제출안함
+                                                    if(date("Y-m-d") <= $key) {
+                                                        $chkActive = 2;
+                                                    }else {
+                                                        $chkActive = 1;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if($item == 5){?><span class="list_more"></span><?php }
+                                    if($item > 4 || $myschedule[$key][$item]["schedule_name"] == ""){continue;}
+                                    ?>
+                                    <p class="<?php if($chkActive==1){?>delays<?php }else if($chkActive==0){?>confirm<?php }else if($chkActive==3){?>lateconfirm<?php }?>" id="cal_<?php echo $myschedule[$key][$item]["id"];?>" title="<?php echo $myschedule[$key][$item]["schedule_name"];?>">
+                                        <span><?php echo $myschedule[$key][$item]["schedule_name"];?></span>
+                                    </p>
+                                <?php }?>
+                            <?php }else{?>
+                                <div>일정이 없습니다.</div>
+                            <?php } ?>
+                        </div>
+                    </li>
+                    <?php }?>
+                <?php }?>
+            <?php }?>
+        </ul>
+    </div>
     <section class="cal_data">
+        <div class="cal_data_mobile_close" onclick="$('.cal_data').hide();">
+            <img src="<?php echo G5_IMG_URL;?>/ic_arrow_down.svg" alt="">
+        </div>
         <!--<div class="delay_msg_btns">
             <input type="button" value="TODAY" class="basic_btn02 " style="margin-right:20px;" onclick="location.href=g5_url+'/page/mypage/schedule?toYear<?php /*echo date("Y");*/?>&toMonth=<?php /*echo date("m");*/?>&constid=<?php /*echo $constid;*/?>'">
             <input type="button" class="basic_btn02" value="업무연락서" onclick="fnWriteMessage('')">
@@ -532,7 +750,7 @@ $delaylists = array_filter($delaylists);
     </section>
 </div>
 <script>
-    function fnScheduleList(key,id){
+    function fnScheduleList(key,id,screen){
         if(!$(".d_"+key).hasClass("selected")) {
             $(".d_" + key).addClass("selected");
             $(".days").not($(".d_" + key)).removeClass("selected");
@@ -547,6 +765,9 @@ $delaylists = array_filter($delaylists);
             $("#del_id").val('');
             $(".schedule_list").html('');
             $(".schedule_list").append(data);
+            if(screen=="m"){
+                $(".cal_data").show();
+            }
         });
     }
 
@@ -591,7 +812,7 @@ $delaylists = array_filter($delaylists);
 
         //fnScheduleList("<?php echo date("Y-m-d");?>");
 
-        $(document).scroll(function(){
+        /*$(document).scroll(function(){
            var top = $(this).scrollTop();
            if(top > 350){
                $(".cal_data").addClass("cal_top");
@@ -610,7 +831,7 @@ $delaylists = array_filter($delaylists);
                $("header.sub").removeClass("cal_top");
                $(".backbg").removeClass("active");
            }
-        });
+        });*/
         //$(".tab2").hide();
 
         $(".tab li").click(function(){
@@ -638,6 +859,96 @@ $delaylists = array_filter($delaylists);
             fnShowModal(data);
         });
     }
+
+    function fnCalOn(){
+        if(!$(".mini_calendar").hasClass('active')){
+            $(".mini_calendar").addClass("active");
+        }else{
+            $(".mini_calendar").removeClass("active");
+        }
+    }
+    $(function(){
+        if($(window).width() < 1400) {
+            var top = $(window).scrollTop();
+            if (top > 160) {
+                $(".header_top").css("position", "fixed");
+                $(".cal").css({"position": "fixed", "top": "60px"});
+                $(".mini_calendar").css({"position": "fixed", "top": "220px"});
+                //chk = true;
+            } else {
+                $(".header_top").css("position", "relative");
+                $(".cal").css({"position": "relative", "top": "0"});
+                $(".mini_calendar").css({"position": "absolute", "top": "unset"})
+                //chk = false;
+            }
+            $(window).scroll(function () {
+                var top = $(this).scrollTop();
+                if (top > 160) {
+                    $(".header_top").css("position", "fixed");
+                    $(".cal").css({"position": "fixed", "top": "60px"});
+                    $(".mini_calendar").css({"position": "fixed", "top": "220px"});
+                    //chk = true;
+                } else {
+                    $(".header_top").css("position", "relative");
+                    $(".cal").css({"position": "relative", "top": "0"});
+                    $(".mini_calendar").css({"position": "absolute", "top": "unset"})
+                    //chk = false;
+                }
+            });
+        }
+        $(window).resize(function(){
+            if($(this).width() < 1400) {
+                $(window).scroll(function () {
+                    var top = $(this).scrollTop();
+                    if (top > 160) {
+                        $(".header_top").css("position", "fixed");
+                        $(".cal").css({"position": "fixed", "top": "60px"});
+                        $(".mini_calendar.active").css({"position": "fixed", "top": "220px"});
+                        //chk = true;
+                    } else {
+                        $(".header_top").css("position", "relative");
+                        $(".cal").css({"position": "relative", "top": "0"});
+                        $(".mini_calendar.active").css({"position": "absolute", "top": "unset"})
+                        //chk = false;
+                    }
+                });
+            }else{
+                $(".header_top").css("position", "fixed");
+            }
+        });
+
+        $('.calendar_date').on('click', function(event){
+            //console.log($(this).attr("id"));
+            event.preventDefault();
+            var top = $(window).scrollTop();
+            var hash = $(this).attr("id").replace("cal_","");
+
+            console.log(top + "//" + hash);
+            if(Number(hash) >= 4 ) {
+                if(top<160){
+                    console.log("A");
+                    $('html,body').animate({scrollTop: $(this.hash).offset().top - 450}, 500);
+                    $(".mini_calendar").removeClass("active");
+                }else {
+                    console.log("b");
+                    $('html,body').animate({scrollTop: $(this.hash).offset().top - 230}, 500);
+                    $(".mini_calendar").removeClass("active");
+                }
+            }else if(top > 150 && Number(hash) < 4){
+                $('html,body').animate({scrollTop: 0}, 500);
+                $(".mini_calendar").removeClass("active");
+            }
+        });
+    });
+    /*$(function(){
+        var $footer = $("#ft").height();
+        $(".schedule_list_m.schedules").css("height","calc(100vh - 60px - 24vw - "+$footer+"px)");
+    });
+
+    $(window).resize(function(){
+        var $footer = $("#ft").height();
+        $(".schedule_list_m.schedules").css("height","calc(100vh - 60px - 24vw - "+$footer+"px)");
+    });*/
 </script>
 
 <?php

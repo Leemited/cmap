@@ -2361,9 +2361,9 @@ function html_end()
 function add_stylesheet($stylesheet, $order=0)
 {
     global $html_process;
-
-    if(trim($stylesheet))
+    if (trim($stylesheet)) {
         $html_process->merge_stylesheet($stylesheet, $order);
+    }
 }
 
 function add_javascript($javascript, $order=0)
@@ -2390,8 +2390,9 @@ class html_process {
             }
         }
 
-        if($is_merge)
+        if($is_merge) {
             $this->css[] = array($order, $stylesheet);
+        }
     }
 
     function merge_javascript($javascript, $order)
@@ -2413,7 +2414,6 @@ class html_process {
     function run()
     {
         global $config, $g5, $member;
-
         // 현재접속자 처리
         $tmp_sql = " select count(*) as cnt from {$g5['login_table']} where lo_ip = '{$_SERVER['REMOTE_ADDR']}' ";
         $tmp_row = sql_fetch($tmp_sql);
@@ -2440,6 +2440,7 @@ class html_process {
         $links = $this->css;
 
         if(!empty($links)) {
+
             foreach ($links as $key => $row) {
                 $order[$key] = $row[0];
                 $index[$key] = $key;

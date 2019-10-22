@@ -78,7 +78,7 @@ while($row = sql_fetch_array($res)){
                     <?php }
                     if(count($list)==0){?>
                         <tr>
-                            <td class="td_center" colspan="6">목록이 없습니다.</td>
+                            <td class="td_center" colspan="7">목록이 없습니다.</td>
                         </tr>
                     <?php }?>
                 </table>

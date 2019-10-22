@@ -66,8 +66,11 @@ if (defined('G5_IS_ADMIN')) {
 } else {
     echo '<link rel="stylesheet" href="'.G5_CSS_URL.'/'.(G5_IS_MOBILE?'mobile':'default').'.css?ver='.G5_CSS_VER.'">'.PHP_EOL;
     echo '<link rel="stylesheet" href="'.G5_CSS_URL.'/style.css?ver='.G5_CSS_VER.'">'.PHP_EOL;
+    if($member["mb_id"]=="cmapmasterpm3" || $member["mb_id"]=="cmap003" || $member["mb_id"]=="cmap002") {
+        echo '<link rel="stylesheet" href="' . G5_CSS_URL . '/media.css?ver=' . G5_CSS_VER . '">' . PHP_EOL;
+    }
+    echo '<link rel="stylesheet" href="'.G5_CSS_URL.'/jquery.mb.YTPlayer.min.css?ver='.G5_CSS_VER.'">'.PHP_EOL;
 }
-
 $userAgent = $_SERVER["HTTP_USER_AGENT"];
 
 ?>
@@ -114,6 +117,7 @@ document.onselectstart = new Function('return false');   // 선택 방지
 <!--<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>-->
 <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.5.js"></script>
 <script src="<?php echo G5_JS_URL ?>/jQuery.resizableColumns.js"></script>
+<script src="<?php echo G5_JS_URL ?>/jquery.mb.YTPlayer.min.js"></script>
 
 <script>
     var IMP = window.IMP; // 생략가능

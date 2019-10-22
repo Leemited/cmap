@@ -29,7 +29,8 @@ if($_GET["date1"] && $_GET["date2"]){
     $date2 = date("Y-m-d");
     $where .= " and send_date between '{$date1}' and '{$date2}'";
 }
-include_once (G5_PATH."/_head.php");
+
+include_once (G5_PATH."/head.php");
 include_once(G5_PLUGIN_PATH.'/jquery-ui/datepicker.php');
 
 
@@ -51,7 +52,7 @@ if($search_text) {
         $where .= " and `{$sfl}` like '%{$_GET["search_text"]}%'";
     }
 }
-
+/*
 if($_GET["search_type"]=="0"){
     if($mb_ids){
         $mm = explode(",",$mb_ids);
@@ -91,13 +92,14 @@ if($_GET["search_type"]=="0"){
     }else {
         $where .= " and (send_mb_id = '{$member["mb_id"]}' or instr(read_mb_id,'{$member["mb_id"]}') != 0)";
     }
-}
+}*/
 
 if($msg_id){
     $sql = "select * from `cmap_construct_work_msg` where id = '{$msg_id}'";
     $msgs = sql_fetch($sql);
     $const_id = $msgs["const_id"];
 }
+
 
 $total=sql_fetch("select count(*) as cnt from `cmap_construct_work_msg` where  1 {$where} {$where1}");
 if(!$page)
@@ -235,16 +237,17 @@ while($row = sql_fetch_array($res)){
                     <td class="td_center"><?php echo $worklist[$i]["num"];?></td>
                     <td class="td_center"><?php echo $msg_type;?></td>
                     <td class="td_center"><?php if($worklist[$i]["msg_count"]!=0){echo str_pad($worklist[$i]["msg_count"],0,'',STR_PAD_LEFT);}?> 호</td>
-                    <td class="td_center"><div><?php echo $mb1["mb_name"];?></div></td>
+                    <td class="td_center"><div><?php echo $worklist[$i]["msg_send_name"];?></div></td>
                     <td class="td_center">
                         <div onclick="fnMemberView('<?php echo $mb2["mb_id"];?>')">
                             <?php
-                            $a=0;
+                                echo $worklist[$i]["msg_read_name"];
+/*                            $a=0;
                             foreach ($mb2 as $mbs){
                                 if($a!=0){echo ",";}
-                                ?>
-                                <?php echo $mbs["mb_name"];?>
-                            <?php $a++;}?>
+                                */?><!--
+                                <?php /*echo $mbs["mb_name"];*/?>
+                            --><?php /*$a++;}*/?>
                         </div>
                     </td>
                     <td onclick="fnWriteMessage2('<?php echo $worklist[$i]["id"];?>')" style="text-decoration: underline;cursor: pointer;padding:5px">

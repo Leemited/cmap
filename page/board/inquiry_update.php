@@ -48,7 +48,7 @@ if($payments){
     $where .= " , payments_mb_id = '{$payments_mb_id}'";
 }
 
-$sql = "insert into `cmap_inquiry` set `name` = '{$name}', email = '{$email}', inquiry_type = '{$inquiry_type}', content = '{$content}', insert_date = now() {$where}";
+$sql = "insert into `cmap_inquiry` set mb_id = '{$mb_id}', `name` = '{$name}', email = '{$email}', inquiry_type = '{$inquiry_type}', content = '{$content}', insert_date = now() {$where}";
 if(sql_query($sql)){
     $file[] = attach_file($_FILES["file"]['name'],$_FILES["file"]["tmp_name"]);
     //관리자에게 메일 송부

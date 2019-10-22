@@ -648,6 +648,8 @@ if($is_member) {
 
             }else if(strpos($_SERVER["REQUEST_URI"],"/ajax/")!==false){
 
+            }else if(strpos($_SERVER["REQUEST_URI"],"/modal/")!==false){
+
             }else if(strpos($_SERVER["REQUEST_URI"],"/board/inquiry")!==false){
                 //goto_url(G5_URL . "/page/company/");
             }else {
@@ -663,8 +665,10 @@ if($is_member) {
     if($chkMembeship["cnt"]==0) {
         $member["mb_auth"]=false;
     }else{
-        if(date("Y-m-d",strtotime("+ 5 day", strtotime($member["mb_datetime"]))) >= $todays){
-            $member["mb_auth"]=false;
+        if($member["mb_level"]<3) {
+            if (date("Y-m-d", strtotime("+ 1 day", strtotime($member["mb_datetime"]))) >= $todays) {
+                $member["mb_auth"] = false;
+            }
         }
     }
 

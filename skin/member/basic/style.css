@@ -176,6 +176,7 @@ position:absolute;z-index:-1;top:2%;bottom:0;left:10px;right:10px;
 #fregisterform #reg_mb_id{width:75%}
 #fregisterform #reg_mb_email{width:38%}
 #fregisterform #reg_mb_email2{width:30%}
+#fregisterform .email_marks{display:inline-block}
 #fregisterform #mb_email_sel{width: 28%;margin-left: 4px;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;-webkit-box-shadow: none;-moz-box-shadow: none;box-shadow: none;}
 #fregisterform #mb_hp1,
 #fregisterform #mb_hp2,
@@ -334,9 +335,7 @@ body{font-family: 'nsr', serif;}
 /* font-family: 'Nanum Myeongjo', serif; */
 
 .login_hd{position: absolute; top: 50%; left: 0; margin:0 auto; display: inline-block; width: 100%;-webkit-transform: translateY(-50%);-moz-transform: translateY(-50%);-ms-transform: translateY(-50%);-o-transform: translateY(-50%);transform: translateY(-50%);}
-.login_hd .head{margin: 0 auto;position: relative;
-display: table;
-width: 820px;}
+.login_hd .head{margin: 0 auto;position: relative;display: table;width: 820px;}
 
 .login_hd .head .line{width:23px; height:3px; background-color:#002d62; margin-bottom:12px;}
 .login_hd .head h2{color:#3f3f3f; font-weight:bold; font-size:32px;}

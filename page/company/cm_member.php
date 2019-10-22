@@ -195,18 +195,28 @@ while($row = sql_fetch_array($res)){
             }
 
             var payments = $("#payments").val();
-
-            $.ajax({
-                url:g5_url+'/page/ajax/ajax.company_sub_member.php',
-                method:"post",
-                data:{payments:payments,type:"cm"}
-            }).done(function(data){
-                if(data==1){
-                    alert("신규 결제 할 계정이 없습니다.");
-                }else{
+            if(Number($("#amount").val()) > 10000000) {
+                $.ajax({
+                    url:g5_url+'/page/ajax/ajax.payment_info.php',
+                    method:"post",
+                    data:{title:"결제금액 초과시 결제방법",msg:"<h2>결제한도</h2><br>카드 : 10,000,000원 / 1회<br>이체 : 2,000,000원 / 1일<br><br><h2>결제방법</h2><br>카드 : 10,000,000원 이내로 분할 결제 (1일 제한 없음)<br>이체 : 2,000,000원 이내로 분할 이체(1일 제한 있음)<br>기타 직접이체 및 전자세금계산서 발금 등은 아래의 문의하기로 남겨주시면 담당자가 신속히 연락드리겠습니다.",link:g5_url+'/page/board/inquiry',btns:"문의하기",payments:payments,od_type:"cm"}
+                }).done(function(data){
                     fnShowModal(data);
-                }
-            });
+                });
+                return false;
+            }else {
+                $.ajax({
+                    url: g5_url + '/page/ajax/ajax.company_sub_member.php',
+                    method: "post",
+                    data: {payments: payments, type: "cm"}
+                }).done(function (data) {
+                    if (data == 1) {
+                        alert("신규 결제 할 계정이 없습니다.");
+                    } else {
+                        fnShowModal(data);
+                    }
+                });
+            }
         }
 
         $(function(){
@@ -247,6 +257,7 @@ while($row = sql_fetch_array($res)){
             });
             $(".totalMonth").html(totalMonth);
             $(".totalPrice").html(number_format(totalPrice));
+            $("#amount").val(totalPrice);
             $("#payments").val(payments);
         }
     </script>

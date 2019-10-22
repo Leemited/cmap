@@ -33,7 +33,7 @@ $total_page=ceil($total/$rows);
 $sql = "select * from `cmap_my_construct` where (mb_id = '{$member["mb_id"]}' or instr(members,'{$member["mb_id"]}') != 0) and status = 0 order by `insert_date` desc limit {$start},{$rows} ";
 $res = sql_query($sql);
 while($row = sql_fetch_array($res)){
-    if($row['members']!="") {
+    if($row['members']!="" && $row["mb_id"]!=$member['mb_id']) {
         $memChk = 0;
         $mem = explode(",", $row["members"]);
         for ($i = 0; $i < count($mem); $i++) {

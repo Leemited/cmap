@@ -1,443 +1,377 @@
 <?php
-include_once ("_common.php");
+session_start();
 
-$time = date("i");
-$base_time = date("H");
-$today = date("Ymd");
-$today2 = date("Y-m-d");
-/*if($time > 30){
-    $base_time = date("H", strtotime("+ 1 hour"));
-    if($base_time < 0){
-        $today = date("Ymd",strtotime("- 1 day"));
-        $base_time = "23";
-    }
-}*/
 
-$base_time = $base_time."00";
-switch ($base_time){
-    case "0500":
-        $baseTime = "12시";
-        $sqlTime = " , base_time2 = '12시'";
-        $times = 2;
-        break;
-    case "0200":
-        $baseTime = "09시";
-        $sqlTime = " , base_time = '9시'";
-        break;
+$test=print_r($_SESSION);
+echo "<script>alert($test);</script>";
+
+if(!isset($_SESSION['user_id'])) {
+    echo "<meta http-equiv='refresh' content='0;url=index.php'>";
+    exit;
 }
 
-/*
-$sql = "select cmap_construct_lat, cmap_construct_lng, weather_addr1, weather_addr2, weather_addr3, id
-        from `cmap_my_construct`
-        where status = 0 and cmap_construct_lat != '' and cmap_construct_lng != ''";
-*/
-//$base_time='1200';
+$user_id = $_SESSION['user_id'];
+$user_name = $_SESSION['user_name'];
+$user_d_name = $_SESSION['user_d_name'];
+$user_p_name = $_SESSION['user_p_name'];
 
-$sql = "select cmap_construct_lat, cmap_construct_lng, weather_addr1, weather_addr2, weather_addr3,
-            concat(weather_addr1, ' ', weather_addr2, ' ', weather_addr3) 'weather_add',
-            id
-        from `cmap_my_construct`
-        where status = 0 and cmap_construct_lat != '' and cmap_construct_lng != ''";
+include_once 'db_connect.php';
 
-$res = sql_query($sql);
+$query="select * from product";
+$result = mysqli_query($db_connect, $query);
+$product_list = mysqli_fetch_all($result);
+mysqli_free_result($result);
 
-while($rs_row = sql_fetch_array($res)){    
-    $url = "http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/ForecastSpaceData?".
-            "ServiceKey=n1t%2B4j2iWa7OlDB0dGxtEk0TRjTN%2Fs9XVV%2FoUgexCxN5i%2BPQA%2BbkmslYrOWgK82GK28prPQB4rfMA4vQZlALXA%3D%3D".
-            "&base_date=".$today.
-            "&base_time=".$base_time.
-            "&nx=".$rs_row["cmap_construct_lat"].
-            "&ny=".$rs_row["cmap_construct_lng"].
-            "&numOfRows=99999999";
+$query="select id, concat(name, ' / ', d_name, ' / ', p_name) as name from user_view";
+$result = mysqli_query($db_connect, $query);
+$user_list = mysqli_fetch_all($result);
+mysqli_free_result($result);
 
-    $ch = curl_init(); //curl 사용 전 초기화 필수(curl handle)
+$query="select * from route";
+$result = mysqli_query($db_connect, $query);
+$route_list = mysqli_fetch_all($result);
+mysqli_free_result($result);
 
-    curl_setopt($ch, CURLOPT_URL, $url); //URL 지정하기
-    curl_setopt($ch, CURLOPT_POST, 0); //0이 default 값이며 POST 통신을 위해 1로 설정해야 함
-    curl_setopt($ch, CURLOPT_HEADER, 0);//헤더 정보를 보내도록 함(*필수)
-    curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1); //이 옵션이 0으로 지정되면 curl_exec의 결과값을 브라우저에 바로 보여줌. 이 값을 1로 하면 결과값을 return하게 되어 변수에 저장 가능(테스트 시 기본값은 1인듯?)
+$query="select * from rand";
+$result = mysqli_query($db_connect, $query);
+$rand_list = mysqli_fetch_all($result);
+mysqli_free_result($result);
 
-    $weather_res = curl_exec ($ch);
+$query="select * from main_notice_view";
+$result = mysqli_query($db_connect, $query);
+$notice_list = mysqli_fetch_all($result);
+mysqli_free_result($result);
 
-    curl_close($ch);
+$query="select * from db_view";
+$result = mysqli_query($db_connect, $query);
+$db_list = mysqli_fetch_all($result);
+mysqli_free_result($result);
 
-    $weather_xml = simplexml_load_string($weather_res);
+mysqli_close($db_connect);
 
-    //print_r2($weather_xml);
-    //return;
-
-    foreach($weather_xml->body->items->item as $item){
-        //print_r2($item);
-        if($item->fcstTime=='0900'){
-            $c_str = "";
-            $c_missing = "";
-            switch($item->category){
-                case "POP": //강수확률
-                    $c_str='POP'.$times;
-                    $c_missing='-1';
-                    break;
-                case "PTY": //강수형태
-                    $c_str='PTY'.$times;
-                    $c_missing='-1';
-                    break;
-                case "R06"://6시간 강수량
-                    $c_str='R06'.$times;
-                    $c_missing='-1';
-                    break;
-                case "REH"://습도
-                    $c_str='REH'.$times;
-                    $c_missing='-1';
-                    break;
-                case "S06"://6시간 신적설
-                    $c_str='S06'.$times;
-                    $c_missing='-1';
-                    break;
-                case "SKY": //하늘상태
-                    $c_str='SKY'.$times;
-                    $c_missing='-1';
-                    break;
-                case "T3H": //3시간 기온
-                    $c_str='T3H'.$times;
-                    $c_missing='-50';
-                    break;
-                case "TMN": //아침 최저기온
-                    $c_str='TMN'.$times;
-                    $c_missing='-50';
-                    break;
-                case "TMX": //낮 최고기온
-                    $c_str='TMX'.$times;
-                    $c_missing='-50';
-                    break;
-                case "VEC": //낮 최고기온
-                    $c_str='VEC'.$times;
-                    $c_missing='-50';
-                    break;
-                case "UUU": //낮 최고기온
-                    $c_str='UUU'.$times;
-                    $c_missing='-50';
-                    break;
-                case "VVV": //낮 최고기온
-                    $c_str='VVV'.$times;
-                    $c_missing='-50';
-                    break;
-                case "WAV": //낮 최고기온
-                    $c_str='WAV'.$times;
-                    $c_missing='-50';
-                    break;
-                case "VEC": //낮 최고기온
-                    $c_str='VEC'.$times;
-                    $c_missing='-50';
-                    break;
-                case "WSD": //낮 최고기온
-                    $c_str='WSD'.$times;
-                    $c_missing='-50';
-                    break;
-            }
-        }
-        else if($item->fcstTime=='1200'){
-            $c_str = "";
-            $c_missing = "";
-            switch($item->category){
-                case "POP": //강수확률
-                    $c_str='POP2'.$times;
-                    $c_missing='-1';
-                    break;
-                case "PTY": //강수형태
-                    $c_str='PTY2'.$times;
-                    $c_missing='-1';
-                    break;
-                case "R06"://6시간 강수량
-                    $c_str='R062'.$times;
-                    $c_missing='-1';
-                    break;
-                case "REH"://습도
-                    $c_str='REH2'.$times;
-                    $c_missing='-1';
-                    break;
-                case "S06"://6시간 신적설
-                    $c_str='S062'.$times;
-                    $c_missing='-1';
-                    break;
-                case "SKY": //하늘상태
-                    $c_str='SKY2'.$times;
-                    $c_missing='-1';
-                    break;
-                case "T3H": //3시간 기온
-                    $c_str='T3H2'.$times;
-                    $c_missing='-50';
-                    break;
-                case "TMN": //아침 최저기온
-                    $c_str='TMN2'.$times;
-                    $c_missing='-50';
-                    break;
-                case "TMX": //낮 최고기온
-                    $c_str='TMX2'.$times;
-                    $c_missing='-50';
-                    break;
-                case "VEC": //낮 최고기온
-                    $c_str='VEC2'.$times;
-                    $c_missing='-50';
-                    break;
-                case "UUU": //낮 최고기온
-                    $c_str='UUU2'.$times;
-                    $c_missing='-50';
-                    break;
-                case "VVV": //낮 최고기온
-                    $c_str='VVV2'.$times;
-                    $c_missing='-50';
-                    break;
-                case "WAV": //낮 최고기온
-                    $c_str='WAV2'.$times;
-                    $c_missing='-50';
-                    break;
-                case "VEC": //낮 최고기온
-                    $c_str='VEC2'.$times;
-                    $c_missing='-50';
-                    break;
-                case "WSD": //낮 최고기온
-                    $c_str='WSD2'.$times;
-                    $c_missing='-50';
-                    break;
-            }
-        }
-        
-        if($item->category=='TMN'){
-            $sql_duplicate_check="
-            select count(id)as cnt, id from `weather`
-            where lat = '{$rs_row["cmap_construct_lat"]}' and lng = '{$rs_row["cmap_construct_lng"]}' and date_format(insert_date, '%Y%m%d') = {$item->fcstDate}";
-            $rs_dp_ch=sql_fetch($sql_duplicate_check);
-            if($rs_dp_ch["cnt"]==0){
-                $sql_w_inu="insert into 
-                            `weather` (
-                                lat, lng, addr1, addr2, addr3, insert_date, update_date, TMN
-                            )
-                            values (
-                                {$rs_row['cmap_construct_lat']}, {$rs_row['cmap_construct_lng']}, '{$rs_row['weather_addr1']}', '{$rs_row['weather_addr2']}', '{$rs_row['weather_addr3']}', {$item->fcstDate}, now(), {$item->fcstValue}
-                            )";
-            }
-            else{
-                $sql_w_inu="update `weather` set TMN = {$item->fcstValue}, update_date = now() where id = {$rs_dp_ch['id']}";
-            }
-            sql_query($sql_w_inu);
-        }
-
-        if($item->category=='TMX'){
-            $sql_duplicate_check="
-            select count(id)as cnt, id from `weather`
-            where lat = '{$rs_row["cmap_construct_lat"]}' and lng = '{$rs_row["cmap_construct_lng"]}' and date_format(insert_date, '%Y%m%d') = {$item->fcstDate}";
-            $rs_dp_ch=sql_fetch($sql_duplicate_check);
-            if($rs_dp_ch["cnt"]==0){
-                $sql_w_inu="insert into 
-                            `weather` (
-                                lat, lng, addr1, addr2, addr3, insert_date, update_date, TMX
-                            )
-                            values (
-                                {$rs_row['cmap_construct_lat']}, {$rs_row['cmap_construct_lng']}, '{$rs_row['weather_addr1']}', '{$rs_row['weather_addr2']}', '{$rs_row['weather_addr3']}', {$item->fcstDate}, now(), {$item->fcstValue}
-                            )";
-            }
-            else{
-                $sql_w_inu="update `weather` set TMX = {$item->fcstValue}, update_date = now() where id = {$rs_dp_ch['id']}";
-            }
-            sql_query($sql_w_inu);
-        }
-        
-        if($item->fcstTime=='0900'){
-            $sql_duplicate_check="
-                select count(id)as cnt, id from `weather`
-                where lat = '{$rs_row["cmap_construct_lat"]}' and lng = '{$rs_row["cmap_construct_lng"]}' and date_format(insert_date, '%Y%m%d') = {$item->fcstDate}";
-
-            $rs_dp_ch=sql_fetch($sql_duplicate_check);
-
-            if($rs_dp_ch["cnt"]==0){
-                $sql_w_inu="insert into `weather` (lat, lng, addr1, addr2, addr3, insert_date, update_date, {$c_str})
-                    values ({$rs_row['cmap_construct_lat']}, {$rs_row['cmap_construct_lng']}, '{$rs_row['weather_addr1']}', '{$rs_row['weather_addr2']}', '{$rs_row['weather_addr3']}', {$item->fcstDate}, now(), {$item->fcstValue})";
-            }
-            else{
-                $sql_w_inu="update `weather` set {$c_str} = {$item->fcstValue}, update_date = now() {$sqlTime}
-                    where id = {$rs_dp_ch['id']}";
-            }
-
-            sql_query($sql_w_inu);
-        }
-        if($item->fcstTime=='1200'){
-            $sql_duplicate_check="
-                select count(id)as cnt, id from `weather`
-                where lat = '{$rs_row["cmap_construct_lat"]}' and lng = '{$rs_row["cmap_construct_lng"]}' and date_format(insert_date, '%Y%m%d') = {$item->fcstDate}";
-
-            $rs_dp_ch=sql_fetch($sql_duplicate_check);
-
-            if($rs_dp_ch["cnt"]==0){
-                $sql_w_inu="insert into `weather` (lat, lng, addr1, addr2, addr3, insert_date, update_date, {$c_str})
-                    values ({$rs_row['cmap_construct_lat']}, {$rs_row['cmap_construct_lng']}, '{$rs_row['weather_addr1']}', '{$rs_row['weather_addr2']}', '{$rs_row['weather_addr3']}', {$item->fcstDate}, now(), {$item->fcstValue})";
-            }
-            else{
-                $sql_w_inu="update `weather` set {$c_str} = {$item->fcstValue}, update_date = now() {$sqlTime}
-                    where id = {$rs_dp_ch['id']}";
-            }
-
-            sql_query($sql_w_inu);
-        }
-
-        if($item->category=='R06'){
-            $rain_str="";
-            switch($item->fcstTime){
-                case "0000":
-                    $rain_str="rain00";
-                    break;
-                case "0600":
-                    $rain_str="rain06";
-                    break;
-                case "1200":
-                    $rain_str="rain12";
-                    break;
-                case "1800":
-                    $rain_str="rain18";
-                    break;
-            }
-
-            $sql_duplicate_check="
-            select count(id)as cnt, id from `weather`
-            where lat = '{$rs_row["cmap_construct_lat"]}' and lng = '{$rs_row["cmap_construct_lng"]}' and date_format(insert_date, '%Y%m%d') = {$item->fcstDate}";
-            $rs_dp_ch=sql_fetch($sql_duplicate_check);
-
-            if($rs_dp_ch["cnt"]==0){
-                $sql_w_inu="insert into 
-                            `weather` (
-                                lat, lng, addr1, addr2, addr3, insert_date, update_date, {$rain_str}
-                            )
-                            values (
-                                {$rs_row['cmap_construct_lat']}, {$rs_row['cmap_construct_lng']}, '{$rs_row['weather_addr1']}', '{$rs_row['weather_addr2']}', '{$rs_row['weather_addr3']}', {$item->fcstDate}, now(), {$item->fcstValue}
-                            )";
-            }
-            else{
-                $sql_w_inu="update `weather` set {$rain_str} = {$item->fcstValue}, update_date = now() where id = {$rs_dp_ch['id']}";
-            }
-
-            sql_query($sql_w_inu);
-        }
-
-        if($item->category=='S06'){
-            $rain_str="";
-            switch($item->fcstTime){
-                case "0000":
-                    $rain_str="snow00";
-                    break;
-                case "0600":
-                    $rain_str="snow06";
-                    break;
-                case "1200":
-                    $rain_str="snow12";
-                    break;
-                case "1800":
-                    $rain_str="snow18";
-                    break;
-            }
-
-            $sql_duplicate_check="
-            select count(id)as cnt, id from `weather`
-            where lat = '{$rs_row["cmap_construct_lat"]}' and lng = '{$rs_row["cmap_construct_lng"]}' and date_format(insert_date, '%Y%m%d') = {$item->fcstDate}";
-            $rs_dp_ch=sql_fetch($sql_duplicate_check);
-
-            if($rs_dp_ch["cnt"]==0){
-                $sql_w_inu="insert into 
-                            `weather` (
-                                lat, lng, addr1, addr2, addr3, insert_date, update_date, {$rain_str}
-                            )
-                            values (
-                                {$rs_row['cmap_construct_lat']}, {$rs_row['cmap_construct_lng']}, '{$rs_row['weather_addr1']}', '{$rs_row['weather_addr2']}', '{$rs_row['weather_addr3']}', {$item->fcstDate}, now(), {$item->fcstValue}
-                            )";
-            }
-            else{
-                $sql_w_inu="update `weather` set {$rain_str} = {$item->fcstValue}, update_date = now() where id = {$rs_dp_ch['id']}";
-            }
-
-            sql_query($sql_w_inu);
-        }
-        //print_r2($sql_duplicate_check);
-        //print_r2($sql_w_inu);
-    }
+if (isset($_POST['main_category'])) {
+    $main_category = $_POST['main_category'];
+} else {
+    $main_category = "book";
 }
 
-/*
-for($i=0;$row = sql_fetch_array($res);$i++) {
-
-    if($row["weather_addr1"]){
-        $where = " and addr1 = '{$row["weather_addr1"]}'";
-        $setaddr = " , addr1 = '{$row["weather_addr1"]}'";
-    }
-    if($row["weather_addr2"]){
-        $where .= " and addr2 = '{$row["weather_addr2"]}'";
-        $setaddr .= " , addr2 = '{$row["weather_addr2"]}'";
-    }
-    if($row["weather_addr3"]){
-        $where .= " and addr3 = '{$row["weather_addr3"]}'";
-        $setaddr .= " , addr3 = '{$row["weather_addr3"]}'";
-    }
-
-    $url = "http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/ForecastSpaceData?ServiceKey=n1t%2B4j2iWa7OlDB0dGxtEk0TRjTN%2Fs9XVV%2FoUgexCxN5i%2BPQA%2BbkmslYrOWgK82GK28prPQB4rfMA4vQZlALXA%3D%3D&base_date=" . $today . "&base_time=".$base_time."&nx=" . $row["cmap_construct_lat"] . "&ny=" . $row["cmap_construct_lng"]."&numOfRows=20";
-
-    $set = getData($url,$setaddr,$row,$today);
-
-    $to = date("Y-m-d");
-
-    $sql2 = "select count(*) as cnt from `weather` where insert_date = '{$today2}' and lat = '{$row["cmap_construct_lat"]}' and lng = '{$row["cmap_construct_lng"]}' and const_id = '{$row["id"]}' {$where}";
-    $weather = sql_fetch($sql2);
-    if($weather["cnt"]==0){
-        $sql3 = "insert into `weather` set {$set} , insert_date = now() , update_date = now(), insert_time = now() , const_id = '{$row["id"]}'";
-    }else{
-        $sql3 = "update `weather` set {$set}, update_date = now() where const_id='{$row["id"]}'";
-    }
-    sql_query($sql3);
+if (isset($_POST['search_category'])) {
+    $search_category = $_POST['search_category'];
+} else {
+    $search_category = "time";
 }
-
-function getData($url,$setaddr,$row,$today){
-    $ch = curl_init(); //curl 사용 전 초기화 필수(curl handle)
-
-    curl_setopt($ch, CURLOPT_URL, $url); //URL 지정하기
-    curl_setopt($ch, CURLOPT_POST, 0); //0이 default 값이며 POST 통신을 위해 1로 설정해야 함
-    curl_setopt($ch, CURLOPT_HEADER, 0);//헤더 정보를 보내도록 함(*필수)
-    curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1); //이 옵션이 0으로 지정되면 curl_exec의 결과값을 브라우저에 바로 보여줌. 이 값을 1로 하면 결과값을 return하게 되어 변수에 저장 가능(테스트 시 기본값은 1인듯?)
-    $res = curl_exec ($ch);
-    curl_close($ch);
-
-    $object = simplexml_load_string($res);
-    
-    $set = " lat= '{$row["cmap_construct_lat"]}' , lng = '{$row["cmap_construct_lng"]}' {$setaddr}";
-    foreach ($object->body->items->item as $obj){
-        if($today==$obj->fcstDate) {
-            switch ($obj->category) {
-                case "POP": //강수확률
-                    $set .= " , POP = '{$obj->fcstValue}'";
-                    break;
-                case "PTY": //강수형태
-                    $set .= " , PTY = '{$obj->fcstValue}'";
-                    break;
-                case "R06"://6시간 강수량
-                    $set .= " , R06 = '{$obj->fcstValue}'";
-                    break;
-                case "REH"://습도
-                    $set .= " , REH = '{$obj->fcstValue}'";
-                    break;
-                case "S06"://6시간 신적설
-                    $set .= " , S06 = '{$obj->fcstValue}'";
-                    break;
-                case "SKY": //하늘상태
-                    $set .= " , SKY = '{$obj->fcstValue}'";
-                    break;
-                case "T3H": //3시간 기온
-                    $set .= " , T3H = '{$obj->fcstValue}'";
-                    break;
-                case "TMN": //아침 최저기온
-                    $set .= " , TMN = '{$obj->fcstValue}'";
-                    break;
-                case "TMX": //낮 최고기온
-                    $set .= " , TMX = '{$obj->fcstValue}'";
-                    break;
-            }
-        }
-    }
-    return $set;
-}
-*/
-
 ?>
+
+<!doctype html>
+<html lang="kr">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>허니문 리조트</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="jquery-ui-1.12.1/jquery-ui.min.css">
+    <script src="jquery-ui-1.12.1/jquery-ui.min.js"></script>
+    <script src="jquery-ui-1.12.1/datepicker-ko.js"></script>
+</head>
+
+<body>
+<div class="left_menu">
+
+    <div class="logo" onclick="window.location.reload()" title="Coconut Tour">
+    </div>
+
+    <div class="search">
+        <select name="search_u_name" class="select_user" title="담당자 이름을 선택 하세요">
+            <option value="" disabled selected hidden>담당자명</option>
+            <?php
+            foreach($user_list as $user){
+                echo "<option value={$user[0]}>{$user[1]}</option>";
+            }
+            ?>
+        </select>
+        <div style="height: 8px"></div>
+        <div>
+            <input type="text" class="input_text" name="search_c_name" placeholder="고객 이름을 입력 하세요"
+                   title="고객 이름을 입력 하세요">
+            <button class="input_button" title="담당자 이름과 고객 이름으로 검색합니다"><img src="img/search.png" alt=""></button>
+        </div>
+    </div>
+
+    <div class="menu">
+        <div style="height: 16px"></div>
+        <button class="top" onclick="window.open('admin.php', '_blank', 'width=814, height=555')"
+                title="관리자 화면을 엽니다"><span><img src="img/admin.png"></span>관리자 관리</button>
+        <div style="height: 1px"></div>
+        <button class="mid" onclick="window.open('reservation.php', '_blank', 'width=814, height=916')"
+                title="고객 등록 화면을 엽니다"><span><img src="img/c_add.png"></span>고객 등록</button>
+        <div style="height: 1px"></div>
+        <button class="mid" onclick="window.open('sms.php', '_blank', 'width=815, height=458')"
+                title="SMS 보내기 화면을 엽니다"><span><img src="img/sms.png"></span>SMS 보내기</button>
+        <div style="height: 1px"></div>
+        <button class="mid" onclick="window.open('notice.php', '_blank', 'width=1617, height=916')"
+                title="공지사항 화면을 엽니다"><span><img src="img/notice.png"></span>공지사항</button>
+        <div style="height: 1px"></div>
+        <button class="mid" onclick="window.open('event.php', '_blank', 'width=1617, height=916')"
+                title="현지행사 화면을 엽니다"><span><img src="img/event.png"></span>현지행사</button>
+        <div style="height: 1px"></div>
+        <button class="btm" onclick="window.open('memo.php', '_blank', 'width=1617, height=916')"
+                title="메모함 화면을 엽니다"><span><img src="img/memo.png"></span>메모함</button>
+    </div>
+</div>
+<div class="top_menu">
+        <span onclick="window.open('user_edit.php', '_blank', 'width=814, height=399')">
+            <?
+            echo "안녕 하세요! {$user_name} / {$user_d_name} / {$user_p_name} 님";
+            ?>
+        </span>
+    <span onclick="window.open('user_edit.php', '_blank', 'width=814, height=399')">
+            정보수정
+        </span>
+    <span onclick="location.href='logout.php'">
+            <img src="img/logout.png">로그아웃
+        </span>
+</div>
+<div class="main">
+    <div class="search_view">
+        <button id="btn_time" onclick="search_category('time')">시간조회</button>
+        <button id="btn_direct" onclick="search_category('direct')">직접조회</button>
+
+        <div id="t_view" class="t_view">
+            <input type="text" name="w_start_date" id="w_start_date" class="date" placeholder="출발일">
+            <span style="width: 16px"></span>
+            <input type="text" name="r_start_date" id="r_start_date" class="date" placeholder="접수시작일">
+
+            <div style="width: 100%; height: 16px"></div>
+
+            <input type="text" name="w_end_date" id="w_end_date" class="date" placeholder="도착일">
+            <span style="width: 16px"></span>
+            <input type="text" name="r_end_date" id="r_end_date" class="date" placeholder="접수종료일">
+        </div>
+
+        <div id="d_view" class="d_view">
+            <span>여행상품</span><span style="width: 16px"></span><span>담당자</span>
+            <select name="" id="" title="상품 이름을 선택 하세요">
+                <option value="" disabled selected hidden>상품명</option>
+                <?php
+                foreach($product_list as $p){
+                    echo "<option value={$p[0]}>{$p[1]}</option>";
+                }
+                ?>
+            </select>
+            <span style="width: 16px"></span>
+            <select name="" id="" title="담당자 이름을 선택 하세요">
+                <option value="" disabled selected hidden>담당자명</option>
+                <?php
+                foreach($user_list as $user){
+                    echo "<option value={$user[0]}>{$user[1]}</option>";
+                }
+                ?>
+            </select>
+            <div style="width: 100%; height: 16px"></div>
+            <span>예약경로</span><span style="width: 16px"></span><span>랜드사</span>
+            <select name="" id="" title="예약 경로를 선택 하세요">
+                <option value="" disabled selected hidden>예약경로</option>
+                <?php
+                foreach($route_list as $r){
+                    echo "<option value={$r[0]}>{$r[1]}</option>";
+                }
+                ?>
+            </select>
+            <span style="width: 16px"></span>
+            <select name="" id="" title="랜드사를 선택 하세요">
+                <option value="" disabled selected hidden>랜드사</option>
+                <?php
+                foreach($rand_list as $r){
+                    echo "<option value={$r[0]}>{$r[1]}</option>";
+                }
+                ?>
+            </select>
+        </div>
+
+        <button>조회</button>
+    </div>
+    <div style="width: 8px"></div>
+    <div class="memo_view">
+        <div class="title">
+            <img src="img/main_memo_title.png" alt="">
+            <img src="img/add.png" alt="" style="float: right">
+        </div>
+        <div class="contents">
+
+        </div>
+    </div>
+    <div style="width: 8px"></div>
+    <div class="notice_event_view">
+        <div class="notice_view">
+            <div class="title">
+                <img src="img/main_notice_title.png" alt="">
+                <img src="img/add.png" title="전체 공지사항 화면을 엽니다" style="cursor: pointer; float: right" onclick="window.open('notice.php', '_blank', 'width=1617, height=916')">
+            </div>
+            <div class="contents">
+                <div class="table">
+                    <?
+                    foreach($notice_list as $n){
+                        echo "<div class='row notice_row' value='$n[0]'>";
+                        echo "<div class='cell'>$n[1]</div>";
+                        echo "<div class='cell'>$n[2]</div>";
+                        echo "<div class='cell'>$n[3]</div>";
+                        echo "</div>";
+                    }
+                    ?>
+                </div>
+            </div>
+        </div>
+        <div class="event_view">
+            <div class="title">
+                <img src="img/main_event_title.png" alt="">
+                <img src="img/add.png" alt="" style="float: right">
+            </div>
+            <div class="contents">
+                <div class="table">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="width: 100%; height: 8px;"></div>
+    <div class="main_view">
+        <div class="menu">
+            <button id="btn_book" onclick="main_category('book')">계약장부</button>
+            <button id="btn_db" onclick="main_category('db')">DB관리</button>
+        </div>
+        <div id="book_view" class="book_view">
+        </div>
+        <div id="db_view" class="db_view">
+            <div class="list_title">
+                <div class="table">
+                    <div class="row">
+                        <div class="cell">접수번호</div>
+                        <div class="cell">분류</div>
+                        <div class="cell">한글이름</div>
+                        <div class="cell">진행사항</div>
+                        <div class="cell">예식일</div>
+                        <div class="cell">예약경로</div>
+                        <div class="cell">경로담당자</div>
+                        <div class="cell">남자연락처</div>
+                        <div class="cell">여자연락처</div>
+                        <div class="cell">남자이메일</div>
+                        <div class="cell">여자이메일</div>
+                        <div class="cell">예식장소</div>
+                        <div class="cell">담당</div>
+                    </div>
+                </div>
+            </div>
+            <div class="list_table">
+                <div class="table">
+                    <?
+                    foreach($db_list as $db){
+                        echo "<div class='row'>";
+                        echo "<div id='r_id' class='cell' style='display: none'>$db[0]</div>";
+                        echo "<div class='cell'>$db[1]</div>";
+                        echo "<div class='cell'>$db[3]</div>";
+                        echo "<div class='cell'>$db[4]</div>";
+                        echo "<div class='cell'>$db[6]</div>";
+                        echo "<div class='cell'>$db[7]</div>";
+                        echo "<div class='cell'>$db[9]</div>";
+                        echo "<div class='cell'>$db[11]</div>";
+                        echo "<div class='cell'>$db[12]</div>";
+                        echo "<div class='cell'>$db[13]</div>";
+                        echo "<div class='cell'>$db[14]</div>";
+                        echo "<div class='cell'>$db[15]</div>";
+                        echo "<div class='cell'>$db[16]</div>";
+                        echo "<div class='cell'>$db[18]</div>";
+                        echo "</div>";
+                    }
+                    ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>
+
+<script>
+    $(document).ready(function () {
+        $(".notice_row").click(function () {
+            window.open("", "notice_view", "toolbar=no, width=1617, height=916, directories=no, status=no, scrollorbars=no, resizable=no");
+
+            var form=document.createElement("form");
+            form.action="notice_view.php";
+            form.method="post";
+            form.target="notice_view"
+
+            var input=document.createElement("textarea");
+            input.name="id";
+            input.value=$(this).attr('value');
+
+            form.appendChild(input);
+            form.style.display="none";
+
+            document.body.appendChild(form);
+
+            form.submit();
+        });
+    });
+
+    window.onload=function(){
+        main_category("<? echo $main_category ?>");
+        search_category("<? echo $search_category ?>");
+    }
+
+    $(function(){
+        $('#w_start_date').datepicker();
+        $('#w_end_date').datepicker();
+        $('#r_start_date').datepicker();
+        $('#r_end_date').datepicker();
+    });
+
+    function main_category(category){
+        if(category=="book"){
+            document.getElementById("btn_book").style.color="white";
+            document.getElementById("btn_book").style.backgroundColor="#4c4c4c";
+
+            document.getElementById("btn_db").style.color="#4c4c4c";
+            document.getElementById("btn_db").style.backgroundColor="white";
+
+            document.getElementById("book_view").style.display="block";
+            document.getElementById("db_view").style.display="none";
+        }
+        else if(category=="db"){
+            document.getElementById("btn_db").style.color="white";
+            document.getElementById("btn_db").style.backgroundColor="#4c4c4c";
+
+            document.getElementById("btn_book").style.color="#4c4c4c";
+            document.getElementById("btn_book").style.backgroundColor="white";
+
+            document.getElementById("db_view").style.display="block";
+            document.getElementById("book_view").style.display="none";
+        }
+    }
+
+    function search_category(category){
+        if(category=="time"){
+            document.getElementById("btn_time").style.color="white";
+            document.getElementById("btn_time").style.backgroundColor="#4c4c4c";
+
+            document.getElementById("btn_direct").style.color="#4c4c4c";
+            document.getElementById("btn_direct").style.backgroundColor="white";
+
+            document.getElementById("t_view").style.display="flex";
+            document.getElementById("d_view").style.display="none";
+        }
+        else if(category=="direct"){
+            document.getElementById("btn_direct").style.color="white";
+            document.getElementById("btn_direct").style.backgroundColor="#4c4c4c";
+
+            document.getElementById("btn_time").style.color="#4c4c4c";
+            document.getElementById("btn_time").style.backgroundColor="white";
+
+            document.getElementById("d_view").style.display="flex";
+            document.getElementById("t_view").style.display="none";
+        }
+    }
+</script>

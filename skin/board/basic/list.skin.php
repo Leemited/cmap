@@ -95,16 +95,16 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
         <table>
         <caption><?php echo $board['bo_subject'] ?> 목록</caption>
         <thead>
-        <colgroup>
+        <colgroup class="td_hidden2">
             <?php if($is_checkbox){?>
             <col width="5%">
             <?php }?>
-            <col width="8%">
-            <col width="10%">
+            <col width="8%" >
+            <col width="10%" >
             <col width="*">
+            <col width="12%" >
             <col width="12%">
-            <col width="12%">
-            <col width="8%">
+            <col width="8%" >
         </colgroup>
         <tr>
             <?php if ($is_checkbox) { ?>
@@ -113,15 +113,15 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
                 <input type="checkbox" id="chkall" onclick="if (this.checked) all_checked(true); else all_checked(false);">
             </th>
             <?php } ?>
-            <th scope="col">NO</th>
-            <th scope="col">구분</th>
-            <th scope="col">제목</th>
+            <th scope="col" class="td_hidden">NO</th>
+            <th scope="col" class="td_hidden">구분</th>
+            <th scope="col" class="mobile_th">제목</th>
             <!--<th scope="col"><?php /*echo subject_sort_link('wr_hit', $qstr2, 1) */?>조회 <i class="fa fa-sort" aria-hidden="true"></i></a></th>-->
            <!-- <?php /*if ($is_good) { */?><th scope="col"><?php /*echo subject_sort_link('wr_good', $qstr2, 1) */?>추천 <i class="fa fa-sort" aria-hidden="true"></i></a></th><?php /*} */?>
             <?php /*if ($is_nogood) { */?><th scope="col"><?php /*echo subject_sort_link('wr_nogood', $qstr2, 1) */?>비추천 <i class="fa fa-sort" aria-hidden="true"></i></a></th>--><?php /*} */?>
-            <th scope="col">작성자</th>
-            <th scope="col">등록일</th>
-            <th scope="col">첨부파일</th>
+            <th scope="col" class="td_hidden">작성자</th>
+            <th scope="col" >등록일</th>
+            <th scope="col" class="td_hidden">첨부파일</th>
             <!--<th scope="col"><?php /*echo subject_sort_link('wr_datetime', $qstr2, 1) */?>등록일  <i class="fa fa-sort" aria-hidden="true"></i></a></th>
             <th scope="col"><?php /*echo subject_sort_link('wr_datetime', $qstr2, 1) */?>날짜  <i class="fa fa-sort" aria-hidden="true"></i></a></th>-->
         </tr>
@@ -137,10 +137,10 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
                 <input type="checkbox" name="chk_wr_id[]" value="<?php echo $list[$i]['wr_id'] ?>" id="chk_wr_id_<?php echo $i ?>">
             </td>
             <?php } ?>
-            <td class="td_num2">
+            <td class="td_num2 td_hidden">
                 <?php echo $list[$i]['num']; ?>
             </td>
-            <td class="td_datetime">
+            <td class="td_datetime td_hidden" >
                 <?php
                 if ($list[$i]['is_notice']){ // 공지사항
                     echo '공지사항';
@@ -180,9 +180,9 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
                 </div>
 
             </td>
-            <td class="td_datetime sv_use"><?php echo $list[$i]['name'] ?></td>
+            <td class="td_datetime sv_use td_hidden"><?php echo $list[$i]['name'] ?></td>
             <td class="td_datetime"><?php echo $list[$i]['datetime2'] ?></td>
-            <td class="td_datetime">
+            <td class="td_datetime td_hidden">
                 <?php if($list[$i]["file"]["count"]>0){
                     $listfile = get_file("databoard",$list[$i]["wr_id"]);
                     for($j=0;$j<count($list[$i]["file"]["count"]);$j++) { ?>
@@ -231,6 +231,19 @@ add_stylesheet('<link rel="stylesheet" href="'.$board_skin_url.'/style.css">', 0
 <!-- 페이지 -->
 <?php echo $write_pages;  ?>
 
+<script>
+    if($(window).width()<1200){
+        $(".empty_table").attr("colspan","2");
+    }
+    $(window).resize(function(){
+        if($(this).width() < 1200){
+            $(".empty_table").attr("colspan","2");
+        }
+        if($(this).width() >= 1200){
+            $(".empty_table").attr("colspan","6");
+        }
+    });
+</script>
 
 <?php if ($is_checkbox) { ?>
 <script>

@@ -242,6 +242,7 @@ $delaylistmsg = array_filter($delaylistmsg);
             <input type="hidden" value="" name="in_members" id="in_members">
             <input type="hidden" value="<?php echo $member["mb_name"];?>" name="msg_send_name" id="msg_send_name">
             <input type="hidden" value="<?php echo $member["mb_8"];?>" name="msg_sing_filename" id="msg_sing_filename">
+            <!--<input type="hidden" value="<?php /*echo ($msgs["msg_send_cmap"])?$msgs["msg_send_cmap"]:$const["cmap_name"];*/?>" name="msg_send_cmap" id="msg_send_cmap">-->
             <?php if($msg_id){?>
                 <!--<input type="hidden" name="mb_id[]" value="<?php /*echo $msgs["send_mb_id"];*/?>">-->
                 <input type="hidden" name="msg_group" value="<?php echo $msgs["msg_group"];?>">
@@ -406,7 +407,7 @@ $delaylistmsg = array_filter($delaylistmsg);
             <div class="msg_write_btn">
                 <input type="button" class="basic_btn01 disabled" disabled value="수신확인">
                 <input type="button" class="basic_btn02 disabled" value="회신" disabled >
-                <input type="button" class="basic_btn02 " value="전송" onclick="return fnMsgSend('')">
+                <input type="button" class="basic_btn02 " value="전송" onclick="return fnMsgSend()">
             </div>
         </form>
     </div>

@@ -8,6 +8,7 @@ html,body{font-family: "nsr", Sans-serif;zoom:1}
 .width-fixed.board-width{width:1600px;margin-bottom:80px;padding-top:120px;}
 .width-fixed.write_width{width:960px;margin-bottom:80px;padding-top:120px;}
 .width-fixed.construct-width{width:720px;margin-bottom:80px;padding-top:120px;}
+.cal-padding{padding-left:20px;padding-right:20px;}
 .float{float:left}
 .sub_sec{padding:40px 0;margin-bottom:50px;}
 .btn_group{text-align:center}
@@ -26,6 +27,8 @@ html,body{font-family: "nsr", Sans-serif;zoom:1}
 .num_list01 li.next a {text-indent:-999px;overflow:hidden;background:url('../img/btn_next.gif') no-repeat 50% 50% #fff;padding:0;border:1px solid #bbb}
 /* page */
 
+
+.header_top{position:fixed;top:0;display:inline-block;left:0;width:100%;height:60px;z-index: 12}
 
 .modalpopup{width:100vw;height:100vh;background-color:RGBA(0,0,0,0.5);position: fixed;top:0;left:0;z-index:-1;-webkit-transition: all 0.5s ease-in-out;-moz-transition: all 0.5s ease-in-out;-ms-transition: all 0.5s ease-in-out;-o-transition: all 0.5s ease-in-out;transition: all 0.5s ease-in-out;opacity: 0;display:none;}
 
@@ -110,6 +113,26 @@ html,body{font-family: "nsr", Sans-serif;zoom:1}
 .login.sub:hover{opacity: 1}
 .my_profile{width:323px;position:absolute;right:-323px;top:61px;height:calc(100% - 61px);-webkit-transition: all 0.3s ease-in;-moz-transition: all 0.3s ease-in;-ms-transition: all 0.3s ease-in;-o-transition: all 0.3s ease-in;transition: all 0.3s ease-in;z-index:999;background-color: #464646;overflow-y: auto;}
 .my_profile.active{right:0;}
+
+.my_profile::-webkit-scrollbar {
+    width: 5px;
+    height:5px;
+}
+
+/* Track */
+.my_profile::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+.my_profile::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+/* Handle on hover */
+.my_profile::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
 
 .my_profile_top {padding: 20px 30px;display: inline-block;width: 100%;position:relative;z-index:2;background-color:#2d2d2d}
 .my_profile_top h2 {font-size: 18px;color: #fff;font-weight: normal;display: inline-block;cursor:pointer;width:100%}
@@ -590,6 +613,7 @@ html,body{font-family: "nsr", Sans-serif;zoom:1}
 
 /* 사용자가이드 */
 .user_guide{padding:16px ;background-color:#e2e2e2}
+.user_guide .user:after {content:"";clear:both;display:block;}
 .user_guide .user div{font-size:1.2em;float:left;}
 .user_guide .user div select{padding:0;border:none;background-color:transparent;border-bottom:1px solid #888}
 .user_guide .user div:first-child{margin-right:40px;font-weight:bold;color:#000;}
@@ -850,6 +874,7 @@ header.sub h2:before{content:"";width:30px;height:3px;background-color:#0e2080;p
 
 header.sub.schedule_titles {margin:0;position:relative;padding:18px 0 0;}
 header.sub.schedule_titles h2{font-size:22px;display:inline-block;margin-right:20px;}
+header.sub.schedule_titles h2 span,header.sub.schedule_titles h2 img{display:none;}
 header.sub.schedule_titles h2:before{content:"";width:30px;height:3px;background-color:#0e2080;position:absolute;top:10px;left:0;}
 
 #faq_wrap{width: 50%;float: left;padding-right: 50px;margin-bottom: 90px;}
@@ -870,11 +895,75 @@ header.sub.schedule_titles h2:before{content:"";width:30px;height:3px;background
 .inquiry_wrap table td{padding:10px;font-size:1.2em;border-bottom:1px solid #ddd;}
 /*.inquiry_wrap table td.files{padding:510px;}*/
 .inquiry_wrap table td input[type=file]{display:none;}
-.inquiry_wrap table td label{border:1px solid #ddd;background-color:#fff;text-align: center;width:100%;display: inline-block;height:100%;padding:10px 0;}
+.inquiry_wrap table td label{border:1px solid #ddd;background-color:#fff;text-align: center;width:100%;display: inline-block;height:100%;padding:10px 0;cursor:pointer}
 .inquiry_wrap table td p{margin-top:10px;font-size:1em;}
 .inquiry_wrap .inquiry_btns{padding:20px 0; text-align: center;}
 /* 제안하기 */
 
+/* 가이드 팝업 */
+.video_guide{
+    position: fixed;
+    bottom: 70px;
+    left: 30px;
+    font-size: 18px;
+    background: #09365e;
+    padding: 10px;
+    color: #fff;
+    text-align: center;
+    border-radius: 10px;
+    z-index:100;
+}
+
+.video_guide a{ color:#fff}
+
+#pop{
+    color:#fff;
+    position:absolute;
+    text-align:center;
+    top:50%;
+    left:50%;
+    display:none;
+    z-index:90000000000001;
+    transform: translate(-50%,-50%);
+    width:60vw;
+    height:40vw;
+}
+
+#pop .tab{
+    display:flex;
+    flex-grow:4;
+}
+
+#pop .tab > div{
+    width:25%;
+    padding:16px 5px;
+    font-size:16px;
+    background-color:#ddd;
+    color:#fff;
+    border-radius:20px 20px 0 0;
+}
+
+#pop .tab > div.active , #pop .tab > div:hover{
+    background-color:#0e2080;
+    color:#fff;
+    font-weight:bold;
+}
+#pop .content > div{position:relative;width:100%;height: calc(40vw - 73px);}
+#pop .content > div#tab1{display:block;}
+#pop .content > div#tab2{display:none;}
+#pop .content > div#tab3{display:none;}
+#pop .content > div#tab4{display:none;}
+
+#yt-player{width:100%;height:100%;z-index: 1000;display:block !important;}
+
+
+#pop .close {height:30px; background:#000; }
+#pop .close div{ text-align:right; }
+
+#check{font-size:12px; font-family:'돋움'; padding-left:70px;}
+#close{font-size:13px; padding:5px; font-weight:bold;}
+#close a {color:#fff;}
+/* 가이드 팝업 */
 
 /* 스케쥴 */
 header.sub.cal_top{position:fixed;top: 113px;background-color: #fff;z-index: 9;}
@@ -926,6 +1015,8 @@ header.sub.cal_top{position:fixed;top: 113px;background-color: #fff;z-index: 9;}
 .cal .calendar_wrap::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+.mini_calendar{display:none;}
+.schedule_list_m{display:none;}
 .schedule_tbl.top{width:calc(100% - 5px);}
 .schedule_tbl{width:100%;border:1px solid #b8c2cc;border-spacing: 0;table-layout: fixed}
 .schedule_tbl th{background-color:#fafafa;font-size:18px;padding:6px;border-bottom:1px solid #ddd;border-right:1px solid #ddd;width:14.285%;}
@@ -946,6 +1037,8 @@ header.sub.cal_top{position:fixed;top: 113px;background-color: #fff;z-index: 9;}
 .schedule_tbl td ul li.lateconfirm:before{content: "";width:3px;height:16px;background-color:#ffd800 ;display: inline-block;margin-right: 1px;vertical-align: middle;}
 .schedule_tbl td ul li.confirm:before{content:"";width:3px;height:16px;background-color:#12a9e2;display:inline-block;margin-right:1px;vertical-align: middle;}
 .schedule_tbl td.selected {border:2px inset orangered !important;}
+
+.cal_data_mobile_close{display:none;}
 
 .delay_msg_btns{position: absolute;top: -68px;right: 0;}
 .delay_msg_btns input{padding:10px 36px;}
@@ -1068,6 +1161,7 @@ header.sub.cal_top{position:fixed;top: 113px;background-color: #fff;z-index: 9;}
 .payment_btns input{float:left;width:calc(33.33% - 6.66px);margin-right:10px;padding:12px 0;border:none;background-color:#d9d9d9;font-size:16px;cursor: pointer;}
 .payment_btns input:last-child{margin-right:0;}
 .payment_btns input:hover{background-color: #002e89;color:#fff;}
+.payment_btns:after{content:"";clear:both;display:block;}
 .payment_title{position:relative;}
 .payment_title span{position:absolute;right:10px;top:15px;color:#002e89;font-weight:bold;font-size:13px;}
 
@@ -1276,6 +1370,9 @@ header.sub.cal_top{position:fixed;top: 113px;background-color: #fff;z-index: 9;}
 .cal_data ul.tab li.active{background-color:#001738;color:#fff;}
 .contruct_sel select{width:100%;padding:10px;font-size:18px;border-right:none;border-left:none;border-bottom:1px solid #ddd;border-top:3px solid #001738;}
 .contruct_sel select:focus{border-right: none !important;border-left: none !important;border-bottom: 1px solid #ddd !important;border-top: 3px solid #001738 !important;-webkit-box-shadow:none;-moz-box-shadow:none;box-shadow:none;outline:none;}
+.contruct_sel_m{display:none;}
+.contruct_sel_m select{width:100%;padding:10px;font-size:18px;border-right:none;border-left:none;border-bottom:1px solid #ddd;border-top:3px solid #001738;display:none}
+.contruct_sel_m select:focus{border-right: none !important;border-left: none !important;border-bottom: 1px solid #ddd !important;border-top: 3px solid #001738 !important;-webkit-box-shadow:none;-moz-box-shadow:none;box-shadow:none;outline:none;}
 .cal_data .list_con{margin-top:6px;border-top:2px solid #001738;}
 .cal_data .list_con h2{padding:15px;border-bottom:1px solid #b8c2cc;font-size:22px;}
 .cal_data .list_con h2 span.del{background-image:url("../img/ic_delete.svg");background-size:contain;background-position: center;background-repeat: no-repeat;width:25px;height:25px;position: absolute;right:15px;cursor: pointer}
@@ -1679,3 +1776,11 @@ svg rect {
 .view .view_table tr.company_mbs td input[type=radio]{display:none}
 .view .view_table tr.company_mbs td input[type=radio] + label:before{content:"";width:20px;height:20px;display:inline-block;vertical-align: middle;margin-right:10px;border:2px solid #ddd;}
 .view .view_table tr.company_mbs td input[type=radio]:checked + label:before{border:2px solid #002d62;background-image:url("../img/ic_checked.svg");background-size:18px 18px;background-position:center;background-repeat:no-repeat}
+
+.mobile_menu{display:none;}
+.mobile_settings{display:none;}
+.mobile_index{display:none;}
+#ft_mobile{display:none;}
+
+.td_hidden{display:table-cell;}
+.td_hidden2{display:table-column-group;}

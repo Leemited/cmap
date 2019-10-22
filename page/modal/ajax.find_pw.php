@@ -31,7 +31,6 @@ include_once ("../../common.php");
                 <input type="text" class="modal_input width100 mbtm10" name="mb_id" id="mb_id" required placeholder="아이디">
                 <input type="text" class="modal_input width100 mbtm10" name="mb_name" id="mb_name" required placeholder="성명">
                 <input type="text" class="modal_input width100 groups mbtm10" name="mb_hp" id="mb_hp" required placeholder="휴대폰번호 (-)제외 숫자만 입력" >
-
                 <input type="button" onclick="fnFind('');" class="modal_btn01 width100" value="확인">
             </div>
         </div>
@@ -47,7 +46,7 @@ include_once ("../../common.php");
             }else{
                 $("#mb_id").attr("placeholder","아이디");
                 $("#mb_name").attr("placeholder","회사명");
-                $("#mb_hp").attr("placeholder","회사전화번호 (-)제외 숫자만 입력");
+                $("#mb_hp").attr("placeholder","사업자번호 (-)제외 숫자만 입력");
             }
         });
     });

@@ -64,7 +64,23 @@ if (G5_IS_MOBILE) {
             <a href="javascript:footerModal('<?php echo G5_URL; ?>/page/ajax/ajax.content.php','provision')">서비스이용약관</a>
             <a href="#">TEL : 055-763-7222</a>
             <a href="#">주소 : 52852 경상남도 진주시 충의로 20-16, 3층 310호</a>
-            <a href="mailto:aplatoxin80@naver.com">Email : cmap114@cmap4u.com</a>
+            <a href="mailto:cmap114@cmap4u.com">Email : cmap114@cmap4u.com</a>
+            <!--<a href="<?php /*echo get_device_change_url(); */?>">모바일버전</a>-->
+        </div>
+    </div>
+    <div id="ft_mobile">
+        <div id="ft_catch"><img src="<?php echo G5_IMG_URL;?>/ft_logo.svg" alt=""></div>
+        <div id="ft_link">
+            <!--<a href="<?php /*echo G5_BBS_URL; */?>/content.php?co_id=company">회사소개</a>-->
+            <a href="#">건설기술혁신처</a>
+            <a href="#">대표자 : 이지연</a>
+            <a href="#">사업자번호 : 398-18-00805</a>
+            <a href="#">통신판매업신고 : 제2019-경남진주-0136호 </a>
+            <a href="javascript:footerModal('<?php echo G5_URL; ?>/page/ajax/ajax.content.php','privacy')"  >개인정보처리방침</a>
+            <a href="javascript:footerModal('<?php echo G5_URL; ?>/page/ajax/ajax.content.php','provision')">서비스이용약관</a>
+            <a href="#">TEL : 055-763-7222</a>
+            <a href="#">주소 : 52852 경상남도 진주시 충의로 20-16, 3층 310호</a>
+            <a href="mailto:cmap114@cmap4u.com">Email : cmap114@cmap4u.com</a>
             <!--<a href="<?php /*echo get_device_change_url(); */?>">모바일버전</a>-->
         </div>
     </div>

@@ -38,7 +38,8 @@ while($row = sql_fetch_array($res)){
                         <col width="*">
                         <col width="12%">
                         <col width="7%">
-                        <col width="10%">
+                        <col width="5%">
+                        <col width="5%">
                     </colgroup>
                     <tr>
                         <th>번호</th>
@@ -46,7 +47,8 @@ while($row = sql_fetch_array($res)){
                         <th>문의타입</th>
                         <th>내용</th>
                         <th>등록일</th>
-                        <th>관리</th>
+                        <th>승인</th>
+                        <th>삭제</th>
                     </tr>
                     <?php for($i=0;$i<count($list);$i++){
                         if($list[$i]["filename"]){
@@ -69,14 +71,16 @@ while($row = sql_fetch_array($res)){
                         <td style="padding:10px;"><?php echo $list[$i]["content"];?></td>
                         <td class="td_center"><?php echo $dates;?></td>
                         <td class="td_center">
-                            <input type="button" value="승인처리" style="display:inline-block;position: relative;right:auto;top:auto;margin:0">
-                            <input type="button" value="삭제" style="display:inline-block;position: relative;right:auto;top:auto;margin:0;background-color:red;" >
+                            <input type="button" value="승인처리" style="display:inline-block;position: relative;right:auto;top:auto;margin:0" onclick="location.href=g5_url+'/admin/inquiry_member?id=<?php echo $list[$i]["id"];?>'">
+                        </td>
+                        <td class="td_center">
+                            <input type="button" value="삭제" style="display:inline-block;position: relative;right:auto;top:auto;margin:0;background-color:red;" onclick="fnDelete('<?php echo $list[$i]["id"];?>');">
                         </td>
                     </tr>
                     <?php }
                     if(count($list)==0){?>
                         <tr>
-                            <td class="td_center" colspan="6">목록이 없습니다.</td>
+                            <td class="td_center" colspan="7">목록이 없습니다.</td>
                         </tr>
                     <?php }?>
                 </table>
@@ -117,6 +121,13 @@ while($row = sql_fetch_array($res)){
         </div>
     </section>
 </div>
+<script>
+    function fnDelete(id){
+        if(confirm("해당 문의를 삭제하시겠습니까?문의를 삭제하실 경우 반드시 해당 문의자에게 안내후 삭제해 주세요.")){
+            location.href=g5_url+'/admin/inquiry_delete?id='+id;
+        }
+    }
+</script>
 <?php
 include_once (G5_PATH."/admin/admin.tail.php");
 ?>

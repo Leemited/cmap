@@ -1,4 +1,4 @@
-7<?php
+<?php
 if (!defined('_GNUBOARD_')) exit; // 개별 페이지 접근 불가
 
 // add_stylesheet('css 구문', 출력순서); 숫자가 작을 수록 먼저 출력됨
@@ -11,7 +11,7 @@ if($is_member) {
 ?>
 
 <!-- 회원정보 입력/수정 시작 { -->
-<div class="login_hd" style="margin:120px 0;position:relative;-webkit-transform: translateY(0);-moz-transform: translateY(0);-ms-transform: translateY(0);-o-transform: translateY(0);transform: translateY(0);">
+<div class="login_hd" style="margin:120px 0;position:relative;-webkit-transform: translateY(0);-moz-transform: translateY(0);-ms-transform: translateY(0);-o-transform: translateY(0);transform: translateY(0);top:0;left:0">
     <div class="head">
         <div class="line"></div>
         <h2>회원가입</h2>
@@ -96,7 +96,7 @@ if($is_member) {
                         </span>
                             <?php }  ?>
                             <input type="hidden" name="old_email" value="<?php echo $member['mb_email'] ?>">
-                            <input type="text" name="mb_email" value="<?php echo ($email[0])?$email[0]:"";?>" id="reg_mb_email" required class="frm_input email required" size="70" maxlength="100" placeholder="E-mail"> @
+                            <input type="text" name="mb_email" value="<?php echo ($email[0])?$email[0]:"";?>" id="reg_mb_email" required class="frm_input email required" size="70" maxlength="100" placeholder="E-mail"> <div class="email_marks"><span>@</span></div>
                             <input type="text" name="mb_email2" value="<?php echo ($email[1])?$email[1]:"";?>" id="reg_mb_email2" required class="frm_input email required" size="70" maxlength="100" placeholder="">
                             <select name="mb_email_sel" id="mb_email_sel" class="frm_input email" onchange="$('#reg_mb_email2').val(this.value)">
                                 <option value="">직접입력</option>

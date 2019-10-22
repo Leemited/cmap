@@ -110,7 +110,7 @@ include_once (G5_PATH."/head.config.php");
                 <h2 class="count_title">제출지연건 <span><strong><?php echo number_format(count($maindelaylists));?></strong> 건</span></h2>
             </div>
             <?php }?>
-            <div class="cmap_menu_td <?php if($member["mb_level"]!=5){?>cmenu8<?php }else{?>cmenu6 border8<?php }?> " onclick="location.href=g5_url+'/page/board/inquiry_payment'">
+            <div class="cmap_menu_td <?php if($member["mb_level"]!=5){?>cmenu8<?php }else{?>cmenu6 border8<?php }?> " onclick="location.href=g5_url+'/page/board/inquiry'">
                 <img src="<?php echo G5_IMG_URL;?>/ic_inquiry.svg" alt=""> <h2>제안하기</h2>
             </div>
             <?php if($is_admin){?>
@@ -301,7 +301,7 @@ include_once (G5_PATH."/head.config.php");
     </div>
 </div>
 <!-- 상단 시작 { -->
-<div class="header_top" style="position:fixed;top:0;display:inline-block;left:0;width:100%;height:60px;z-index: 12">
+<div class="header_top" >
     <div id="hd">
         <h1 id="hd_h1"><?php echo $g5['title'] ?></h1>
 
@@ -338,6 +338,35 @@ include_once (G5_PATH."/head.config.php");
                     <img src="<?php echo G5_IMG_URL ?>/logo.svg" alt="<?php echo $config['cf_title']; ?>">
                     <?php }?>
                 </a>
+            </div>
+            <div class="mobile_menu">
+                <img src="<?php echo G5_IMG_URL;?>/ic_mobile_menu.svg" alt="">
+            </div>
+            <div class="mobile_menu_left">
+                <div class="mobile_top">
+
+                </div>
+                <div class="mobile_menu_cate">
+                    <div class="mobile_cates">
+                        <ul>
+                            <li onclick="">건설행정</li>
+                            <li onclick="">공사관리</li>
+                            <li onclick="">시공확인</li>
+                            <li onclick="">점검/평가</li>
+                            <li onclick="location.href=g5_bbs_url+'/board?bo_table=databoard'">자료실</li>
+                            <li onclick="location.href=g5_url+'/page/mypage/schedule'">스케쥴</li>
+                            <li onclick="location.href=g5_url+'/page/board/inquiry'">제안하기</li>
+                            <!--<li onclick="location.href=g5_url+'/page/'">천후표</li>-->
+                            <?php if($member["mb_level"]==5){?>
+                            <li>PM MODE</li>
+                            <?php }?>
+                            <li onclick="location.href=g5_url+'/page/mypage/user_confirm'">사용자관리</li>
+                            <li onclick="location.href=g5_url+'/page/mypage/work_messages'">업무요청서</li>
+                            <li onclick="location.href=g5_url+'/page/mypage/delaylist.php'">제출지연건</li>
+                        </ul>
+                    </div>
+                    <div class="mobile_in_menu"></div>
+                </div>
             </div>
             <div class="gnb_wrap">
                 <ul id="gnb_1dul">
@@ -568,7 +597,16 @@ include_once (G5_PATH."/head.config.php");
                 <div class="navigator_set">
                     <div class="icons"></div>
                 </div>
+                <div class="mobile_settings" onclick="<?php if($is_member && $member["mb_auth"]==true){?>location.href=g5_url+'/page/mypage/mypage'<?php }else{?>location.href=g5_bbs_url+'/login'<?php }?>">
+                    <img src="<?php echo G5_IMG_URL;?>/ic_profile_setting.svg" alt="">
+                </div>
             </div>
+            <?php }else if($member["mb_level"]==5){?>
+                <div class="etc_btns">
+                    <div class="mobile_settings" onclick="fnLogout();">
+                        <img src="<?php echo G5_IMG_URL;?>/ic_logout_w.png" alt="">
+                    </div>
+                </div>
             <?php }?>
         </nav>
         <script>
@@ -699,10 +737,11 @@ include_once (G5_PATH."/head.config.php");
     <span class="widthchk" style="opacity: 0;white-space: nowrap;height: 0;display:none;"><?php if($useguide["menu_desc"]){echo $useguide["menu_desc"];}else{echo "사용자 가이드를 입력해주세요.";}?></span>
     </div>
 
-    <?php if($test=="msg"){?>
+    <?php if($test=="msg"){
+        ?>
         <div class="search" style="position: relative;" id="msg_search">
-            <form action="" method="get">
-                <select name="const_id" id="cons_id" class="basic_input01" >
+            <form action="" method="get" name="msg_serach_form">
+                <select name="const_id" id="cons_id" class="basic_input01" onchange="document.msg_serach_form.submit();">
                     <option value="">현장 선택</option>
                     <?php for($i=0;$i<count($mycont);$i++){?>
                         <option value="<?php echo $mycont[$i]["id"];?>" <?php if($const_id==$mycont[$i]["id"]){?>selected<?php }?>><?php echo $mycont[$i]["cmap_name"];?></option>
@@ -729,7 +768,6 @@ include_once (G5_PATH."/head.config.php");
             </div>
         </div>
     <?php }if($test=="mng"){?>
-
         <div class="search" style="position: relative;" id="msg_search">
             <form action="" method="get">
                 <input type="text" name="stx" id="stx" value="<?php echo $stx;?>" class="basic_input01 width20" placeholder="현장명을 입력해주세요.">

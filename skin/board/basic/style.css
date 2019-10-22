@@ -31,7 +31,7 @@
 /* 기본 테이블 */
 /* 목록 테이블 */
 #bo_list .tbl_head01 {}
-#bo_list .tbl_head01 table{border-right:1px solid #e8e8e9;border-left:1px solid #e8e8e9;border-top:2px solid #1b386e}
+#bo_list .tbl_head01 table{border-right:1px solid #e8e8e9;border-left:1px solid #e8e8e9;border-top:2px solid #1b386e;table-layout: fixed}
 #bo_list .tbl_head01 caption {}
 #bo_list .tbl_head01 th {background-color:#fff;border-right:1px dashed #d9dfe5;border-bottom:#b8c2cc;padding:20px 0;font-size:17px;color:#000;}
 #bo_list .tbl_head01 thead a {}

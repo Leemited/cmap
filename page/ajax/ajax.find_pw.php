@@ -1,11 +1,11 @@
 <?php
 include_once ("../../common.php");
 include_once(G5_LIB_PATH.'/mailer.lib.php');
-$mb_hp = hyphen_hp_number($mb_hp);
 
 if($mb_level==6) {
-    $sql = "select * from `g5_member` where mb_id='{$mb_id}' and mb_name = '{$name}' and mb_tel = '{$mb_hp}' and mb_level = 6";
+    $sql = "select * from `g5_member` where mb_id='{$mb_id}' and mb_1 = '{$name}' and REPLACE(mb_3,'-','') = '{$mb_hp}' and mb_level = 6";
 }else{
+    $mb_hp = hyphen_hp_number($mb_hp);
     $sql = "select * from `g5_member` where mb_id='{$mb_id}' and mb_name = '{$name}' and mb_hp = '{$mb_hp}'";
 }
 $result["sql"]=$sql;

@@ -1,8 +1,8 @@
 <?php
 if (!defined('_GNUBOARD_')) exit;
 define('G5_MYSQL_HOST', 'localhost');
-define('G5_MYSQL_USER', 'cmapAdmin');
-define('G5_MYSQL_PASSWORD', 'freeflug0258!');
+define('G5_MYSQL_USER', 'root');
+define('G5_MYSQL_PASSWORD', 'jhs72877287');
 define('G5_MYSQL_DB', 'cmap');
 define('G5_MYSQL_SET_MODE', false);
 

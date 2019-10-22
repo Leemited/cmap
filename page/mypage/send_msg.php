@@ -26,7 +26,7 @@ if($msg_id) {
     $sql = "select * from `cmap_construct_work_msg` where id = '{$msg_id}'";
     $msg_chk = sql_fetch($sql);
     $const_id = $msg_chk["const_id"];
-    $cmap_name = $msg_chk["cmap_name"];
+    $cmap_name = $msg_chk["msg_send_cmap"];
 }else {
     $const = sql_fetch("select cmap_name from `cmap_my_construct` where id = '{$const_id}'");
     $cmap_name = $const["cmap_name"];

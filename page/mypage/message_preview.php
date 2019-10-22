@@ -4,14 +4,14 @@ $count = 0;
 $chk_read = true;//확인 불가능 false = 가능 , 신규등록은 불가능
 if($msg_id){
     $msgs = sql_fetch("select * from `cmap_construct_work_msg` where id = '{$msg_id}'");
-    /*if($msgs["read_mb_id"]==$member["mb_id"] && $msgs["read_date"] == "") {
-        $sql = "update `cmap_construct_work_msg` set read_date = now(), read_time = now() where id = '{$msg_id}'";
-        sql_query($sql);
-    }*/
 
     $read_mbs = explode(",",$msgs["read_mb_id"]);
+    $chk_read_mem = true;
     for($i=0;$i<count($read_mbs);$i++){
         $read_mb_ids[] = get_member($read_mbs[$i]);
+        if($read_mbs[$i]==$member["mb_id"]){
+            $chk_read_mem = false;
+        }
     }
 
     if($msgs["msg_read_member"]!="") {
@@ -29,7 +29,7 @@ if($msg_id){
             }
         }
     }else{//빈값
-        $chk_read = false;
+        $chk_read = $chk_read_mem;
     }
 
     if($msgs["send_mb_id"]==$member["mb_id"]){
@@ -38,10 +38,12 @@ if($msg_id){
 
     $retype_status=false;
     if($chk_read==true){
+        $retype_status_member = false;
         if($msgs["msg_retype_member"]!="") {
             $msg_reads = explode(",", $msgs["msg_retype_member"]);
             for ($i = 0; $i < count($msg_reads); $i++) {
                 if ($msg_reads[$i] == $member["mb_id"]) {
+                    $retype_status_member = true;
                     $retype_status = false;//회신불가능
                     continue;
                 } else {
@@ -49,7 +51,7 @@ if($msg_id){
                 }
             }
         }else{
-            $retype_status = true;
+            $retype_status = $retype_status_member;
         }
     }
 
@@ -129,7 +131,7 @@ $delaylist = arr_sort($delaylist, "delay_date", "asc");
     <a href="#" class="print_preview">인쇄하기</a>-->
 <div class="message preview" id="prints" style="">
     <div class="msg_title">
-        <h2>업무연락서</h2>
+        <h2>업무연락서<?php print_r2($chk_read);?></h2>
         <?php if($msg_id){?>
             <ul>
                 <!--<li onclick="">새로고침</li>-->
